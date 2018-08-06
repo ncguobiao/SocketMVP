@@ -1,0 +1,164 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'  //kapt3插件
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        kapt {
+            generateStubs = true
+        }
+
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+//    repositories {
+//        maven { url 'http://repo1.maven.org/maven2' }
+//        jcenter { url "http://jcenter.bintray.com/" }
+//    }
+
+}
+
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+//    configurations.all {
+//        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//            def requested = details.requested
+//            if (requested.group == 'com.android.support') {
+//                if (!requested.name.startsWith("multidex")) {
+//                    details.useVersion '26.1.0'
+//                }
+//            }
+//
+//        }
+//    }
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    api "com.android.support:support-v4:${android_support_version}"
+    api "com.android.support:appcompat-v7:${android_support_version}"
+    api "com.android.support:recyclerview-v7:${android_support_version}"
+    api "com.android.support:design:${android_support_version}"
+    api "com.android.support:cardview-v7:${android_support_version}"
+
+    //    api rootProject.ext.supportLibs
+
+        testCompile 'junit:junit:4.12'
+    api 'com.android.support.constraint:constraint-layout:1.1.2'
+    api 'org.jetbrains.anko:anko-commons:0.10.4'
+
+    //leakCanary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+    //腾讯 bugly
+    api 'com.tencent.bugly:crashreport:2.6.6.1'
+
+    //Logger
+    api 'com.orhanobut:logger:2.2.0'
+
+    //多视图
+    api project(':multiple-status-view')
+
+    //运行时权限
+//    api 'me.weyye.hipermission:library:1.0.7'
+    api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.3@aar'
+
+//
+    //    // 底部菜单
+
+    //    api('com.flyco.tablayout:FlycoTabLayout_Lib:2.1.0@aar') {
+
+    //        exclude group: 'com.android.support', module: 'support-v4'
+
+    //    }
+
+    //模糊透明 View
+
+    //    api 'com.github.mmin18:realtimeblurview:1.1.0'
+
+    //Dagger2
+    api "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    //kotlin 支持库
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+
+    //GlideOkHttp
+    api(rootProject.ext.glideOkhttp) {
+        exclude group: 'glide-parent'
+    }
+
+    // Support库
+    api rootProject.ext.supportLibs
+
+    // 网络请求库
+    api rootProject.ext.networkLibs
+
+    // RxJava2
+    api rootProject.ext.rxJavaLibs
+    api rootProject.ext.otherLibs
+    api 'com.jakewharton.rxbinding2:rxbinding:2.1.1'
+
+    // APT dependencies(Kotlin内置的注解处理器)
+    kapt rootProject.ext.annotationProcessorLibs
+
+    //Retrofit
+    api "com.squareup.okhttp3:logging-interceptor:${ok_http_version}"
+    api "com.squareup.retrofit2:retrofit:${retrofit_version}"
+    api "com.squareup.retrofit2:converter-gson:${retrofit_version}"
+    api "com.squareup.retrofit2:adapter-rxjava2:${retrofit_version}"
+
+    //RxLifecycle
+    api "com.trello.rxlifecycle2:rxlifecycle-kotlin:$rx_lifecycle_version"
+    api "com.trello.rxlifecycle2:rxlifecycle-components:$rx_lifecycle_version"
+
+    //smartRefreshLayout 下拉刷新
+    api 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1'
+    api 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.5.1'
+
+    //    //Banner
+
+    //    api 'cn.bingoogolapple:bga-banner:2.1.8@aar'
+
+    //ARouter
+    api "com.alibaba:arouter-api:$arouter_api_version"
+
+    //fastjson
+    api 'com.alibaba:fastjson:1.2.47'
+    api 'com.android.support:multidex:1.0.3'
+
+
+
+    //FastJson-Converter
+    api 'com.github.BaronZ88:Retrofit2-FastJson-Converter:1.2'
+
+    //zxing
+    api files('libs/zxing.jar')
+
+    //BluetoothKit
+    api 'com.inuker.bluetooth:library:1.4.0'
+
+    //MobSDK
+    implementation files('libs/MobCommons-2017.1201.1507.jar')
+    implementation files('libs/MobTools-2017.1201.1507.jar')
+    implementation files('libs/ShareSDK-Wechat-3.1.2.jar')
+    implementation files('libs/ShareSDK-Wechat-Core-3.1.2.jar')
+    implementation files('libs/ShareSDK-Wechat-Favorite-3.1.2.jar')
+    implementation files('libs/ShareSDK-Wechat-Moments-3.1.2.jar')
+    implementation files('libs/ShareSDK-Core-3.1.2.jar')
+}

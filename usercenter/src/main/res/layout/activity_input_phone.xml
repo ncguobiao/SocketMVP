@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_input_phone"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:orientation="vertical"
+   >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <!--<RelativeLayout-->
+        <!--android:id="@+id/iv_back"-->
+        <!--style="@style/click_style">-->
+
+        <!--<ImageView style="@style/back_style" />-->
+        <!--</RelativeLayout>-->
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/input_phone"
+            android:textColor="@color/text_color"
+            android:textSize="18sp" />
+        <RelativeLayout
+            android:visibility="invisible"
+            android:id="@+id/tv_regist"
+            style="@style/click_style"
+            android:layout_alignParentEnd="true"
+            android:gravity="center">
+            <TextView
+                style="@style/tv_right_style"
+                android:text="@string/regist" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grayline" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/white">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:text="国家和地区"
+            android:textColor="@color/text_light_color"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="20dp"
+            android:text="中国"
+            android:textColor="@color/text_light_color"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <View style="@style/line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:background="@color/white">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="34dp"
+            android:text="+86"
+            android:textColor="@color/text_light_color"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/et_phone"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="请输入手机号码"
+            android:inputType="phone"
+            android:textColor="@color/text_light_color"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View style="@style/line" />
+
+    <include layout="@layout/center_layout" />
+
+    <Button
+        android:id="@+id/bt_next"
+        style="@style/button_style"
+        android:text="@string/next" />
+
+    <include layout="@layout/weixin_login" />
+</LinearLayout>

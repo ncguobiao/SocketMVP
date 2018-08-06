@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2e8abb</color>
+    <color name="colorPrimaryDark">#549cf8</color>
+    <color name="colorAccent">#EF5362</color>
+    <color name="textColorPrimary">#030405</color>
+
+    <color name="color_gray">#9a9a9a</color>
+    
+    <color name="color_gray_translucent">#5000</color>
+
+
+    <color name="app_color_theme_1">#EF5362</color> <!-- Grapefruit -->
+    <color name="app_color_theme_2">#FE6D4B</color> <!-- Bittersweet -->
+    <color name="app_color_theme_3">#FFCF47</color> <!-- Sunflower -->
+    <color name="app_color_theme_4">#9FD661</color> <!-- Grass -->
+    <color name="app_color_theme_5">#3FD0AD</color> <!-- Mint -->
+    <color name="app_color_theme_6">#2BBDF3</color> <!-- Aqua -->
+    <color name="app_color_theme_7">#00b0ff</color> <!-- Blue Jeans -->
+    <color name="app_color_theme_8">#AC8FEF</color> <!-- Lavender -->
+    <color name="app_color_theme_9">#EE85C1</color> <!-- Pink Rose -->
+
+    <color name="color_pink">#ff4081</color>
+    <color name="color_orange">#dd2c00</color>
+    <color name="color_blue_dark">#ee447AA4</color>
+    <color name="common_red">#f11919</color>
+    <color name="common_bg">#f5f5f5</color>
+
+
+    <!-- title 半透明背景颜色 -->
+    <color name="color_title_bg">#CCFFFFFF</color>
+    <!-- 默认背景色 -->
+    <color name="backgroundColor">#EEEEEE</color>
+
+    <!-- white -->
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_black">#000000</color>
+
+    <color name="color_blue">#87CEEB</color>
+
+    <!-- item 标题颜色 -->
+    <color name="color_item_title">#000000</color>
+
+    <color name="color_lighter_gray">#ddd</color>
+    <color name="color_darker_gray">#aaa</color>
+
+    <color name="color_division_line">@color/color_lighter_gray</color>
+    
+    <color name="color_translucent">#00000000</color>
+
+    <color name="color_aquamarine">#7FFFD4</color>
+
+    <color name="color_light_black">#5000</color>
+    <color name="mainColor">#541B85</color>
+
+    <!-- 暗灰色 -->
+    <color name="brown">#A52A2A</color>
+
+    <!-- QR_Code -->
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="result_image_border">#ffffffff</color>
+    <color name="result_minor_text">#ffc0c0c0</color>
+    <color name="result_points">#c000ff00</color>
+    <color name="system_bar_color">#fed952</color>
+
+
+    <color name="colorTheme">#1296db</color>
+    <color name="colorBlue">#40a9ff</color>
+    <color name="white">#FFFFFF</color>
+    <color name="White">#FFFFFF</color>
+    <color name="Black">#000000</color>
+    <color name="grey">#D7D4D4</color>
+    <color name="grayline">#DDDDDD</color>
+    <color name="transparent">#00000000</color><!-- 透明 -->
+    <color name="semi_transparent">#22ffffff</color><!-- 半透明 -->
+    <color name="black">#ff323232</color><!-- 黑色 -->
+    <color name="igray">#ffF2F2F2</color><!-- 用于页面背景 -->
+    <color name="darkblue">#ff7CA0CE</color><!-- actionbar背景 ,即是所有标题栏背景 主题色 -->
+    <color name="red">#ffff0000</color><!-- 红色 -->
+    <color name="blue">#ff0288ce</color><!-- 红色 -->
+    <color name="tv_auxiliary">#999999</color><!-- 辅助文字-->
+    <color name="tv_content">#333333</color><!-- 辅助文字-->
+    <color name="Orange">#F5A623</color><!-- 橙色 -->
+    <color name="dark_grey">#D2D2D2</color><!-- 深灰 -->
+    <color name="wxnavpage">#FFE1E8EB</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorWhite">#ffffffff</color>
+    <color name="green">#03e80b</color>
+    <color name="bg_color">#F4F4F4</color>
+    <color name="tv_color">#34A9D2</color>
+    <color name="connect_fail">#F5A623</color>
+    <color name="red_pressed">#FF6666</color>
+    <color name="red_normal">#FF0000</color>
+    <color name="device_detail_center">#54bac8</color>
+    <color name="recycler_swipe_color_text_gray">#FF777777</color>
+
+    <color name="recycler_swipe_color_loading_color1">#55777777</color>
+    <color name="recycler_swipe_color_loading_color2">#B1777777</color>
+    <color name="recycler_swipe_color_loading_color3">#FF777777</color>
+    <color name="divider_color">#FFB7B2B2</color>
+    <color name="white_pressed">#FFCFCFCF</color>
+    <color name="text_light_color">#333333</color>
+    <color name="igray_et">#ff999999</color><!-- 辅助文字-->
+    <color name="text_color">#4A4A4A</color>
+    <color name="activity_background">#F4F4F4</color>
+    <color name="BLUE">#34A9D2</color>
+</resources>
