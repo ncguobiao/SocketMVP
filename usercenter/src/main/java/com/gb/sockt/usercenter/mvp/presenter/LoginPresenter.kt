@@ -15,6 +15,12 @@ interface LoginPresenter :IPresenter<LoginView>{
     /**
      * 微信登陆
      */
-    fun weiXinLogin(openid: String, nickname: String)
+    fun weiXinLogin(openid: String?, nickname: String?)
+
+
+    /**
+     * 校验手机是否已注册
+     */
+    fun checkPhoneISRegister(mobile:String,codeType:String?)
 
 }

@@ -20,7 +20,7 @@ import java.security.MessageDigest
  *
  */
 
-class GlideRoundTransform @JvmOverloads constructor(context: Context = BaseApplication.mContext, dp: Int = 4) : BitmapTransformation(context) {
+class GlideRoundTransform @JvmOverloads constructor(context: Context = BaseApplication.getAppContext(), dp: Int = 4) : BitmapTransformation(context) {
 
     private var radius = 0f
 

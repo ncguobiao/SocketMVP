@@ -2,6 +2,7 @@ package com.gb.socket
 
 import android.content.Context
 import com.example.baselibrary.common.BaseApplication
+import com.example.baselibrary.utils.AppUtils
 import com.mob.MobSDK
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
@@ -28,6 +29,9 @@ class App: BaseApplication(){
 
     override fun onCreate() {
         super.onCreate()
-        MobSDK.init(applicationContext)
+        MobSDK.init(this)
+
+        AppUtils.init(this)
+//        ZXingLibrary.initDisplayOpinion(this)
     }
 }

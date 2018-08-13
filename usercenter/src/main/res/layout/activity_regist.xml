@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.gb.sockt.usercenter.ui.activity.RegistActivity">
+    tools:context="com.gb.sockt.usercenter.ui.activity.RegisterActivity">
 
     <Button
         android:id="@+id/bt_regist"

@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:id="@+id/activity_ll_control"
+    android:orientation="vertical">
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp">-->
+
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/iv_back"-->
+            <!--style="@style/click_style">-->
+            <!--<ImageView style="@style/back_style" />-->
+        <!--</RelativeLayout>-->
+
+        <!--<TextView-->
+            <!--style="@style/tv_center_style"-->
+            <!--android:text="@string/device_info" />-->
+    <!--</RelativeLayout>-->
+
+    <View style="@style/line_style" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/battery_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="6dp"
+            android:text="@string/battery_state_no"
+            android:textColor="@color/red_normal"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/battery_two"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/battery_notify_no"
+            android:textColor="@color/red_normal"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/iv_gif"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/tv_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/tv_color"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/bg_color" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:baselineAligned="false"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="88dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/device_num"
+                android:textColor="@color/tv_content"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_device_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="44dp"
+            android:background="@color/grayline" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="88dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/device_voltage"
+                android:textColor="@color/tv_content"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_voltage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:text="0V"
+                android:gravity="center"
+                android:textSize="16sp" />
+        </LinearLayout>
+        <View
+            android:layout_width="2dp"
+            android:layout_height="44dp"
+            android:background="@color/grayline" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="88dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/device_electricity"
+                android:textColor="@color/tv_content"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_electricity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="0mA"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="44dp"
+            android:background="@color/grayline" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="88dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="费率"
+                android:textColor="@color/tv_content"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_device_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="1元/小时"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/bg_color" />
+
+    <LinearLayout
+        android:id="@+id/ll_time_count_down"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/tv_content"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/iv_time_count_down"
+            android:layout_width="30dp"
+            android:layout_height="39dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/tv_time_count_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="18dp"
+            android:textColor="#666666"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_time_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:text="请选择充电时间"
+            android:textColor="@color/tv_content"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_time_group_1"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/white"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/bt_time1"
+                style="@style/money_select_style"
+                android:layout_marginEnd="26dp"
+                android:layout_marginStart="30dp"
+                android:text="1小时" />
+
+            <Button
+                android:id="@+id/bt_time2"
+                style="@style/money_select_style"
+                android:layout_marginEnd="26dp"
+                android:layout_marginStart="26dp"
+                android:text="2小时" />
+
+            <Button
+                android:id="@+id/bt_time3"
+                style="@style/money_select_style"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="26dp"
+                android:text="3小时" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_time_group_2"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/white"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/bt_time4"
+                style="@style/money_select_style"
+                android:layout_marginEnd="26dp"
+                android:layout_marginStart="30dp"
+                android:text="4小时" />
+
+            <Button
+                android:id="@+id/bt_time5"
+                style="@style/money_select_style"
+                android:layout_marginEnd="26dp"
+                android:layout_marginStart="26dp"
+                android:text="5小时" />
+
+            <Button
+                android:id="@+id/bt_edit"
+                style="@style/money_select_style"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="26dp"
+                android:text="自定义" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <!--<Button-->
+    <!--android:text="开始充电"-->
+    <!--android:id="@+id/bt_confirm"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="45dp"-->
+    <!--android:layout_margin="30dp"-->
+    <!--android:background="#FF1196DB"-->
+    <!--android:textColor="#FFFFFFFF"-->
+    <!--android:textSize="18sp" />-->
+
+    <!--<RelativeLayout-->
+    <!--android:id="@+id/rl_control"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:layout_weight="1"-->
+    <!--android:visibility="gone">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_open"-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:background="@drawable/open_btn_selector" />-->
+
+    <!--</RelativeLayout>-->
+
+    <Button
+        android:id="@+id/bt_start"
+        style="@style/button_style"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/normal_button"
+        android:text="请选择充电时间"
+        android:visibility="invisible" />
+
+</LinearLayout>

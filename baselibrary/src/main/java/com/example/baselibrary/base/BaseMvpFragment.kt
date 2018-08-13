@@ -9,6 +9,7 @@ import com.classic.common.MultipleStatusView
 import com.example.baselibrary.act
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.Constant
+import com.example.baselibrary.common.ConstantSP
 import com.example.baselibrary.injection.component.ActivityComponent
 import com.example.baselibrary.injection.component.DaggerActivityComponent
 import com.example.baselibrary.injection.module.ActivityMoudle
@@ -118,7 +119,7 @@ abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), IBaseView
     }
 
     fun getUserID():String{
-        return SpUtils.getString(activity,Constant.USERID)
+        return SpUtils.getString(activity,ConstantSP.USER_ID)
     }
 
 }

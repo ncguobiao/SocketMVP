@@ -32,18 +32,17 @@ android {
 }
 
 dependencies {
-
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
-
     //Dagger2
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     //ARouter
     kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
     implementation project(':provider')
     implementation project(':usercenter')
+    implementation project(':blutoothcontrol')
 }
 

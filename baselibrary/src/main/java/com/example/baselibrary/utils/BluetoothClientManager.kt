@@ -6,7 +6,7 @@ import com.inuker.bluetooth.library.BluetoothClient
 /**
  * Created by guobiao on 2018/7/13.
  */
-class ClientManager {
+class BluetoothClientManager {
 
     companion object {
 
@@ -14,7 +14,7 @@ class ClientManager {
 
         fun getClient(): BluetoothClient {
             if (mClient == null) {
-                synchronized(ClientManager::class.java) {
+                synchronized(BluetoothClientManager::class.java) {
                     if (mClient == null) {
                         mClient = BluetoothClient(BaseApplication.getAppContext())
                     }

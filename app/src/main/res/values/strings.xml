@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">SocketMVP</string>
+    <string name="app_name">充电桩</string>
+    <string name="qrcode_error">二维码数据错误!</string>
 </resources>

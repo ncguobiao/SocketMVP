@@ -23,6 +23,9 @@ public class TestOkHttp3 {
      */
     @Test
     public void testGet() {
+        TestKotlin t = new TestKotlin();
+                t.testGet();
+
         // 创建 OkHttpClient 对象
         OkHttpClient client = new OkHttpClient();
         // 创建 Request 对象
@@ -47,9 +50,13 @@ public class TestOkHttp3 {
         OkHttpClient client = new OkHttpClient();
         // 创建 Request 对象
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(mediaType, "{\"name\": \"dalimao\"}");
+//        RequestBody body = RequestBody.create(mediaType, "{\"name\": \"dalimao\"}");
+        RequestBody body = RequestBody.create(mediaType,
+                "{\"openId\":\"oE1qXwpVx2IFSzYGwT8rHs-dP1ME\", \"nickname\":\"\\uF8FF just so so，吻猪\"}");
         Request request = new Request.Builder()
-                .url("http://httpbin.org/post")// 请求行
+//                .url("http://httpbin.org/post")// 请求行
+                .url("https://www.sensorte.com/UserService/User/wechatLogin")// 请求行
+//                .url("http://test01.sensor668.com:5080/UserService/User/wechatLogin")// 请求行
                 //.header(); // 请求头
                 .post(body) // 请求体
                 .build();
@@ -132,4 +139,6 @@ public class TestOkHttp3 {
             e.printStackTrace();
         }
     }
+
+
 }

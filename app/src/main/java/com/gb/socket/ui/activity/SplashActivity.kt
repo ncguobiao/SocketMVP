@@ -1,28 +1,19 @@
 package com.gb.socket.ui.activity
 
 import android.Manifest
-import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import com.example.baselibrary.base.BaseActivity
-import com.example.baselibrary.base.BaseMvpActivity
 import com.example.baselibrary.common.ConstantSP
-import com.example.baselibrary.utils.AppUtils
 import com.example.baselibrary.utils.SpUtils
 import com.gb.socket.App
 import com.gb.socket.R
 import com.tbruyelle.rxpermissions2.RxPermissions
 import java.util.*
-import android.widget.Toast
-import com.alibaba.android.arouter.launcher.ARouter
-import com.example.baselibrary.utils.ClientManager
-import com.example.provider.router.RouterPath
+import com.example.baselibrary.utils.BluetoothClientManager
 import com.gb.sockt.usercenter.ui.activity.LoginActivity
-import com.gb.sockt.usercenter.ui.activity.RegistActivity
 import com.orhanobut.logger.Logger
-import com.tbruyelle.rxpermissions2.Permission
-import io.reactivex.functions.Consumer
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
@@ -40,7 +31,7 @@ class SplashActivity : BaseActivity() {
     }
 
 
-     fun initData() {
+    fun initData() {
         init_msg_count()
         requestPermissions()
     }
@@ -58,7 +49,6 @@ class SplashActivity : BaseActivity() {
             SpUtils.put(App.getAppContext(), ConstantSP.VOICE_MSG_COUNT, 2)
         }
     }
-
 
 
     fun layoutId(): Int {
@@ -82,7 +72,7 @@ class SplashActivity : BaseActivity() {
                             it.granted -> {
                                 // 用户已经同意该权限
                                 Logger.d(it.name + " is granted.")
-                                jumpToOtherActivity()
+                                redirectTo()
 //                                when {
 //                                    it.name == Manifest.permission.ACCESS_FINE_LOCATION -> {
 //                                        jumpToOtherActivity()
@@ -102,17 +92,33 @@ class SplashActivity : BaseActivity() {
                         }
                     }
                 }
+
+//        rxPermission.request(
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//                , Manifest.permission.ACCESS_COARSE_LOCATION
+//                , Manifest.permission.CAMERA
+//                , Manifest.permission.READ_SMS
+//                , Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                , Manifest.permission.READ_EXTERNAL_STORAGE
+//        ).subscribe({
+//            if (it){
+//                //申请的权限全部允许
+//                redirectTo()
+//            }else{
+//                //只要有一个权限被拒绝，就会执行
+//            }
+//        })
     }
 
 
-    private fun jumpToOtherActivity() {
-        val bluetoothOpened = ClientManager.getClient().isBluetoothOpened
+    private fun redirectTo() {
+        val bluetoothOpened = BluetoothClientManager.getClient().isBluetoothOpened
         if (!bluetoothOpened) {
-            val b = ClientManager.getClient().openBluetooth()
+            val b = BluetoothClientManager.getClient().openBluetooth()
         }
         val isLogin = SpUtils.getBoolean(App.getAppContext(), ConstantSP.IS_LOGIN)
         if (isLogin) {
-            startActivity<LoginActivity>()
+            startActivity<MainActivity>()
             finish()
         } else {
             Handler().postDelayed({

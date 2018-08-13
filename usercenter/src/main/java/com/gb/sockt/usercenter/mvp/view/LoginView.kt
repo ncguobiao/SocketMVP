@@ -12,11 +12,16 @@ interface LoginView : IBaseView {
     /**
      * 设置空View
      */
-    fun loginSuccess(data: LoginBean)
+    fun loginSuccess()
 
-    fun weixinLoginSuccess(data: WeiXinLoginSuccessBean)
+    fun loginFail(msg: String)
 
-    fun loginFail(msg:String)
+    fun showError(error: String, errorCode: Int)
 
-    fun showError(error: String,errorCode:Int)
+    fun showNotifyDialog(title:String?)
+
+    fun showSendCodeDialog(phone:String?)
+
+
+
 }

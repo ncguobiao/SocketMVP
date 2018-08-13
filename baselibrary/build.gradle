@@ -48,6 +48,8 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testCompile 'junit:junit:4.12'
+
     api "com.android.support:support-v4:${android_support_version}"
     api "com.android.support:appcompat-v7:${android_support_version}"
     api "com.android.support:recyclerview-v7:${android_support_version}"
@@ -56,10 +58,11 @@ dependencies {
 
     //    api rootProject.ext.supportLibs
 
-        testCompile 'junit:junit:4.12'
-    api 'com.android.support.constraint:constraint-layout:1.1.2'
-    api 'org.jetbrains.anko:anko-commons:0.10.4'
 
+    api 'com.android.support.constraint:constraint-layout:1.1.2'
+    //anko
+    api "org.jetbrains.anko:anko-commons:$anko_version"
+    api "org.jetbrains.anko:anko-design:$anko_version" // For SnackBars
     //leakCanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
@@ -69,7 +72,7 @@ dependencies {
 
     //Logger
     api 'com.orhanobut:logger:2.2.0'
-
+    api 'de.greenrobot:eventbus:3.0.0-beta1'
     //多视图
     api project(':multiple-status-view')
 
@@ -77,17 +80,13 @@ dependencies {
 //    api 'me.weyye.hipermission:library:1.0.7'
     api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.3@aar'
 
-//
     //    // 底部菜单
-
     //    api('com.flyco.tablayout:FlycoTabLayout_Lib:2.1.0@aar') {
 
     //        exclude group: 'com.android.support', module: 'support-v4'
 
     //    }
-
     //模糊透明 View
-
     //    api 'com.github.mmin18:realtimeblurview:1.1.0'
 
     //Dagger2
@@ -97,12 +96,10 @@ dependencies {
     //kotlin 支持库
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-
     //GlideOkHttp
     api(rootProject.ext.glideOkhttp) {
         exclude group: 'glide-parent'
     }
-
     // Support库
     api rootProject.ext.supportLibs
 
@@ -130,9 +127,9 @@ dependencies {
     //smartRefreshLayout 下拉刷新
     api 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1'
     api 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.5.1'
-
+    api 'com.yanzhenjie:recyclerview-swipe:1.1.4'
     //    //Banner
-
+    api 'com.youth.banner:banner:1.4.10'  //最新版本
     //    api 'cn.bingoogolapple:bga-banner:2.1.8@aar'
 
     //ARouter
@@ -142,13 +139,14 @@ dependencies {
     api 'com.alibaba:fastjson:1.2.47'
     api 'com.android.support:multidex:1.0.3'
 
-
+    api 'com.yanzhenjie:recyclerview-swipe:1.1.4'
 
     //FastJson-Converter
     api 'com.github.BaronZ88:Retrofit2-FastJson-Converter:1.2'
 
-    //zxing
-    api files('libs/zxing.jar')
+//    //zxing
+    implementation files('libs/zxing.jar')
+//    api 'cn.yipianfengye.android:zxing-library:2.2'
 
     //BluetoothKit
     api 'com.inuker.bluetooth:library:1.4.0'
@@ -161,4 +159,17 @@ dependencies {
     implementation files('libs/ShareSDK-Wechat-Favorite-3.1.2.jar')
     implementation files('libs/ShareSDK-Wechat-Moments-3.1.2.jar')
     implementation files('libs/ShareSDK-Core-3.1.2.jar')
+
+    implementation 'com.github.traex.rippleeffect:library:1.3'
+
+//    compile 'com.amap.api:3dmap:latest.integration'
+//    2D地图
+    implementation 'com.amap.api:map2d:latest.integration'
+//    导航
+//    implementation 'com.amap.api:navi-3dmap:latest.integration'
+//    搜索
+    implementation 'com.amap.api:search:latest.integration'
+//    定位
+    implementation 'com.amap.api:location:latest.integration'
+    implementation 'com.contrarywind:Android-PickerView:3.2.7'
 }

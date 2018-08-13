@@ -29,7 +29,7 @@ open class BaseApplication : MultiDexApplication() {
     companion object {
         private val TAG = "BaseApplication"
         private val LOGTAG = "APPLOG"
-        var mContext: Context by Delegates.notNull()
+       private var mContext: Context by Delegates.notNull()
             private set
 
         fun getRefWatcher(context: Context): RefWatcher? {

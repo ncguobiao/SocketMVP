@@ -1,11 +1,11 @@
 package com.gb.sockt.usercenter.ui.activity
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.view.View
 import cn.sharesdk.framework.Platform
 import cn.sharesdk.framework.PlatformActionListener
 import cn.sharesdk.framework.ShareSDK
@@ -13,7 +13,6 @@ import cn.sharesdk.wechat.friends.Wechat
 import com.alibaba.android.arouter.launcher.ARouter
 import com.example.baselibrary.base.BaseMvpActivity
 import com.example.baselibrary.common.BaseApplication
-import com.example.baselibrary.common.Constant
 import com.example.baselibrary.common.ConstantSP
 import com.example.baselibrary.data.net.execption.ErrorStatus
 import com.example.baselibrary.onClick
@@ -23,11 +22,8 @@ import com.example.baselibrary.utils.SpUtils
 import com.example.baselibrary.utils.databus.RxBus
 import com.example.provider.router.RouterPath
 import com.gb.sockt.usercenter.R
-import com.gb.sockt.usercenter.data.domain.LoginBean
-import com.gb.sockt.usercenter.data.domain.WeiXinLoginSuccessBean
 import com.gb.sockt.usercenter.injection.component.DaggerUserComponent
 import com.gb.sockt.usercenter.injection.module.UserModule
-import com.gb.sockt.usercenter.mvp.presenter.UserCenterPresenter
 import com.gb.sockt.usercenter.mvp.presenter.impl.LoginPresenterImpl
 import com.gb.sockt.usercenter.mvp.view.LoginView
 import com.jakewharton.rxbinding2.view.RxView
@@ -50,14 +46,14 @@ import java.util.regex.Pattern
  * Created by guobiao on 2018/8/5.
  * 注册页面
  */
-class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
+class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
         , PlatformActionListener, Handler.Callback {
 
 
-    private val WEIXIN_MSG_ACTION_CALLBACK: Int = 6
-    private lateinit var nickname: String
-    private lateinit var openid: String
-    private lateinit var login_type: String
+
+    private  lateinit var nickname: String
+    private  lateinit var openid: String
+    private lateinit var codeType: String
     private lateinit var mobile: String
     private lateinit var pwd: String
     private var canSeePwd: Boolean = false
@@ -71,43 +67,41 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
         UIHandler.sendMessage(msg, this)
     }
 
+    /**
+     * 该方法处于子线程
+     */
     override fun onComplete(platform: Platform?, action: Int, res: HashMap<String, Any>?) {
-
         res?.let {
             if (res.containsKey("openid")) {
                 openid = res["openid"] as String
-                Logger.e("openid： $openid")
+                Logger.i("openid： $openid")
             }
             if (res.containsKey("nickname")) {
                 nickname = res["nickname"] as String
-                Logger.e("nickname： $nickname")
+                Logger.i("nickname： $nickname")
             }
             if (res.containsKey("headimgurl")) {
                 val headimgurl = res.get("headimgurl") as String
-                Logger.e("headimgurl： $headimgurl")
+                Logger.i("headimgurl： $headimgurl")
                 SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_WEIXIN_PHOTO, headimgurl)
             }
             if (res.containsKey("sex")) {
                 val sex = res["sex"] as Int
                 Logger.e("sex： $sex")
-                when (sex) {
-                    1 ->
-//                        EventBus.getDefault().post(GenderBean("男"))
-                        RxBus.getInstance().chainProcess {
-                            R.string.man
-                        }
-
-                    2 ->
-                        RxBus.getInstance().chainProcess {
-                            R.string.women
-                        }
-//                    EventBus.getDefault().post(GenderBean("女"))
-                }
+                    when (sex) {
+                        1 ->
+                            RxBus.getInstance().chainProcess {
+                                R.string.man
+                            }
+                        2 ->
+                            RxBus.getInstance().chainProcess {
+                                R.string.women
+                            }
+                    }
             }
-
-            if (openid.trim().isNotEmpty() && nickname.trim().isNotEmpty()) {
-                mPresenter.weiXinLogin(openid, nickname)
-//                mPresenter.weiXinLogin("oE1qXwvLwjfVeTNjPFE_FiE-zVNQ", "\uF8FF just so so，吻猪")
+            Logger.i("=================${Thread.currentThread().name}")
+            runOnUiThread {
+                this.mPresenter.weiXinLogin(openid, nickname)
             }
         }
 
@@ -154,35 +148,14 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
     override fun onDataIsNull() {
     }
 
-    override fun loginSuccess(data: LoginBean) {
+    override fun loginSuccess() {
         toast("登陆成功")
-        //保存用户数据
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_ID, data.id)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.MOBILE, data.mobile)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.AUTH_TOKEN, data.authToken)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.IS_LOGIN, true)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_NAME, data.userName)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_LOGIN_TYPE, ConstantSP.USER_LOGIN_FOR_PWD)//普通登录
         ARouter.getInstance().build(RouterPath.Main.PATH_HOME)
                 .withTransition(R.anim.anim_in, R.anim.anim_out)
                 .navigation()
         finish()
     }
 
-
-    override fun weixinLoginSuccess(data: WeiXinLoginSuccessBean) {
-
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_ID, data.id)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.MOBILE, data.mobile)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.AUTH_TOKEN, data.authToken)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.IS_LOGIN, true)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_NAME, data.userName)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_LOGIN_TYPE, ConstantSP.USER_LOGIN_FOR_WEIXIN)//普通登录
-        ARouter.getInstance().build(RouterPath.Main.PATH_HOME)
-                .withTransition(R.anim.anim_in, R.anim.anim_out)
-                .navigation()
-        finish()
-    }
 
     override fun loginFail(msg: String) {
         toast(msg)
@@ -202,7 +175,7 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
     override fun initData() {
     }
 
-    override fun initView() {
+    override fun initView(savedInstanceState: Bundle?) {
         im_clear.onClick {
             et_phone.setText("")
         }
@@ -211,16 +184,16 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
         }
 
         tv_regist.onClick {
-            login_type = ConstantSP.USER_TYPE_REGIST
-            jumpActivity(login_type)
+            codeType = ConstantSP.USER_TYPE_REGIST
+            redirectTo(codeType)
         }
         tv_forget_pwd.onClick {
-            login_type = ConstantSP.USER_TYPE_FORGET_PWD;
-            jumpActivity(login_type);
+            codeType = ConstantSP.USER_TYPE_FORGET_PWD;
+            redirectTo(codeType);
         }
         tv_fast_login.onClick {
-            login_type = ConstantSP.USER_LOGIN_FOR_FASTLOGIN
-            jumpActivity(login_type)
+            codeType = ConstantSP.USER_LOGIN_FOR_FASTLOGIN
+            redirectTo(codeType)
         }
 
         iv_see.onClick {
@@ -274,7 +247,7 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
                 .subscribe({
 //                    Logger.d("微信登录")
                     weiXinLogin()
-                    mPresenter.weiXinLogin("oE1qXwvLwjfVeTNjPFE_FiE-zVNQ", "\uF8FF just so so，吻猪")
+//                    mPresenter.weiXinLogin("oE1qXwvLwjfVeTNjPFE_FiE-zVNQ", "\uF8FF just so so，吻猪")
 
                 })
 
@@ -294,10 +267,11 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
             }
 
             override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Logger.e(s.toString().trim())
             }
 
         })
+
+        mLayoutStatusView = multipleStatusView
 
     }
 
@@ -326,10 +300,16 @@ class LoginActivity : BaseMvpActivity<UserCenterPresenter>(), LoginView
 
     }
 
-    private fun jumpActivity(login_type: String) {
-        startActivity<InputPhoneActivity>(ConstantSP.LOGIN_TYPE to login_type)
+    private fun redirectTo(codeType: String) {
+        startActivity<InputPhoneActivity>(ConstantSP.CODE_TYPE to codeType)
         finish()
     }
 
+
+    override fun showNotifyDialog(title: String?) {
+    }
+
+    override fun showSendCodeDialog(phone: String?) {
+    }
 
 }

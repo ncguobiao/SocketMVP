@@ -17,6 +17,10 @@ object Constant {
     const val DEVICE_MAC: String = "device_mac"
     const val DEVICE_WAY: String = "device_way"
     const val DEVICE_TYPE: String = "device_typ"
+    const val DEVICE_RATE: String = "rate"
+    const val DEVICE_ID: String = "device_id"
+    const val DEVICE_CE: String = "CE"
+    const val DEVICE_CD: String = "CD"
 
     //sp name
     const val SP_NAME: String = "MyAgent_save"
@@ -26,15 +30,14 @@ object Constant {
 
 
     //fragment类型
-    const val FRAGMENT_TAG:String = "fragment_tag"
-    const val FRAGMENT_INCOME:Int = 0
-    const val FRAGMENT_DEVICE_MANAGER:Int = 1
-    const val FRAGMENT_CHARG_DETAIL:Int = 2
-    const val FRAGMENT_TWITHDRAWALS_RECORD:Int = 3
-    const val FRAGMENT_USER_INFO:Int = 4
-    const val FRAGMENT_DEVICE_RECORDS:Int = 5
+    const val FRAGMENT_TAG: String = "fragment_tag"
+    const val FRAGMENT_INCOME: Int = 0
+    const val FRAGMENT_DEVICE_MANAGER: Int = 1
+    const val FRAGMENT_CHARG_DETAIL: Int = 2
+    const val FRAGMENT_TWITHDRAWALS_RECORD: Int = 3
+    const val FRAGMENT_USER_INFO: Int = 4
+    const val FRAGMENT_DEVICE_RECORDS: Int = 5
 //    const val FRAGMENT_INCOME:Int = 0
-
 
 
     //测试服
@@ -44,8 +47,8 @@ object Constant {
 
 
     //蓝牙信息
-     val SERVICEUUID : UUID? = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
-     val CHARACTERISTICUUID2 : UUID? = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
-     val CHARACTERISTICUUID1 : UUID? = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
+    val SERVICEUUID: UUID? = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
+    val CHARACTERISTICUUID2: UUID? = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
+    val CHARACTERISTICUUID1: UUID? = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
 
 }

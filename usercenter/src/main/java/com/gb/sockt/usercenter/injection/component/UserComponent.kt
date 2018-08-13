@@ -3,6 +3,8 @@ package com.gb.sockt.usercenter.injection.component
 import com.example.baselibrary.injection.component.ActivityComponent
 import com.example.baselibrary.injection.scope.PerComponentScope
 import com.gb.sockt.usercenter.injection.module.UserModule
+import com.gb.sockt.usercenter.ui.activity.InputPhoneActivity
+import com.gb.sockt.usercenter.ui.activity.InputVerificationCodeActivity
 import com.gb.sockt.usercenter.ui.activity.LoginActivity
 import dagger.Component
 
@@ -15,5 +17,6 @@ import dagger.Component
         modules = [(UserModule::class)])
 interface UserComponent {
     fun inject(activity: LoginActivity)
-
+    fun inject(activity: InputPhoneActivity)
+    fun inject(activity: InputVerificationCodeActivity)
 }

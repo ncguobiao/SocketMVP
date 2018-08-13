@@ -34,14 +34,13 @@ class RouterPath {
         }
     }
 
-    //我模块
-    class MINE{
+    //蓝牙
+    class BLUETOOTH{
         companion object {
-            //账户
-            const val PATH_MINE_ACCOUNT = "/mine/accout"
+            //BluetoothControllActivity
+            const val PATH_BLUETOOTH_CONTROLL = "/bluetooth/container"
 
-//            //收入明细
-//            const val PATH_MINE_ACCOUNT = "/mine/accout"
+//
         }
     }
 }

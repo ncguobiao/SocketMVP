@@ -7,6 +7,13 @@ import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
 import java.security.MessageDigest
+import android.app.Activity
+import android.content.pm.PackageInfo
+import android.os.Build
+import de.greenrobot.event.EventBus
+import java.io.File
+import java.util.*
+
 
 /**
  * Created by xuhao on 2017/12/6.
@@ -17,15 +24,29 @@ class AppUtils private constructor() {
 
 
     init {
-        throw Error("Do not need instantiate!")
+//        throw Error("Do not need instantiate!")
     }
 
+
     companion object {
+
+        /**
+         * 用于存储所有打开activity的集合
+         */
+        private val mActivitys = LinkedList<Activity>()
+
+        private lateinit var context: Context
+        fun init(context: Context) {
+            this.context = context
+        }
 
         private val DEBUG = true
         private val TAG = "AppUtils"
         private val sHandler = Handler(Looper.getMainLooper())
 
+        fun getContext():Context{
+            return context
+        }
         /**
          * 得到软件版本号
          *
@@ -77,12 +98,12 @@ class AppUtils private constructor() {
 
         @SuppressLint("PackageManagerGetSignatures")
                 /**
-         * 获取应用签名
-         *
-         * @param context 上下文
-         * @param pkgName 包名
-         * @return 返回应用的签名
-         */
+                 * 获取应用签名
+                 *
+                 * @param context 上下文
+                 * @param pkgName 包名
+                 * @return 返回应用的签名
+                 */
         fun getSign(context: Context, pkgName: String): String? {
             return try {
                 @SuppressLint("PackageManagerGetSignatures") val pis = context.packageManager
@@ -154,22 +175,70 @@ class AppUtils private constructor() {
             get() = android.os.Build.VERSION.SDK_INT
 
 
-    fun runOnUI(r: Runnable) {
-        sHandler.post(r)
-    }
-
-    fun runOnUIDelayed(r: Runnable, delayMills: Long) {
-        sHandler.postDelayed(r, delayMills)
-    }
-
-    fun removeRunnable(r: Runnable?) {
-        if (r == null) {
-            sHandler.removeCallbacksAndMessages(null)
-        } else {
-            sHandler.removeCallbacks(r)
+        fun runOnUI(r: Runnable) {
+            sHandler.post(r)
         }
+
+        fun runOnUIDelayed(r: Runnable, delayMills: Long) {
+            sHandler.postDelayed(r, delayMills)
+        }
+
+        fun removeRunnable(r: Runnable?) {
+            if (r == null) {
+                sHandler.removeCallbacksAndMessages(null)
+            } else {
+                sHandler.removeCallbacks(r)
+            }
+        }
+
+
+        /**
+         * Activity开启时添加Activity到集合
+         *
+         * @param activity
+         */
+        fun addActivity(activity: Activity) {
+            mActivitys.addFirst(activity)
+        }
+
+        /**
+         * Activity退出时清除集合中的Activity.
+         *
+         * @param activity 被移除的activity
+         */
+        fun removeActivity(activity: Activity) {
+            mActivitys.remove(activity)
+        }
+
+        /**
+         * 清除 除了自己外其他activity
+         * @param oneself 不被移除的activity
+         */
+        fun removeOtherActivity(oneself: Activity) {
+            try {
+                for (activity in mActivitys) {
+                    if (activity != null && activity!!.getLocalClassName() != oneself.localClassName) {
+                        activity!!.finish()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+
+        /**
+         * 退出应用时调用
+         */
+        fun exit() {
+            for (activity in mActivitys) {
+                if (activity != null) {
+                    activity!!.finish()
+                }
+            }
+        }
+
     }
 
 
-    }
 }

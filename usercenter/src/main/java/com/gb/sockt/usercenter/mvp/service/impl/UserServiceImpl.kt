@@ -12,6 +12,7 @@ import javax.inject.Inject
 class UserServiceImpl @Inject constructor():UserService{
 
 
+
     @Inject
     lateinit var repository: UserRepository
 
@@ -28,4 +29,42 @@ class UserServiceImpl @Inject constructor():UserService{
     override fun weixinLogin(openid: String, nickname: String): Observable<BaseResp> {
         return repository.weixinLogin(openid,nickname)
     }
+
+    /**
+     * 校验手机是否已注册
+     */
+    override fun checkPhoneISRegister(mobile: String): Observable<BaseResp> {
+        return repository.checkPhoneISRegister(mobile)
+
+    }
+
+    /**
+     * 获取短信验证码
+     */
+    override fun getMsgCode(mobile: String, tag: String): Observable<BaseResp> {
+        return repository.getMsgCode(mobile,tag)
+    }
+
+    /**
+     * 用户注册
+     */
+    override fun register(mobile: String, username: String, pwd: String, code: String): Observable<BaseResp> {
+
+        return repository.register(mobile,username,pwd, code)
+    }
+
+    /**
+     * 忘记密码
+     */
+    override fun forgetPwd(code: String, mobile: String, newPassword: String): Observable<BaseResp> {
+        return repository.forgetPwd(code,mobile,newPassword)
+    }
+
+    /**
+     * 快捷登陆
+     */
+    override fun fastLogin(code: String, mobile: String): Observable<BaseResp> {
+        return repository.fastLogin(code,mobile)
+    }
+
 }

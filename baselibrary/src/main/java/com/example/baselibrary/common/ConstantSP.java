@@ -46,4 +46,6 @@ public class ConstantSP {
 
     public static final String DEVICE_NAME = "deviceName";
     public static final String LOGIN_TYPE = "login_type";
+    public static final String CODE_TYPE = "code_type";
+    public static final String CODE_TAG = "code_tag";
 }

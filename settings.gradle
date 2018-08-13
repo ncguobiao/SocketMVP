@@ -1,1 +1,1 @@
-include ':app', ':baselibrary', ':multiple-status-view', ':provider', ':usercenter'
+include ':app', ':baselibrary', ':multiple-status-view', ':provider', ':usercenter', ':blutoothcontrol'

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">blutoothControl</string>
+    <string name="connect_success">蓝牙连接成功</string>
+    <string name="connect_failure">蓝牙未连接</string>
+</resources>

@@ -426,7 +426,7 @@
         <item name="android:layout_marginRight">5dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:background">@color/grayline</item>
+        <item name="android:background">@drawable/circle_btn_normal_bg</item>
     </style>
     <style name="line">
         <item name="android:layout_width">match_parent</item>

@@ -319,4 +319,5 @@
     <string name="open_device_fail">开启设备失败，请稍后重试</string>
     <string name="close_device_fail">关闭设备失败，请稍后重试</string>
     <string name="select_device_state_fail">查询设备状态失败</string>
+    <string name="qrcode_error">二维码数据错误!</string>
 </resources>
