@@ -218,7 +218,6 @@ class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
                         toast("手机号码不能为空")
                         return@Function Observable.empty()
                     }
-
                     pwd = et_pwd.text.toString().trim()
                     if (pwd.isEmpty()) {
                         toast(R.string.input_pwd)
@@ -253,7 +252,6 @@ class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
 
         et_pwd.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                Logger.e(s.toString().trim())
                 val s = s?.toString()!!.trim()
                 val phone = et_phone.text?.toString()!!.trim()
                 if (s.isNotEmpty() && phone.isNotEmpty()) {
@@ -271,7 +269,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
 
         })
 
-        mLayoutStatusView = multipleStatusView
+//        mLayoutStatusView = multipleStatusView
 
     }
 

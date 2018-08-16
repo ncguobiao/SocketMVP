@@ -44,6 +44,7 @@ abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), IBaseView
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(getLayoutId(), null)
     }
+
     /**
      *  加载布局
      */
@@ -73,7 +74,7 @@ abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), IBaseView
        初始化Activity级别Component
     */
     private fun initActivityInjection() {
-       mActivityComponent = DaggerActivityComponent.builder()
+        mActivityComponent = DaggerActivityComponent.builder()
                 .appComponent((activity?.application as BaseApplication).appComponent)
                 .activityMoudle(ActivityMoudle(act!!))
                 .lifecycleProviderModule(LifecycleProviderModule(this))
@@ -92,7 +93,7 @@ abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), IBaseView
      */
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser){
+        if (isVisibleToUser) {
             lazyLoadDataIfPrepared()
         }
     }
@@ -118,8 +119,35 @@ abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), IBaseView
         BaseApplication.getRefWatcher(activity!!)?.watch(activity)
     }
 
-    fun getUserID():String{
-        return SpUtils.getString(activity,ConstantSP.USER_ID)
+    fun getUserID(): String {
+        return SpUtils.getString(activity, ConstantSP.USER_ID)
     }
+
+    override fun showLoading() {
+        if (activity is BaseMvpActivity<*>) {
+            (activity as BaseMvpActivity<*>).showLoading()
+        }
+    }
+
+
+    override fun dismissLoading() {
+        if (activity is BaseMvpActivity<*>) {
+            (activity as BaseMvpActivity<*>).dismissLoading()
+        }
+
+    }
+
+    override fun showNetDialog() {
+        if (activity is BaseMvpActivity<*>) {
+            (activity as BaseMvpActivity<*>).showNetDialog()
+        }
+    }
+
+    override fun hideNetDialog() {
+        if (activity is BaseMvpActivity<*>) {
+            (activity as BaseMvpActivity<*>).hideNetDialog()
+        }
+    }
+
 
 }

@@ -4,15 +4,12 @@ import com.alibaba.fastjson.JSON
 import com.example.baselibrary.base.BasePresenter
 import com.example.baselibrary.common.*
 import com.example.baselibrary.compose
-import com.example.baselibrary.utils.SpUtils
-import com.gb.socket.data.domain.BannerBean
-import com.gb.socket.data.domain.DeviceInfo
+import com.gb.socket.data.domain.*
 import com.gb.socket.mvp.service.MainService
 import com.gb.socket.mvp.view.MainView
-import com.gb.sockt.usercenter.data.domain.LoginBean
-import com.gb.sockt.usercenter.mvp.service.UserService
 import com.orhanobut.logger.Logger
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import javax.inject.Inject
 
@@ -34,7 +31,8 @@ class MainPresenterImpl @Inject constructor() : MainPresenter, BasePresenter<Mai
                 .compose(lifecycleProvider.bindToLifecycle())
                 .compose()
                 .map(object : Function<BaseResp, List<String>?> {
-                    override fun apply(t: BaseResp): List<String>?{
+                    override fun apply(t: BaseResp): List<String>? {
+                        getView()?.dismissLoading()
                         val jsonData = t.retnrnJson.toString().trim()
                         val data = JSON.parseObject(jsonData, BannerBean::class.java)
                         if (data != null) {
@@ -52,41 +50,89 @@ class MainPresenterImpl @Inject constructor() : MainPresenter, BasePresenter<Mai
                         return null
                     }
 
-                }).subscribe {
+                }).subscribe({
+                    getView()?.dismissLoading()
                     if (it != null) {
                         getView()?.showBanner(it)
                     } else {
                         getView()?.onDataIsNull()
                     }
-                }
+                },{
+                    getView()?.dismissLoading()
+                    getView()?.onError("获取首页轮播图失败,原因:${it.message.toString()}")
+                })
     }
 
     /**
-     * 查询当前使用记录
+     * 查询当前普通设备使用记录和2G设备使用记录
      */
     override fun getRecords(userId: String, appType: String) {
         if (!preparReq(getView(), this)) return
-        if (userId.isEmpty()){
+        if (userId.isEmpty()) {
             getView()?.onError("userID is null")
             return
         }
-        service.getRecords(userId, appType)
-                .execute(object : BaseSubscriber<BaseResp>(getView()!!) {
-                    override fun onNext(t: BaseResp) {
-                        if ("0000" == t.returnCode) {
-//                            val jsonData = t.retnrnJson.toString().trim()
-//                            val data = JSON.parseObject(jsonData, DeviceInfo::class.java)
-//                            if (data!=null){
-//                                getView()?.getDeviceInfo(data)
-//                            }else{
-//                                getView()?.onDataIsNull()
-//                            }
-
-                        } else {
-                            getView()?.onDataIsNull()
-                        }
+        //普通设备使用记录
+        val records = service.getRecords(userId, appType)
+        //2G设备使用记录
+        val records2G = service.get2GRecords(userId)
+        Observable.zip(records, records2G, object : BiFunction<BaseResp, BaseResp, ArrayList<RecordsMergeBean>> {
+            override fun apply(t1: BaseResp, t2: BaseResp): ArrayList<RecordsMergeBean> {
+                getView()?.dismissLoading()
+                val list = ArrayList<RecordsMergeBean>()
+                if ("0000" == t1.returnCode) {
+                    val jsonData = t1.retnrnJson.toString().trim()
+                    val data = JSON.parseArray(jsonData, RecordsBean::class.java)
+                    data?.forEach {
+//                        Logger.d("it${it}")
+                        var databean = RecordsMergeBean (it, null)
+                        list.add(databean)
                     }
-                }, lifecycleProvider)
+//                    Logger.d("记录${data}")
+                } else {
+                    getView()?.onError("查询设备使用记录失败，错误吗：${t1.returnCode}")
+                }
+                if ("0000" == t2.returnCode) {
+                    val jsonData = t2.retnrnJson.toString().trim()
+                    val data = JSON.parseObject(jsonData, Records2G::class.java)
+//                    Logger.d("2G记录${data}")
+                    val databean = RecordsMergeBean(null, data)
+                    list.add(0,databean)
+                } else {
+                    getView()?.onError("查询2G设备使用记录失败，错误吗：${t2.returnCode}")
+                }
+                return list
+            }
+
+        }).compose()
+                .compose(lifecycleProvider.bindToLifecycle())
+                .subscribe({
+                    getView()?.dismissLoading()
+                    getView()?.showRecords(it)
+                },{
+                    getView()?.dismissLoading()
+                    getView()?.onError("查询设备使用记录失败,原因:${it.message.toString()}")
+                })
+
+
+
+//        service.getRecords(userId, appType)
+//                .execute(object : BaseSubscriber<BaseResp>(getView()!!) {
+//                    override fun onNext(t: BaseResp) {
+//                        if ("0000" == t.returnCode) {
+////                            val jsonData = t.retnrnJson.toString().trim()
+////                            val data = JSON.parseObject(jsonData, DeviceInfo::class.java)
+////                            if (data!=null){
+////                                getView()?.getDeviceInfo(data)
+////                            }else{
+////                                getView()?.onDataIsNull()
+////                            }
+//
+//                        } else {
+//                            getView()?.onDataIsNull()
+//                        }
+//                    }
+//                }, lifecycleProvider)
     }
 
 
@@ -95,7 +141,7 @@ class MainPresenterImpl @Inject constructor() : MainPresenter, BasePresenter<Mai
      */
     override fun getDeviceInfo(macAddress: String?, deviceName: String?) {
         if (!preparReq(getView(), this)) return
-        if (macAddress==null || deviceName == null){
+        if (macAddress == null || deviceName == null) {
             getView()?.onError("macAddress is null or deviceName is null")
             return
         }
@@ -104,21 +150,21 @@ class MainPresenterImpl @Inject constructor() : MainPresenter, BasePresenter<Mai
                     override fun onNext(t: BaseResp) {
                         if ("0000" == t.returnCode) {
                             var jsonData = t.retnrnJson.toString().trim()
-                            if (jsonData.contains("[")){
-                                jsonData = jsonData.replace("[","")
+                            if (jsonData.contains("[")) {
+                                jsonData = jsonData.replace("[", "")
                             }
-                            if (jsonData.contains("]")){
-                                jsonData = jsonData.replace("]","")
+                            if (jsonData.contains("]")) {
+                                jsonData = jsonData.replace("]", "")
                             }
-                            var data:DeviceInfo?=null
+                            var data: DeviceInfo? = null
                             try {
-                                 data = JSON.parseObject(jsonData, DeviceInfo::class.java)
-                            }catch (e:Exception){
+                                data = JSON.parseObject(jsonData, DeviceInfo::class.java)
+                            } catch (e: Exception) {
                                 getView()?.onError("获取数据异常")
                             }
-                            if (data!=null){
+                            if (data != null) {
                                 getView()?.getDeviceInfo(data)
-                            }else{
+                            } else {
                                 getView()?.onDataIsNull()
                             }
                         } else {
@@ -150,12 +196,12 @@ class MainPresenterImpl @Inject constructor() : MainPresenter, BasePresenter<Mai
     /**
      * 合并发送请求
      */
-    fun getMergeData(deleteFlag: String, curPage: String, pageSize: String,userId: String, appType: String){
+    fun getMergeData(deleteFlag: String, curPage: String, pageSize: String, userId: String, appType: String) {
         if (!preparReq(getView(), this)) return
 
         val banner = service.getBanner(deleteFlag, curPage, pageSize)
         val records = service.getRecords(userId, appType)
-        val merge = Observable.merge(banner,records).subscribe(object :BaseSubscriber<BaseResp>(getView()!!){
+        val merge = Observable.merge(banner, records).subscribe(object : BaseSubscriber<BaseResp>(getView()!!) {
             override fun onNext(t: BaseResp) {
 //             if ("0000"==t.returnCode){
 //                 val jsondata = t.retnrnJson
@@ -173,8 +219,6 @@ class MainPresenterImpl @Inject constructor() : MainPresenter, BasePresenter<Mai
         })
 
     }
-
-
 
 
 }

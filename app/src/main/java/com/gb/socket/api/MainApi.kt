@@ -1,5 +1,6 @@
 package com.gb.socket.api
 
+import com.example.baselibrary.api.UriConstant
 import com.example.baselibrary.common.BaseResp
 import com.gb.socket.data.domain.BannerReq
 import com.gb.socket.data.domain.DeviceInfoReq
@@ -18,8 +19,14 @@ interface MainApi {
     /**
      * 获取当前使用记录
      */
-    @POST("DeviceService/UseDevice/currentRecord")
+//    @POST("DeviceService/UseDevice/currentRecord")
+    @POST(UriConstant.TEST_USER_DEVICE_URL + "DeviceService/UseDevice/currentRecord")
     fun getRecords(@Body req: RecordReq): Observable<BaseResp>
+
+
+    //    @POST("DeviceService/UseGsmDevice/findOrder")
+    @POST(UriConstant.TEST_USER_DEVICE_URL + "DeviceService/UseGsmDevice/findOrder")
+    fun get2GRecords(@Body req: RecordReq): Observable<BaseResp>
 
 
     /**
@@ -39,7 +46,8 @@ interface MainApi {
     /**
      * 查询设备信息
      */
-    @POST("DeviceService/Device/findDevice")
+//    @POST("DeviceService/Device/findDevice")
+    @POST(UriConstant.TEST_USER_DEVICE_URL + "DeviceService/Device/findDevice")
     fun getDeviceInfo(@Body req: DeviceInfoReq): Observable<BaseResp>
 
     /**

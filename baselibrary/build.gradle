@@ -12,13 +12,17 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
         multiDexEnabled true
+
         kapt {
             generateStubs = true
         }
 
 
     }
+
+
     buildTypes {
         release {
             minifyEnabled false
@@ -34,32 +38,20 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
-//    configurations.all {
-//        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-//            def requested = details.requested
-//            if (requested.group == 'com.android.support') {
-//                if (!requested.name.startsWith("multidex")) {
-//                    details.useVersion '26.1.0'
-//                }
-//            }
-//
-//        }
-//    }
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
-    api "com.android.support:support-v4:${android_support_version}"
-    api "com.android.support:appcompat-v7:${android_support_version}"
-    api "com.android.support:recyclerview-v7:${android_support_version}"
-    api "com.android.support:design:${android_support_version}"
-    api "com.android.support:cardview-v7:${android_support_version}"
+    implementation "com.android.support:support-v4:${android_support_version}"
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
+    implementation "com.android.support:recyclerview-v7:${android_support_version}"
+    implementation "com.android.support:design:${android_support_version}"
+    implementation "com.android.support:cardview-v7:${android_support_version}"
 
     //    api rootProject.ext.supportLibs
 
-
-    api 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     //anko
     api "org.jetbrains.anko:anko-commons:$anko_version"
     api "org.jetbrains.anko:anko-design:$anko_version" // For SnackBars
@@ -128,6 +120,7 @@ dependencies {
     api 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1'
     api 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.5.1'
     api 'com.yanzhenjie:recyclerview-swipe:1.1.4'
+
     //    //Banner
     api 'com.youth.banner:banner:1.4.10'  //最新版本
     //    api 'cn.bingoogolapple:bga-banner:2.1.8@aar'
@@ -147,6 +140,9 @@ dependencies {
 //    //zxing
     implementation files('libs/zxing.jar')
 //    api 'cn.yipianfengye.android:zxing-library:2.2'
+
+    //功能库（Zxing扫描与生成二维码条形码 支付宝 微信）
+//    api "com.github.vondear.RxTool:RxFeature:v2.0.4"
 
     //BluetoothKit
     api 'com.inuker.bluetooth:library:1.4.0'
@@ -171,5 +167,11 @@ dependencies {
     implementation 'com.amap.api:search:latest.integration'
 //    定位
     implementation 'com.amap.api:location:latest.integration'
+
     implementation 'com.contrarywind:Android-PickerView:3.2.7'
+
+//    api 'com.github.thomper:sweet-alert-dialog:v1.4.0'
+
+
+    api 'com.mylhyl:circleDialog:2.4.2'
 }

@@ -1,6 +1,10 @@
 package com.gb.socket.mvp.service.impl
 
 import com.example.baselibrary.common.BaseResp
+import com.example.baselibrary.compose
+import com.example.baselibrary.data.net.RetrofitFactory
+import com.gb.socket.api.MainApi
+import com.gb.socket.data.domain.RecordReq
 import com.gb.socket.data.repository.MainRepository
 import com.gb.socket.mvp.service.MainService
 import io.reactivex.Observable
@@ -44,6 +48,11 @@ class MainServiceImpl @Inject constructor() : MainService {
     override fun uploadLocation(userId: String, deviceId: String, macAddress: String, longitude: String, latitude: String, collectionType: String): Observable<BaseResp> {
         return repository.uploadLocation(userId, deviceId, macAddress, longitude, latitude, collectionType)
 
+    }
+
+
+    override fun get2GRecords(userId: String): Observable<BaseResp> {
+        return repository.get2GRecords(userId)
     }
 
 }

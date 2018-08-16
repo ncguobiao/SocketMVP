@@ -412,9 +412,7 @@ open class BlueToothMulitControlImpl constructor(deviceTag: String, val context:
      * 获取设备信息
      */
     override fun getBLEDeviceInfo() {
-        //TODO
-
-
+       //TODO 预留单路
     }
 
     /**

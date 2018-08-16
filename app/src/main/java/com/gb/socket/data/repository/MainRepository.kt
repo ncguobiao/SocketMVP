@@ -32,6 +32,13 @@ class MainRepository @Inject constructor() {
     }
 
     /**
+     * 查询2G设备使用记录
+     */
+    fun get2GRecords(userId: String): Observable<BaseResp> {
+        return RetrofitFactory.instance.create(MainApi::class.java).get2GRecords(RecordReq(userId,"")).compose()
+    }
+
+    /**
      * 获取设备信息
      */
     fun getDeviceInfo(macAddress: String, deviceName: String): Observable<BaseResp> {

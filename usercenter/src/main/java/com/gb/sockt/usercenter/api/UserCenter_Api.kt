@@ -1,5 +1,6 @@
 package com.gb.sockt.usercenter.api
 
+import com.example.baselibrary.api.UriConstant
 import com.example.baselibrary.common.BaseResp
 import com.example.baselibrary.common.Constant
 import com.gb.sockt.usercenter.data.domain.*
@@ -15,8 +16,8 @@ interface UserCenter_Api {
     /**
      * 登陆
      */
-    @POST("UserService/User/Login")
-//    @POST(Constant.USER_COMMON_URL+"UserService/User/Login")
+//    @POST("UserService/User/Login")
+    @POST(UriConstant.TEST_USER_URL+"UserService/User/Login")
     fun login(@Body req: LoginReq): Observable<BaseResp>
 
 

@@ -10,7 +10,7 @@ kapt {
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.gb.socket"
+        applicationId "com.gb.socket_1"
         minSdkVersion 18
         targetSdkVersion 26
         versionCode 1

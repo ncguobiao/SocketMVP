@@ -3,7 +3,7 @@ package com.gb.sockt.blutoothcontrol.injection.component
 import com.example.baselibrary.injection.component.ActivityComponent
 import com.example.baselibrary.injection.scope.PerComponentScope
 import com.gb.sockt.blutoothcontrol.injection.module.BluetoothModule
-import com.gb.sockt.blutoothcontrol.ui.fragment.CEFragment
+import com.gb.sockt.blutoothcontrol.ui.fragment.MulitWayFragment
 import dagger.Component
 
 /**
@@ -15,7 +15,7 @@ import dagger.Component
         ))
 interface BluetoothComponent {
 
-    fun inject(fragment: CEFragment)
+    fun inject(fragment: MulitWayFragment)
 
 
 }

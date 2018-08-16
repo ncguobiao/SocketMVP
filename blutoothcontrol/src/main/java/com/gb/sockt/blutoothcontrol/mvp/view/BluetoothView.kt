@@ -21,4 +21,13 @@ interface BluetoothView:IBaseView {
      * 第一次使用
      */
     fun isFirstToUse()
+
+    fun openSuccess2ServiceOnSuceess(time :String)
+    fun openSuccess2ServiceOnFailure(error:String)
+
+    fun addTime2ServiceOnFailure(error:String)
+
+    fun addTime2ServiceOnSuccess(addTime:String,reminTime:Long)
+
+    fun showAddTimeCanUse()
 }

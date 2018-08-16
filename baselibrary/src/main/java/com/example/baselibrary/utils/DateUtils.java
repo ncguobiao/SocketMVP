@@ -22,7 +22,7 @@ public class DateUtils {
     }
 
     //传入时间格式获取时间戳2018-01-11 08:57:34
-    public static Long getTimeStamp(String todayDateTime){
+    public static Long getTimeStamp(String todayDateTime) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long time = 0;
         try {
@@ -519,27 +519,59 @@ public class DateUtils {
         return week;
     }
 
-    //将long类型的时间格式化
-    public static String getTimeFormat(long l){
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        java.util.Date now = df.parse("2004-03-26 13:31:40");
-//        java.util.Date date=df.parse("2004-01-02 11:30:24");
-//        long l=now.getCETime()-date.getCETime();
-        long day=l/(24*60*60*1000);
-        long hour=(l/(60*60*1000)-day*24);
-        long min=((l/(60*1000))-day*24*60-hour*60);
-        long s=(l/1000-day*24*60*60-hour*60*60-min*60);
-//        return ""+day+"天"+hour+"小时"+min+"分"+s+"秒";
-        return ((day*24)+ hour)+"小时"+min+"分"+s+"秒";
+//    //将long类型的时间格式化
+//    public static String getTimeFormat(long l){
+//        long day=l/(24*3600);
+//        long hour=(l/3600-day*24);
+//        long min=((l/(60*1000))-day*24*60-hour*60);
+//        long s=(l/1000-day*24*60*60-hour*60*60-min*60);
+//        if (day>0){
+//            return day+"天"+hour+"小时"+min+"分"+s+"秒";
+//        }else {
+//            return  hour+"小时"+min+"分"+s+"秒";
+//        }
+//
+//    }
 
+    /**
+     * @param second
+     * @return
+     */
+    public static String getTimeFormat(long second) {
+        long h = 0;
+        long d = 0;
+        long s = 0;
+//        second = second/1000;
+        long temp = second % 3600;
+        if (second > 3600) {
+            h = second / 3600;
+            if (temp != 0) {
+                if (temp > 60) {
+                    d = temp / 60;
+                    if (temp % 60 != 0) {
+                        s = temp % 60;
+                    }
+                } else {
+                    s = temp;
+                }
+            }
+        } else {
+            d = second / 60;
+            if (second % 60 != 0) {
+                s = second % 60;
+            }
+        }
+
+        return h + "时" + d + "分" + s + "秒";
     }
 
     /**
      * 转成分钟显示
+     *
      * @param l
      * @return
      */
-    public static String getTimeFormatMinute(long l){
+    public static String getTimeFormatMinute(long l) {
 
 //        long day=l/(24*60*60*1000);
 //        long hour=(l/(60*60*1000)-day*24);
@@ -547,8 +579,26 @@ public class DateUtils {
 //        long s=(l/1000-day*24*60*60-hour*60*60-min*60);
 //        return ""+day+"天"+hour+"小时"+min+"分"+s+"秒";
 //        return ((day*24)+ hour)+"小时"+min+"分"+s+"秒";
-        return l/1000/60+"分";
+        return l / 1000 / 60 + "分";
 
     }
 
+
+    /**
+     * 将秒转成小时
+     *
+     * @param value 秒
+     * @return
+     */
+    public static int getHour(Long value) {
+        int a = (int) (value % 3600);//取模是否整除 （小时）
+        int intTime;
+        if (a == 0) {
+            intTime = (int) (value / 3600);//计算可以整除下的时间
+        } else {
+            int l1 = (int) (value / 3600);//获取整除后的时间
+            intTime = (l1 + (a / 3600) + 1);//总时间
+        }
+        return intTime;
+    }
 }

@@ -1,19 +1,22 @@
 package com.gb.sockt.blutoothcontrol.ui.activity
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
+import android.support.v4.app.DialogFragment
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.Constant
 import com.example.provider.router.RouterPath
 import com.gb.sockt.blutoothcontrol.R
-import com.gb.sockt.blutoothcontrol.ui.fragment.CEFragment
+import com.gb.sockt.blutoothcontrol.ui.fragment.MulitWayFragment
 import com.example.baselibrary.utils.BluetoothClientManager
 import com.example.baselibrary.utils.databus.AmountUtils
+import com.mylhyl.circledialog.CircleDialog
 import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.toast
-
 
 // 在支持路由的页面上添加注解(必选)
 // 这里的路径需要注意的是至少需要有两级，/xx/x
@@ -28,7 +31,10 @@ class BluetoothControlActivity : BaseActivity() {
 //    @JvmField
 //    var macAddress: String ?=null
 
+    private var deviceIsBusyDialog: DialogFragment? = null
+    private var fillMoneyDialog: DialogFragment? = null
 
+    private var bleConnectDialog: DialogFragment? = null
     var macAddress: String? = null
     var deviceName: String? = null
     var deviceWay: String? = null
@@ -40,17 +46,16 @@ class BluetoothControlActivity : BaseActivity() {
         setContentView(R.layout.activity_blue_tooth_control)
         initData()
         checkBLE()
-        val ceFragment = CEFragment.newInstance()
+        val ceFragment = MulitWayFragment.newInstance()
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.content_main, ceFragment, ceFragment.javaClass.simpleName)
-                .addToBackStack(ceFragment.javaClass.simpleName)
+//                .addToBackStack(ceFragment.javaClass.simpleName)
+//                .addToBackStack(null)
                 .commit()
     }
 
-
     private fun initData() {
-
         macAddress = intent.getSerializableExtra(Constant.DEVICE_MAC) as String
         deviceName = intent.getSerializableExtra(Constant.DEVICE_NAME) as String
         deviceWay = intent.getSerializableExtra(Constant.DEVICE_WAY) as String
@@ -108,6 +113,81 @@ class BluetoothControlActivity : BaseActivity() {
                         requestPremissionSetting("获取位置信息")
                     }
                 }
+
+    }
+
+
+    fun showDeviceIsBusyDialog() {
+        deviceIsBusyDialog = CircleDialog.Builder()
+                .setTitle("设备正忙!")
+                .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                .setText("设备可能被其他人占用，请稍后尝试")
+                .setPositive("确定") {
+                    val intent: Intent
+                    deviceIsBusyDialog?.dismiss()
+                }
+                .setCancelable(true).show(supportFragmentManager)
+
+    }
+
+
+    fun showFillMoneyDialog() {
+        fillMoneyDialog = CircleDialog.Builder()
+                .setTitle("账户余额不足!")
+                .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                .setText("账户金额不足，是否要充值后再使用？")
+                .setNegative("取消") { fillMoneyDialog?.dismiss() }
+                .setPositive("确定") {
+
+                    fillMoneyDialog?.dismiss()
+
+
+                }
+                .setCancelable(true).show(supportFragmentManager)
+    }
+
+
+
+
+
+    fun showBleConnectDialog() {
+        bleConnectDialog = CircleDialog.Builder()
+                .setTitle("连接失败!")
+                .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                .setText("确认是否需要尝试继续连接？")
+                .setNegative("取消") { bleConnectDialog?.dismiss() }
+                .setPositive("确定") {
+
+                    bleConnectDialog?.dismiss()
+
+
+                }
+                .setCancelable(true).show(supportFragmentManager)
+    }
+
+
+    fun hideDeviceIsBusyDialog() {
+        deviceIsBusyDialog?.dismiss()
+        deviceIsBusyDialog = null
+    }
+
+    fun hideBleConnectDialog() {
+        bleConnectDialog?.dismiss()
+        bleConnectDialog = null
+    }
+
+
+
+    fun hideFillMomeyDialog() {
+        fillMoneyDialog?.dismiss()
+        fillMoneyDialog = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        hideDeviceIsBusyDialog()
+        hideFillMomeyDialog()
+        hideBleConnectDialog()
 
     }
 

@@ -32,6 +32,7 @@ import com.example.baselibrary.zxing.view.ViewfinderResultPointCallback;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
+import java.lang.ref.WeakReference;
 import java.util.Vector;
 
 
@@ -54,7 +55,8 @@ public final class CaptureActivityHandler extends Handler {
     }
 
     public CaptureActivityHandler(CaptureActivity activity, Vector<BarcodeFormat> decodeFormats, String characterSet) {
-        this.activity = activity;
+        WeakReference<CaptureActivity> activityWeakReference  = new WeakReference<CaptureActivity>(activity);
+        this.activity = activityWeakReference.get();
         decodeThread = new DecodeThread(activity, decodeFormats, characterSet, new ViewfinderResultPointCallback(
                 activity.getViewfinderView()));
         decodeThread.start();

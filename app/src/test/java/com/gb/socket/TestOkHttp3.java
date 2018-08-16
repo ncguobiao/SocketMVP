@@ -3,10 +3,16 @@ package com.gb.socket;
 /**
  * Created by liuguangli on 17/4/24.
  */
+import com.orhanobut.logger.Logger;
+
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -140,5 +146,20 @@ public class TestOkHttp3 {
         }
     }
 
+    @Test
+    public void testScheduledExecutorService(){
+
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
+        TimerTask t1 = new TimerTask(){
+
+            @Override
+            public void run() {
+//                Logger.d("testScheduledExecutorService");
+                System.out.println("testScheduledExecutorService");
+            }
+        };
+        pool.scheduleWithFixedDelay(t1, 0, 2, TimeUnit.SECONDS);
+
+    }
 
 }

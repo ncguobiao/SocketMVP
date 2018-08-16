@@ -32,6 +32,7 @@ class App: BaseApplication(){
         MobSDK.init(this)
 
         AppUtils.init(this)
+//        RxTool.init(this);
 //        ZXingLibrary.initDisplayOpinion(this)
     }
 }

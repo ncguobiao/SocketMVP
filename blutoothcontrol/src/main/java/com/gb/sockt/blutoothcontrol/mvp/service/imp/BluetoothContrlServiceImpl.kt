@@ -1,7 +1,11 @@
 package com.gb.sockt.blutoothcontrol.mvp.service.imp
 
 import com.example.baselibrary.common.BaseResp
+import com.example.baselibrary.compose
+import com.example.baselibrary.data.net.RetrofitFactory
+import com.gb.sockt.blutoothcontrol.api.BluetoothControlApi
 import com.gb.sockt.blutoothcontrol.ble.BlueToothControl
+import com.gb.sockt.blutoothcontrol.data.domain.RequestCantUseReq
 import com.gb.sockt.blutoothcontrol.data.repository.BlueToothControlRepository
 import com.gb.sockt.blutoothcontrol.mvp.service.BluetoothContrlService
 import io.reactivex.Observable
@@ -25,5 +29,22 @@ class BluetoothContrlServiceImpl @Inject constructor() : BluetoothContrlService 
     override fun requestCanUse(userId: String, deviceId: String, time: String): Observable<BaseResp> {
 
         return repository.requestCanUse(userId, deviceId, time)
+    }
+
+
+    override fun openSuccess2Service(userId: String, deviceId: String, time: String): Observable<BaseResp>{
+        return repository.openSuccess2Service(userId, deviceId, time)
+    }
+
+    /**
+     * 加时成功通知服务器
+     */
+    override fun addTimeSuccess2Service(userId: String, deviceId: String, time: String): Observable<BaseResp>{
+        return repository.addTimeSuccess2Service(userId, deviceId, time)
+    }
+
+    override fun addTimeCanUse(userId: String, deviceId: String, time: String): Observable<BaseResp>{
+        return repository.addTimeCanUse(userId, deviceId, time)
+
     }
 }

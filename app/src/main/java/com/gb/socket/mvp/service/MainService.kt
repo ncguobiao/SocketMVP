@@ -22,4 +22,7 @@ interface MainService {
             latitude: String,
             collectionType: String
     ): Observable<BaseResp>
+
+    fun get2GRecords(userId: String): Observable<BaseResp>
+
 }

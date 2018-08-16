@@ -50,12 +50,14 @@ public final class CameraManager {
 	/**
 	 * ???????
 	 */
-	private static final int MIN_FRAME_WIDTH = 400;
-	private static final int MIN_FRAME_HEIGHT = 380;
-	private static final int MAX_FRAME_WIDTH = 550;
-	private static final int MAX_FRAME_HEIGHT = 520;
+	private static final int MIN_FRAME_WIDTH = 680;
+	private static final int MIN_FRAME_HEIGHT = 660;
+	private static final int MAX_FRAME_WIDTH = 680;
+	private static final int MAX_FRAME_HEIGHT = 660;
 
 	private static CameraManager cameraManager;
+
+
 
 	static final int SDK_INT; // Later we can use Build.VERSION.SDK_INT
 	static {
@@ -249,13 +251,25 @@ public final class CameraManager {
 			if (camera == null) {
 				return null;
 			}
-			int width = screenResolution.x * 3 / 4;
+//			int width = screenResolution.x * 3 / 4;
+//			if (width < MIN_FRAME_WIDTH) {
+//				width = MIN_FRAME_WIDTH;
+//			} else if (width > MAX_FRAME_WIDTH) {
+//				width = MAX_FRAME_WIDTH;
+//			}
+//			int height = screenResolution.y * 3 / 4;
+//			if (height < MIN_FRAME_HEIGHT) {
+//				height = MIN_FRAME_HEIGHT;
+//			} else if (height > MAX_FRAME_HEIGHT) {
+//				height = MAX_FRAME_HEIGHT;
+//			}
+			int width = screenResolution.x * 3 / 4 ;
 			if (width < MIN_FRAME_WIDTH) {
 				width = MIN_FRAME_WIDTH;
 			} else if (width > MAX_FRAME_WIDTH) {
 				width = MAX_FRAME_WIDTH;
 			}
-			int height = screenResolution.y * 3 / 4;
+			int height = screenResolution.y ;
 			if (height < MIN_FRAME_HEIGHT) {
 				height = MIN_FRAME_HEIGHT;
 			} else if (height > MAX_FRAME_HEIGHT) {
@@ -269,6 +283,7 @@ public final class CameraManager {
 		}
 		return framingRect;
 	}
+
 
 	/**
 	 * Like {@link #getFramingRect} but coordinates are in terms of the preview

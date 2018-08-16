@@ -75,6 +75,7 @@ open class BasePresenter<T : IBaseView> : IPresenter<T> {
         if(!NetworkUtil.isNetworkAvailable(BaseApplication.getAppContext())){
             getView()?.let {
                 getView()!!.onError("网络不可用,请检查网络")
+                getView()!!.showNetDialog()
             }
             return false
         }

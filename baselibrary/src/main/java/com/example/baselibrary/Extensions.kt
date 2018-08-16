@@ -27,6 +27,9 @@ fun Context.showToast(content: String): Toast {
     return toast
 }
 
+/**
+ * 线程切换
+ */
 fun <T> Observable<T>.compose(): Observable<T> {
     return this.compose(SchedulerUtils.inToMain())
 

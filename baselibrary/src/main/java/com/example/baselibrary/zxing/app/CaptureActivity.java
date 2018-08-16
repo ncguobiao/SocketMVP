@@ -43,6 +43,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.baselibrary.R;
+import com.example.baselibrary.base.BaseActivity;
 import com.example.baselibrary.zxing.camera.CameraManager;
 import com.example.baselibrary.zxing.decode.BeepManager;
 import com.example.baselibrary.zxing.decode.CaptureActivityHandler;
@@ -80,7 +81,7 @@ import java.util.Vector;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
+public final class CaptureActivity extends BaseActivity implements SurfaceHolder.Callback {
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
 
@@ -196,7 +197,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 isFlash = !isFlash;
             } else if (id == R.id.photo_btn) {
                 // 打开手机中的相册
-                Intent innerIntent = new Intent(Intent.ACTION_GET_CONTENT); // "android.intent.action.GET_CONTENT"
+                // "android.intent.action.GET_CONTENT"
+                Intent innerIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 innerIntent.setType("image/*");
                 Intent wrapperIntent = Intent.createChooser(innerIntent, "选择二维码图片");
                 startActivityForResult(wrapperIntent, REQUEST_CODE);

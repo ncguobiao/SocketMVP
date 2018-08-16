@@ -2,11 +2,15 @@ package com.example.baselibrary.base
 
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.LayoutRes
+import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
+import android.text.TextUtils
 import android.view.View
+import com.alibaba.android.arouter.launcher.ARouter
 import com.classic.common.MultipleStatusView
 import com.example.baselibrary.R
 import com.example.baselibrary.common.BaseApplication
@@ -16,9 +20,12 @@ import com.example.baselibrary.injection.component.DaggerActivityComponent
 import com.example.baselibrary.injection.module.ActivityMoudle
 import com.example.baselibrary.injection.module.LifecycleProviderModule
 import com.example.baselibrary.utils.SpUtils
+import com.example.baselibrary.widght.ProgressLoading
+import com.mylhyl.circledialog.CircleDialog
 import de.greenrobot.event.EventBus
 import org.jetbrains.anko.alert
 import javax.inject.Inject
+
 
 /**
  * BaseActivity基类
@@ -26,6 +33,10 @@ import javax.inject.Inject
 abstract class BaseMvpActivity<T : BasePresenter<*>> : BaseActivity(), IBaseView {
     public val TAG: String = this.javaClass.simpleName
     val WEIXIN_MSG_ACTION_CALLBACK: Int = 6
+
+    private lateinit var mLoadingDialog: ProgressLoading
+
+
     /**
      * 多种状态的 View 的切换
      */
@@ -37,18 +48,39 @@ abstract class BaseMvpActivity<T : BasePresenter<*>> : BaseActivity(), IBaseView
 
     protected var mLayoutStatusView: MultipleStatusView? = null
 
+//    private lateinit var pDialog: SweetAlertDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutId())
         initActivityInjection()
         initComponent()
         initData()
+
         initView(savedInstanceState)
+        initDialog()
         start()
         initListener()
     }
 
 
+
+
+    private fun initDialog() {
+        //初始加载框
+        mLoadingDialog = ProgressLoading.create(this)
+        //ARouter注册
+        ARouter.getInstance().inject(this)
+//        pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
+//        pDialog.progressHelper.barColor = Color.parseColor("#A5DC86")
+//        pDialog.titleText = "Loading"
+//        pDialog.setCancelable(true)
+
+
+
+
+
+    }
 
 
     /**
@@ -97,21 +129,36 @@ abstract class BaseMvpActivity<T : BasePresenter<*>> : BaseActivity(), IBaseView
         super.onDestroy()
         mPresenter.detachView()
         BaseApplication.getRefWatcher(this)?.watch(this)
-
+//        mLoadingDialog?.hideLoading()
+//        pDialog?.cancel()
     }
 
     override fun showLoading() {
+
         mLayoutStatusView?.showLoading()
+        mLoadingDialog.showLoading()
+//        pDialog?.show()
+
     }
 
     override fun dismissLoading() {
         mLayoutStatusView?.showContent()
+//        pDialog?.cancel()
+        mLoadingDialog.hideLoading()
     }
 
-    fun getUserID():String{
-        return SpUtils.getString(BaseApplication.getAppContext(),ConstantSP.USER_ID)
+    fun getUserID(): String {
+        return SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_ID)
     }
 
+
+    override fun hideNetDialog() {
+       dissmissNetDialog()
+    }
+
+    override fun showNetDialog() {
+        showDialog()
+    }
 
 
 }

@@ -2,6 +2,7 @@ package com.gb.socket.mvp.view
 
 import com.example.baselibrary.base.IBaseView
 import com.gb.socket.data.domain.DeviceInfo
+import com.gb.socket.data.domain.RecordsMergeBean
 
 /**
  * Created by guobiao on 2018/8/7.
@@ -19,4 +20,6 @@ interface MainView:IBaseView {
     fun getDeviceInfo(data :DeviceInfo)
 
     fun uploadLocationSuccess()
+
+    fun showRecords(list:ArrayList<RecordsMergeBean>?)
 }

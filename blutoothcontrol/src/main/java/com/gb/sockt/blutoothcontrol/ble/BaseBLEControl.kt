@@ -26,7 +26,7 @@ interface BaseBLEControl {
     /**
      * 开启设备
      */
-    fun openDeivce(time: String?, deviceWay: String?, equipElectiic: String?)
+    fun openDeivce(time: String?, deviceWay: String?, equipElectiic: String?="2000")
 
 
     fun connect()

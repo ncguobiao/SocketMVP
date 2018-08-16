@@ -45,10 +45,10 @@ open class LoginPresenterImpl @Inject constructor() : LoginPresenter, BasePresen
                                 getView()?.loginSuccess()
                                 Logger.e("账号密码登陆")
                             } else {
-                                getView()?.onDataIsNull()
+                                getView()?.onError("登陆失败,用户数据不存在")
                             }
                         } else {
-                            getView()?.onDataIsNull()
+                            getView()?.onError("登陆失败，原因:${t.returnMsg},错误码:${t.returnCode}")
                         }
                     }
                 }, lifecycleProvider)
@@ -84,10 +84,10 @@ open class LoginPresenterImpl @Inject constructor() : LoginPresenter, BasePresen
                                 getView()?.loginSuccess()
                                 Logger.e("微信登陆成功")
                             } else {
-                                getView()?.onDataIsNull()
+                                getView()?.onError("登陆失败,用户数据不存在")
                             }
                         } else {
-                            getView()?.onDataIsNull()
+                            getView()?.onError("登陆失败，原因:${t.returnMsg},错误码:${t.returnCode}")
                         }
                     }
                 }, lifecycleProvider)

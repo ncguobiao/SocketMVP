@@ -2,6 +2,7 @@ package com.gb.socket.ui.activity
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -25,17 +26,34 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import javax.inject.Inject
 import android.content.Intent
+import android.graphics.Color
+import android.os.Handler
+import android.os.Message
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import com.alibaba.android.arouter.launcher.ARouter
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.Constant
 import com.example.baselibrary.utils.BleUtils
 import com.example.baselibrary.utils.BluetoothClientManager
-import com.example.baselibrary.utils.databus.AmountUtils
 import com.example.baselibrary.zxing.app.CaptureActivity
 import com.gb.socket.data.domain.DeviceInfo
+import com.gb.socket.data.domain.RecordsMergeBean
+import com.gb.socket.listener.OnRecyclerItemClickListener
+//import com.gb.socket.ui.adapter.MainRecords1Adapter
+import com.gb.socket.ui.adapter.MainRecordsAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
-
-
+import java.lang.ref.WeakReference
+import java.util.*
+import java.util.concurrent.*
+/**
+ * @date 创建时间：2018/8/15
+ * @author :guobiao
+ * @Description
+ * @version
+ */
 @Route(path = RouterPath.Main.PATH_HOME)
 class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
@@ -55,6 +73,25 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
     private var longitude: String? = null
     private var rate: String? = null
     private var deviceId: String? = null
+
+    private val mList = ArrayList<RecordsMergeBean>()
+
+
+    private lateinit var cycleTask: Runnable
+
+    private val linearLayoutManager by lazy {
+        LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    }
+    private val mAdapter by lazy {
+        MainRecordsAdapter(this, mList, R.layout.item__main_records_layout)
+//        MainRecords1Adapter(this,mList)
+    }
+
+    private val mHandler by lazy {
+        LoopHandler(this)
+    }
+
+
     override fun layoutId(): Int = R.layout.activity_main
 
     override fun onError(error: String) {
@@ -64,6 +101,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
     override fun onDataIsNull() {
         toast("数据获取失败")
     }
+
 
     override fun initView(savedInstanceState: Bundle?) {
         //定位
@@ -93,6 +131,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
                             Logger.d("扫码权限通过")
                             startActivityForResult(
                                     Intent(BaseApplication.getAppContext(), CaptureActivity::class.java),
+//                                    Intent(BaseApplication.getAppContext(), ActivityScanerCode::class.java),
                                     QRCODE
                             )
                         } else {
@@ -102,9 +141,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
                     }
 
 
-//
         }
-
         // Must be done during an initialization phase like onCreate
 //        RxView.clicks(bt_scan)
 //                .compose(rxPermissions.ensure(Manifest.permission.CAMERA))
@@ -112,7 +149,33 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 //                    if (it) toast("扫码权限通过") else toast("没有扫码权限")
 //                }
 
+        initRecyclerView()
 
+    }
+
+    /**
+     * 初始化RecyclerView
+     */
+    private fun initRecyclerView() {
+        mRecyclerView?.layoutManager = linearLayoutManager
+        mRecyclerView?.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        mRecyclerView?.itemAnimator = DefaultItemAnimator()
+        mRecyclerView?.adapter = mAdapter
+        mAdapter.setOnItemClick(object : OnRecyclerItemClickListener {
+            override fun onItemClick(position: Int) {
+
+            }
+
+            override fun onClose(deviceName: String, useTemporaryId: String) {
+                toast("关闭")
+
+            }
+
+            override fun onOpen(useTemporaryId: String) {
+                toast("关闭")
+            }
+
+        })
     }
 
 
@@ -122,7 +185,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
             QRCODE ->//扫码逻辑
             {
                 if (resultCode == Activity.RESULT_OK) {
-                    var result = data?.getStringExtra("SCAN_RESULT")
+                    val result = data?.getStringExtra("SCAN_RESULT")
                     if (checkQRResult(result)) return
                     macAddress = macAddress?.replace(":".toRegex(), "")
                     when (resultLength) {
@@ -140,6 +203,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
     //获取设备信息
     override fun getDeviceInfo(data: DeviceInfo) {
+
         if (macAddress != data.macAddress) {
             toast("二维码未入库或错误")
             return
@@ -367,9 +431,10 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         //获取banner
         mPresenter.getBanner("No", "", "")
         //获取当前使用记录
-        mPresenter.getRecords(getUserID(), "CDZ")
+
 //        mPresenter.getMergeData("No","","",getUserID(),"CDZ")
     }
+
 
     override fun initData() {
 //        bugly更新
@@ -396,6 +461,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
             }
         }
 
+        mHandler?.obtainMessage(0)?.sendToTarget()
+
         //检查位置信息
 //        rxPermissions.request(Manifest.permission.ACCESS_FINE_LOCATION
 //                , Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -409,6 +476,9 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
     }
 
+    /**
+     * 检查定位权限
+     */
     private fun checkLocationPremission() {
         rxPermissions
                 .request(Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -427,10 +497,30 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
     }
 
+
+    override fun showRecords(list: ArrayList<RecordsMergeBean>?) {
+
+
+        list?.let {
+            if (it.size>0){
+                rl_main_image.visibility = View.GONE
+                mRecyclerView?.visibility = View.VISIBLE
+//            mList?.apply {
+//                this.clear()
+//                this.addAll(it)
+//            }
+                mAdapter?.addData(it)
+            }
+        }
+    }
+
+
     override fun onStart() {
         super.onStart()
         //开始轮播
         banner.startAutoPlay()
+        //获取使用记录
+        mPresenter.getRecords(getUserID(), "CDZ")
     }
 
     override fun onResume() {
@@ -452,6 +542,11 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
     override fun onDestroy() {
         super.onDestroy()
         mLbsLayer.onDestroy()
+        mHandler?.let {
+            it.removeCallbacksAndMessages(null)
+        }
+
+
     }
 
 
@@ -469,4 +564,18 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         return super.onKeyDown(keyCode, event)
     }
 
+
+    class LoopHandler constructor(activity: MainActivity) : Handler() {
+        private var mWeakReference: WeakReference<MainActivity>? = WeakReference(activity)
+
+
+        override fun handleMessage(msg: Message?) {
+            val mContext = mWeakReference?.get()
+            if (msg?.what == 0) {
+                mContext?.mAdapter?.notifyDataSetChanged()
+            }
+            this.sendEmptyMessageDelayed(0, 1000)
+
+        }
+    }
 }

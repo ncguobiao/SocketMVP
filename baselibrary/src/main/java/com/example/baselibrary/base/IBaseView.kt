@@ -13,4 +13,8 @@ interface IBaseView {
 //    fun showError(error:String,errorState:Int)
 
     fun onDataIsNull()
+
+    fun showNetDialog()
+
+    fun hideNetDialog()
 }

@@ -368,7 +368,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
         return object : Function<Any, ObservableSource<Long>> {
             override fun apply(t: Any): ObservableSource<Long>? {
                 //更新发送按钮的状态并初始化显现倒计时文字
-                tv_time_countdown.setTextColor(BaseApplication.getAppContext().resources.getColor(R.color.text_light_color))
+                tv_time_countdown?.setTextColor(BaseApplication.getAppContext().resources.getColor(R.color.text_light_color))
 //                Logger.e("countDown")
                 return Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
                         .take(MAX_COUNT_TIME)

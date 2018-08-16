@@ -46,7 +46,7 @@ open class BaseApplication : MultiDexApplication() {
         super.onCreate()
         initAppInjection()
         mContext = applicationContext
-        refWatcher = setupLeakCanary()
+//        refWatcher = setupLeakCanary()
         initConfig(LOGTAG)
         DisplayManager.init(this)
         registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks)

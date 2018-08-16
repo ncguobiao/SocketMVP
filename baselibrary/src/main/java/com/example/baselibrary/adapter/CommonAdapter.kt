@@ -15,12 +15,8 @@ import com.example.baselibrary.listener.OnItemLongClickListener
 abstract class CommonAdapter<T>(var context: Context,var mData:ArrayList<T>,
                        private var mLayoutId:Int):RecyclerView.Adapter<ViewHolder>() {
 
-    protected var mInflater: LayoutInflater?
+    protected var mInflater: LayoutInflater? = LayoutInflater.from(context)
 
-    init {
-        mInflater =LayoutInflater.from(context)
-
-    }
     //需要多布局
     constructor(context: Context, data: ArrayList<T>, typeSupport: MultipleType<T>):this(context,data,-1){
         this.mTypeSupport = typeSupport
@@ -29,6 +25,7 @@ abstract class CommonAdapter<T>(var context: Context,var mData:ArrayList<T>,
     private val mItemClickListener: OnItemClickListener?=null
     //使用接口回调点击事件
     private var mItemLongClickListener: OnItemLongClickListener? = null
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //绑定数据
         bindData(holder,mData[position],position)

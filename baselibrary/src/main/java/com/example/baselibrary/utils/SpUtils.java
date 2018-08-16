@@ -42,7 +42,7 @@ public class SpUtils {
 
     public static int getInt(Context context, String key) {
         SharedPreferences sp = getSP(context);
-        return sp.getInt(key, -1);
+        return sp.getInt(key, 0);
     }
 
     public static long getLong(Context context, String key) {
