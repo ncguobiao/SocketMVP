@@ -12,7 +12,6 @@ import com.example.baselibrary.lbs.ILbsLayer
 import com.example.baselibrary.lbs.LocationInfo
 import com.example.baselibrary.onClick
 import com.example.baselibrary.showToast
-import com.example.baselibrary.utils.SpUtils
 import com.example.provider.router.RouterPath
 import com.gb.socket.App
 import com.gb.socket.R
@@ -27,32 +26,34 @@ import javax.inject.Inject
 import android.content.Intent
 import android.os.Handler
 import android.os.Message
+import android.support.design.widget.NavigationView
+import android.support.v4.view.GravityCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import com.alibaba.android.arouter.launcher.ARouter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.Constant
 import com.example.baselibrary.dao.GreenDaoHelper
-import com.example.baselibrary.dao.model.DeviceUseRecords
-import com.example.baselibrary.utils.BleUtils
-import com.example.baselibrary.utils.BluetoothClientManager
-import com.example.baselibrary.utils.DateUtils
+import com.example.baselibrary.utils.*
 import com.example.baselibrary.zxing.app.CaptureActivity
 
 import com.gb.socket.data.domain.DeviceInfo
 import com.gb.socket.data.domain.RecordsMergeBean
 import com.gb.socket.listener.OnRecyclerItemClickListener
-//import com.gb.socket.ui.adapter.MainRecords1Adapter
 import com.gb.socket.ui.adapter.MainRecordsAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
-import io.reactivex.android.schedulers.AndroidSchedulers
-import org.greenrobot.greendao.rx.RxDao
+import kotlinx.android.synthetic.main.main_content_layout.*
+import kotlinx.android.synthetic.main.nav_header_drawer_layout__one.*
 import java.lang.ref.WeakReference
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 /**
  * @date 创建时间：2018/8/15
@@ -61,7 +62,7 @@ import java.util.concurrent.TimeUnit
  * @version
  */
 @Route(path = RouterPath.Main.PATH_HOME)
-class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
+class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationView.OnNavigationItemSelectedListener {
 
 
     private val QRCODE = 18666
@@ -90,7 +91,6 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
     }
     private val mAdapter by lazy {
         MainRecordsAdapter(this, mList, R.layout.item__main_records_layout)
-//        MainRecords1Adapter(this,mList)
     }
 
     private val mHandler by lazy {
@@ -155,13 +155,14 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
 
         iv_user.onClick {
-
+            mDrawerLayout.openDrawer(GravityCompat.START)
         }
+        nav_view.setNavigationItemSelectedListener(this)
 
-
+        showUserInfo()
         initRecyclerView()
-
     }
+
 
     /**
      * 初始化RecyclerView
@@ -188,6 +189,23 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         })
     }
 
+    /**
+     * 侧滑选中
+     */
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here.
+        when (item.itemId) {
+            R.id.wallet -> toast("钱包")
+            R.id.recharge_records -> toast("钱包")
+            R.id.use_records -> toast("钱包")
+            R.id.help -> toast("钱包")
+            R.id.about_us -> toast("钱包")
+            R.id.opinion_feedback -> toast("钱包")
+        }
+        mDrawerLayout.closeDrawer(GravityCompat.START)
+        return true
+
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -453,6 +471,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
 
     override fun initData() {
+
+
 //        bugly更新
 //        Beta.checkUpgrade()
 
@@ -490,6 +510,46 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 //                    }
 //                }
 
+    }
+
+    private fun showUserInfo() {
+        //menu图片显示原来的颜色
+        nav_view.itemIconTintList = null
+        //先获取NavigationView
+        val headerView = nav_view.getHeaderView(0)
+        val tvUserName = headerView?.findViewById<TextView>(R.id.tv_username)
+        val ivUserPhoto = headerView?.findViewById(R.id.iv_user_photo) as ImageView
+        val tvSetting = headerView?.findViewById(R.id.tv_setting) as RelativeLayout
+        tvSetting.onClick {
+          toast("设置")
+        }
+
+        val userName = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_NAME)
+        val mobile = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.MOBILE)
+        val userPhoto = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_PHOTO)
+        val userWeiXinPhoto = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_WEIXIN_PHOTO)
+        val loginType = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_LOGIN_TYPE)
+        if (loginType.isNotEmpty() && ConstantSP.USER_LOGIN_FOR_WEIXIN == loginType && userWeiXinPhoto.isNotEmpty()) {
+
+            val options = RequestOptions.circleCropTransform()
+            Glide.with(this@MainActivity)
+                    .load(userWeiXinPhoto)
+                    .apply(options)
+                    .into(iv_user_photo)
+
+        } else {
+            if (userPhoto.isNotEmpty() && "男" == userPhoto) {
+                ivUserPhoto.setImageResource(R.drawable.man_photo)
+            } else {
+                ivUserPhoto.setImageResource(R.drawable.woman_photo)
+            }
+        }
+
+        if (userName.isEmpty()) {
+            tvUserName?.text = mobile
+        } else {
+            tvUserName?.text = userName
+        }
     }
 
     /**
@@ -535,6 +595,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         banner.startAutoPlay()
         //获取使用记录
         mPresenter.getRecords(getUserID(), "CDZ")
+        //TODO 上传缓存使用记录
         val dao = GreenDaoHelper.getInstance().daoSession.deviceUseRecordsDao
 //        val loadAll = dao?.loadAll()
 //        val size = loadAll?.size as Int
@@ -570,9 +631,22 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         }
     }
 
+
+    override fun onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+
+
+    }
+
     //退出
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //关闭侧滑
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) mDrawerLayout.closeDrawer(GravityCompat.START)
             if (System.currentTimeMillis().minus(mExitTime) <= 2000) {
                 finish()
             } else {
@@ -595,7 +669,6 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
                 mContext?.mAdapter?.notifyDataSetChanged()
             }
             this.sendEmptyMessageDelayed(0, 1000)
-
         }
     }
 }

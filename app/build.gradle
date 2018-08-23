@@ -55,7 +55,7 @@ dependencies {
     //ARouter
     kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
     implementation project(':provider')
-    implementation project(':usercenter')
+    implementation project(':accountCenter')
     implementation project(':blutoothcontrol')
 
 

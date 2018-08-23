@@ -221,14 +221,9 @@ class BluetoothControlActivity : BaseActivity() {
 
     }
 
-    fun dismissAllDialog() {
-        hideBleConnectDialog()
-        hideDeviceIsBusyDialog()
-        hideFillMomeyDialog()
-    }
 
     fun hideDeviceIsBusyDialog() {
-        if (deviceIsBusyDialog!=null&&deviceIsBusyDialog!!.isVisible){
+        if (deviceIsBusyDialog != null && deviceIsBusyDialog!!.isVisible) {
             deviceIsBusyDialog?.dismissAllowingStateLoss()
         }
         deviceIsBusyDialog = null
@@ -236,7 +231,7 @@ class BluetoothControlActivity : BaseActivity() {
     }
 
     fun hideBleConnectDialog() {
-        if (bleConnectDialog!=null&&bleConnectDialog!!.isVisible){
+        if (bleConnectDialog != null && bleConnectDialog!!.isVisible) {
             bleConnectDialog?.dismissAllowingStateLoss()
         }
         bleConnectDialog = null
@@ -244,17 +239,21 @@ class BluetoothControlActivity : BaseActivity() {
 
 
     fun hideFillMomeyDialog() {
-        if (fillMoneyDialog!=null&&fillMoneyDialog!!.isVisible){
+        if (fillMoneyDialog != null && fillMoneyDialog!!.isVisible) {
             fillMoneyDialog?.dismissAllowingStateLoss()
         }
         fillMoneyDialog = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    fun dismissAllDialog() {
+        hideBleConnectDialog()
         hideDeviceIsBusyDialog()
         hideFillMomeyDialog()
-        hideBleConnectDialog()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dismissAllDialog()
 
     }
 

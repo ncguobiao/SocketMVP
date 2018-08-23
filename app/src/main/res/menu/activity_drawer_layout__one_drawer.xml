@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/wallet"
+            android:icon="@drawable/my_money"
+            android:iconTint="@color/colorPrimary"
+            android:title="@string/my_money" />
+        <item
+            android:id="@+id/recharge_records"
+            android:icon="@drawable/charging"
+            android:title="@string/charg_detail" />
+        <item
+            android:id="@+id/use_records"
+            android:icon="@drawable/record"
+            android:title="@string/user_record" />
+        <item
+            android:id="@+id/help"
+            android:icon="@drawable/help"
+            android:title="@string/used_help" />
+        <item
+            android:id="@+id/about_us"
+            android:icon="@drawable/about_us"
+            android:title="@string/about_us" />
+        <item
+            android:id="@+id/opinion_feedback"
+            android:icon="@drawable/opinion_feedback"
+            android:title="@string/opinion_feedback" />
+
+    </group>
+    <!--<item android:title="Communicate">-->
+    <!--<menu>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_share"-->
+
+    <!--android:title="Share"/>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_send"-->
+
+    <!--android:title="Send"/>-->
+    <!--</menu>-->
+    <!--</item>-->
+
+
+</menu>

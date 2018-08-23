@@ -1,1 +1,1 @@
-include ':app', ':baselibrary', ':multiple-status-view', ':provider', ':usercenter', ':blutoothcontrol', ':PickerUI_library'
+include ':app', ':baselibrary', ':multiple-status-view', ':provider', ':accountCenter', ':blutoothcontrol', ':PickerUI_library', ':usercenter'
