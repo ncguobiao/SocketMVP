@@ -3,20 +3,28 @@ package com.gb.sockt.blutoothcontrol.ui.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.FragmentManager
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.Constant
 import com.example.provider.router.RouterPath
 import com.gb.sockt.blutoothcontrol.R
-import com.gb.sockt.blutoothcontrol.ui.fragment.MulitWayFragment
+import com.gb.sockt.blutoothcontrol.ui.fragment.MultiWayFragment
 import com.example.baselibrary.utils.BluetoothClientManager
 import com.example.baselibrary.utils.databus.AmountUtils
+import com.gb.sockt.blutoothcontrol.ble.BaseBLEControl
+import com.gb.sockt.blutoothcontrol.ui.fragment.CEFragment
 import com.mylhyl.circledialog.CircleDialog
 import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.toast
+import android.os.Build
+import com.gb.sockt.blutoothcontrol.ui.fragment.SingleFragment
+import java.lang.reflect.AccessibleObject.setAccessible
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+
 
 // 在支持路由的页面上添加注解(必选)
 // 这里的路径需要注意的是至少需要有两级，/xx/x
@@ -41,25 +49,66 @@ class BluetoothControlActivity : BaseActivity() {
     var device_rate: String? = null
     var rate_yuan: String? = null
     var deviceId: String? = null
+    var deviceType: String? = null
+
+    private lateinit var fragmentManager: FragmentManager
+
+    private var noteStateNotSavedMethod: Method? = null
+    private val activityClassName = arrayOf("Activity", "FragmentActivity")
+
+    private lateinit var fragmentMgr: Any
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blue_tooth_control)
         initData()
         checkBLE()
-        val ceFragment = MulitWayFragment.newInstance()
-        supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.content_main, ceFragment, ceFragment.javaClass.simpleName)
-//                .addToBackStack(ceFragment.javaClass.simpleName)
-//                .addToBackStack(null)
-                .commit()
+
+    }
+
+    private fun initFragment() {
+
+
+        deviceType?.let {
+            when (it) {
+                Constant.DEVICE_CE -> {
+                    val beginTransaction = supportFragmentManager.beginTransaction()
+                    val ceFragment = CEFragment.newInstance()
+                    beginTransaction.replace(R.id.content_main, ceFragment, ceFragment.javaClass.simpleName)
+                            //                .addToBackStack(ceFragment.javaClass.simpleName)
+                            //                .addToBackStack(null)
+                            .commit()
+                }
+                Constant.DEVICE_CD -> {
+                    val beginTransaction = supportFragmentManager.beginTransaction()
+                    val multiWayFragment = MultiWayFragment.newInstance()
+                    beginTransaction.replace(R.id.content_main, multiWayFragment, multiWayFragment.javaClass.simpleName)
+                            .commit()
+                }
+                Constant.DEVICE_SINGLE -> {
+                    val beginTransaction = supportFragmentManager.beginTransaction()
+                    val singleFragment = SingleFragment.newInstance()
+                    beginTransaction.replace(R.id.content_main, singleFragment, singleFragment.javaClass.simpleName)
+                            .commit()
+                }
+                else -> {
+                    toast("设备类型异常")
+                }
+            }
+        }
+
+
     }
 
     private fun initData() {
+        fragmentManager = supportFragmentManager
         macAddress = intent.getSerializableExtra(Constant.DEVICE_MAC) as String
         deviceName = intent.getSerializableExtra(Constant.DEVICE_NAME) as String
-        deviceWay = intent.getSerializableExtra(Constant.DEVICE_WAY) as String
+        val way = intent.getSerializableExtra(Constant.DEVICE_WAY)
+        if (way != null) {
+            deviceWay = way as String
+        }
         device_rate = intent.getSerializableExtra(Constant.DEVICE_RATE) as String
+        deviceType = intent.getSerializableExtra(Constant.DEVICE_TYPE) as String
         deviceId = intent.getSerializableExtra(Constant.DEVICE_ID) as String
         try {
             rate_yuan = AmountUtils.changeF2Y(java.lang.Long.parseLong(device_rate))
@@ -80,8 +129,11 @@ class BluetoothControlActivity : BaseActivity() {
         mClient?.let {
             if (it.isBluetoothOpened) {
                 //蓝牙开启状态，检查位置信息
+                Logger.e("蓝牙开启")
                 checkLocationPremissionAndNavigation()
+
             } else {
+                Logger.e("蓝牙开启未开启")
                 //开启蓝牙
                 if (it.openBluetooth()) {
                     //蓝牙开启状态，检查位置信息
@@ -107,7 +159,8 @@ class BluetoothControlActivity : BaseActivity() {
                 .subscribe {
                     if (it) {
 //                //申请的权限全部允许
-                        Logger.d("获取位置信息权限成功")
+                        Logger.d("获取位置信息权限成功---")
+                        initFragment()
                     } else {
 //                //只要有一个权限被拒绝，就会执行
                         requestPremissionSetting("获取位置信息")
@@ -126,7 +179,7 @@ class BluetoothControlActivity : BaseActivity() {
                     val intent: Intent
                     deviceIsBusyDialog?.dismiss()
                 }
-                .setCancelable(true).show(supportFragmentManager)
+                .setCancelable(true).show(fragmentManager)
 
     }
 
@@ -143,14 +196,11 @@ class BluetoothControlActivity : BaseActivity() {
 
 
                 }
-                .setCancelable(true).show(supportFragmentManager)
+                .setCancelable(true).show(fragmentManager)
     }
 
-
-
-
-
-    fun showBleConnectDialog() {
+    fun showBleConnectDialog(mBLEControl: BaseBLEControl) {
+        dismissAllDialog()
         bleConnectDialog = CircleDialog.Builder()
                 .setTitle("连接失败!")
                 .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
@@ -159,12 +209,20 @@ class BluetoothControlActivity : BaseActivity() {
                 .setPositive("确定") {
 
                     bleConnectDialog?.dismiss()
-
+                    //蓝牙重连
+                    mBLEControl.deviceIfNeeded()
 
                 }
-                .setCancelable(true).show(supportFragmentManager)
+                .setCancelable(true).show(fragmentManager)
+
+
     }
 
+    fun dismissAllDialog() {
+        hideBleConnectDialog()
+        hideDeviceIsBusyDialog()
+        hideFillMomeyDialog()
+    }
 
     fun hideDeviceIsBusyDialog() {
         deviceIsBusyDialog?.dismiss()
@@ -175,7 +233,6 @@ class BluetoothControlActivity : BaseActivity() {
         bleConnectDialog?.dismiss()
         bleConnectDialog = null
     }
-
 
 
     fun hideFillMomeyDialog() {
@@ -189,6 +246,76 @@ class BluetoothControlActivity : BaseActivity() {
         hideFillMomeyDialog()
         hideBleConnectDialog()
 
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        invokeFragmentManagerNoteStateNotSaved()
+    }
+
+
+    override fun onBackPressed() {
+        if (!isFinishing)
+        super.onBackPressed()
+    }
+
+    private fun invokeFragmentManagerNoteStateNotSaved() {
+//java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            return
+        }
+        try {
+            if (noteStateNotSavedMethod != null && fragmentMgr != null) {
+                noteStateNotSavedMethod!!.invoke(fragmentMgr)
+                return
+            }
+            var cls: Class<*> = javaClass
+            do {
+                cls = cls.superclass
+            } while (!(activityClassName[0].equals(cls.simpleName) || activityClassName[1].equals(cls.simpleName)))
+
+            val fragmentMgrField = prepareField(cls, "mFragments")
+            if (fragmentMgrField != null) {
+                fragmentMgr = fragmentMgrField!!.get(this)
+                noteStateNotSavedMethod = getDeclaredMethod(fragmentMgr, "noteStateNotSaved")
+                noteStateNotSavedMethod?.invoke(fragmentMgr)
+            }
+
+        } catch (ex: Exception) {
+        }
+
+
+    }
+
+
+    @Throws(NoSuchFieldException::class)
+    private fun prepareField(c: Class<*>?, fieldName: String): Field {
+        var c = c
+        while (c != null) {
+            try {
+                val f = c.getDeclaredField(fieldName)
+                f.isAccessible = true
+                return f
+            } finally {
+                c = c.superclass
+            }
+        }
+        throw NoSuchFieldException()
+    }
+
+    private fun getDeclaredMethod(`object`: Any, methodName: String, vararg parameterTypes: Class<*>): Method? {
+        var method: Method? = null
+        var clazz: Class<*> = `object`.javaClass
+        while (clazz != Any::class.java) {
+            try {
+                method = clazz.getDeclaredMethod(methodName, *parameterTypes)
+                return method
+            } catch (e: Exception) {
+            }
+
+            clazz = clazz.superclass
+        }
+        return null
     }
 
 }

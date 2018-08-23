@@ -6,7 +6,7 @@ import java.util.List;
  * Created by guobiao on 2018/8/8.
  */
 
-public class BannerBean {
+public class   BannerBean {
 
 
     /**

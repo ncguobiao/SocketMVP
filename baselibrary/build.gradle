@@ -3,9 +3,13 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'  //kapt3插件
+
+apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 26
     defaultConfig {
+
+        minSdkVersion 18
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode 1
@@ -18,6 +22,7 @@ android {
         kapt {
             generateStubs = true
         }
+
 
 
     }
@@ -34,6 +39,16 @@ android {
 //        jcenter { url "http://jcenter.bintray.com/" }
 //    }
 
+}
+
+configurations.all {
+    resolutionStrategy.force 'com.android.support:support-annotations:26.1.0'
+}
+
+greendao {
+    schemaVersion 3 //数据库版本号
+    daoPackage 'com.example.baselibrary.dao'// 设置DaoMaster、DaoSession、Dao 包名
+    targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
 }
 
 dependencies {
@@ -89,7 +104,13 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //GlideOkHttp
-    api(rootProject.ext.glideOkhttp) {
+//    api(rootProject.ext.glideOkhttp) {
+//        exclude group: 'glide-parent'
+//    }
+    api(rootProject.ext.glide) {
+        exclude group: 'glide-parent'
+    }
+    kapt(rootProject.ext.glideCompiler) {
         exclude group: 'glide-parent'
     }
     // Support库
@@ -172,6 +193,16 @@ dependencies {
 
 //    api 'com.github.thomper:sweet-alert-dialog:v1.4.0'
 
+    //GreenDao
+    api "org.greenrobot:greendao:$greenDao_version"
+    api 'net.zetetic:android-database-sqlcipher:3.5.6@aar'
+
+    api 'com.facebook.stetho:stetho:1.5.0'
+    api 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    //极光
+    api 'cn.jiguang.sdk:jpush:3.1.5'  // 此处以JPush 3.1.1 版本为例。
+    api 'cn.jiguang.sdk:jcore:1.2.3'  // 此处以JCore 1.1.9 版本为例。
 
     api 'com.mylhyl:circleDialog:2.4.2'
 }

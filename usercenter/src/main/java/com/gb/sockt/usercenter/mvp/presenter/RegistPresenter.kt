@@ -17,7 +17,7 @@ interface RegistPresenter :IPresenter<RegisterView>{
     /**
      * 注册
      */
-    fun register(mobile:String, username:String, pwd:String, code:String)
+    fun register(mobile:String, username:String, pwd:String, code:String, operateType:String, pushId:String)
 
 
     /**
@@ -30,6 +30,6 @@ interface RegistPresenter :IPresenter<RegisterView>{
      * 快捷登陆
      */
     @POST("UserService/User/fastLogin")
-    fun fastLogin( code:String,  mobile:String)
+    fun fastLogin( code:String,  mobile:String, operateType:String, pushId:String)
 
 }

@@ -19,15 +19,15 @@ class UserServiceImpl @Inject constructor():UserService{
     /**
      * 登陆
      */
-    override fun login(userName: String, pwd: String): Observable<BaseResp> {
-        return repository.login(userName,pwd)
+    override fun login(userName: String, pwd: String, operateType:String, pushId:String): Observable<BaseResp> {
+        return repository.login(userName,pwd,operateType, pushId)
     }
 
     /**
      * 微信登陆
      */
-    override fun weixinLogin(openid: String, nickname: String): Observable<BaseResp> {
-        return repository.weixinLogin(openid,nickname)
+    override fun weixinLogin(openid: String, nickname: String, operateType:String, pushId:String): Observable<BaseResp> {
+        return repository.weixinLogin(openid,nickname,operateType, pushId)
     }
 
     /**
@@ -63,8 +63,8 @@ class UserServiceImpl @Inject constructor():UserService{
     /**
      * 快捷登陆
      */
-    override fun fastLogin(code: String, mobile: String): Observable<BaseResp> {
-        return repository.fastLogin(code,mobile)
+    override fun fastLogin(code: String, mobile: String, operateType:String, pushId:String): Observable<BaseResp> {
+        return repository.fastLogin(code,mobile,operateType, pushId)
     }
 
 }

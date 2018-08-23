@@ -11,6 +11,7 @@ import com.example.baselibrary.injection.component.AppComponent
 import com.example.baselibrary.injection.component.DaggerAppComponent
 import com.example.baselibrary.injection.module.AppMoudle
 import com.example.baselibrary.utils.DisplayManager
+import com.facebook.stetho.Stetho
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.BuildConfig
 import com.orhanobut.logger.Logger
@@ -51,6 +52,8 @@ open class BaseApplication : MultiDexApplication() {
         DisplayManager.init(this)
         registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks)
         initArouter()
+
+
     }
 
     private fun initArouter() {
@@ -59,6 +62,9 @@ open class BaseApplication : MultiDexApplication() {
         ARouter.openDebug()
         ARouter.init(this)
     }
+
+
+
 
     private fun initAppInjection() {
         appComponent = DaggerAppComponent.builder().appMoudle(AppMoudle(this)).build()

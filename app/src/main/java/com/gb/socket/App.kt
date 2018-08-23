@@ -1,13 +1,11 @@
 package com.gb.socket
 
-import android.content.Context
+import cn.jpush.android.api.JPushInterface
 import com.example.baselibrary.common.BaseApplication
+import com.example.baselibrary.dao.GreenDaoHelper
 import com.example.baselibrary.utils.AppUtils
+import com.facebook.stetho.Stetho
 import com.mob.MobSDK
-import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.Logger
-import com.orhanobut.logger.Logger.addLogAdapter
-import kotlin.properties.Delegates
 
 
 /**
@@ -32,7 +30,34 @@ class App: BaseApplication(){
         MobSDK.init(this)
 
         AppUtils.init(this)
+
+        //初始化数据库
+        GreenDaoHelper.getInstance().init(this)
+
+        initStetho()
+
+        initJPush()
+
 //        RxTool.init(this);
 //        ZXingLibrary.initDisplayOpinion(this)
     }
+
+    private fun initJPush() {
+
+        //极光推送
+        JPushInterface.setDebugMode(true)
+        JPushInterface.init(this)
+    }
+
+    fun initStetho() {
+//        Stetho.initializeWithDefaults(this);
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                        .build()
+        )
+
+    }
+
 }

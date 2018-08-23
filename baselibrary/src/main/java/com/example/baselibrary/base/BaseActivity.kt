@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.support.v4.app.DialogFragment
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import cn.jpush.android.api.JPushInterface.getRegistrationID
 import com.example.baselibrary.R
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.utils.AppUtils
@@ -132,7 +133,9 @@ open class BaseActivity : RxAppCompatActivity() {
         mNetDialog?.dismiss()
     }
 
-
+    protected fun getPushId():String{
+        return getRegistrationID(this)
+    }
 }
 
 

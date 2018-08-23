@@ -22,9 +22,9 @@ open class LoginPresenterImpl @Inject constructor() : LoginPresenter, BasePresen
     /**
      * 登陆
      */
-    override fun login(userName: String, pwd: String) {
+    override fun login(userName: String, pwd: String, operateType:String, pushId:String) {
         if (!preparReq(getView(), this)) return
-        service.login(userName, pwd)
+        service.login(userName, pwd,operateType, pushId)
                 .execute(object : BaseSubscriber<BaseResp>(getView()!!) {
                     override fun onNext(t: BaseResp) {
                         if ("0000" == t.returnCode) {
@@ -58,13 +58,13 @@ open class LoginPresenterImpl @Inject constructor() : LoginPresenter, BasePresen
 //        }
     }
 
-    override fun weiXinLogin(openid: String?, nickname: String?) {
+    override fun weiXinLogin(openid: String?, nickname: String?, operateType:String, pushId:String) {
         if (!preparReq(getView(), this)) return
         if (openid.isNullOrEmpty() or nickname.isNullOrEmpty()) {
             Logger.e("微信登陆参数异常")
             return
         }
-        service.weixinLogin(openid!!, nickname!!)
+        service.weixinLogin(openid!!, nickname!!,operateType, pushId)
                 .execute(object : BaseSubscriber<BaseResp>(getView()!!) {
                     override fun onNext(t: BaseResp) {
                         if ("0000" == t.returnCode) {

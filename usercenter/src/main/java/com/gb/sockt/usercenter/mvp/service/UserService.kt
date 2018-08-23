@@ -11,13 +11,13 @@ interface UserService {
     /**
      * 登陆
      */
-    fun login(mobile: String, pwd: String): Observable<BaseResp>
+    fun login(mobile: String, pwd: String, operateType:String, pushId:String): Observable<BaseResp>
 
 
     /**
      * 微信登陆
      */
-    fun weixinLogin(openid: String, nickname: String) : Observable<BaseResp>
+    fun weixinLogin(openid: String, nickname: String, operateType:String, pushId:String) : Observable<BaseResp>
 
 
     /**
@@ -45,7 +45,7 @@ interface UserService {
     /**
      * 快捷登陆
      */
-    fun fastLogin(code: String, mobile: String): Observable<BaseResp>
+    fun fastLogin(code: String, mobile: String, operateType:String, pushId:String): Observable<BaseResp>
 
 
 }

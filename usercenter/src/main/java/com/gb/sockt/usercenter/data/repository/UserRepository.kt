@@ -16,22 +16,29 @@ class UserRepository @Inject constructor() {
     /**
      * 登陆
      */
-    fun login(mobile: String, pwd: String): Observable<BaseResp> {
-        return RetrofitFactory.instance.create(UserCenter_Api::class.java).login(LoginReq(mobile,pwd)).compose()
+    fun login(mobile: String, pwd: String,operateType:String, pushId:String): Observable<BaseResp> {
+        return RetrofitFactory.instance.create(UserCenter_Api::class.java).login(LoginReq(mobile,pwd,operateType, pushId)).compose()
+    }
+    /**
+     * 快捷登陆
+     */
+    fun fastLogin(code: String, mobile: String, operateType:String, pushId:String): Observable<BaseResp> {
+        return RetrofitFactory.instance.create(UserCenter_Api::class.java).fastLogin(FastLoginReq(code, mobile,operateType, pushId)).compose()
+
     }
 
     /**
      * 微信登陆
      */
-    fun weixinLogin(openid:String,nickname:String): Observable<BaseResp>{
-        return RetrofitFactory.instance.create(UserCenter_Api::class.java).weixinLogin(WeiXinLoginReq(openid,nickname)).compose()
+    fun weixinLogin(openid:String,nickname:String, operateType:String, pushId:String): Observable<BaseResp>{
+        return RetrofitFactory.instance.create(UserCenter_Api::class.java).weixinLogin(WeiXinLoginReq(openid,nickname,operateType, pushId)).compose()
     }
 
     /**
      * 检验手机好是否注册
      */
     fun checkPhoneISRegister(mobile: String): Observable<BaseResp>{
-        return RetrofitFactory.instance.create(UserCenter_Api::class.java).checkPhoneISRegister(LoginReq(mobile,"")).compose()
+        return RetrofitFactory.instance.create(UserCenter_Api::class.java).checkPhoneISRegister(LoginReq(mobile,"","","")).compose()
     }
 
     /**
@@ -55,13 +62,7 @@ class UserRepository @Inject constructor() {
         return RetrofitFactory.instance.create(UserCenter_Api::class.java).forgetPwd(ForgetPwdBean(code, mobile, newPassword)).compose()
     }
 
-    /**
-     * 快捷登陆
-     */
-    fun fastLogin(code: String, mobile: String): Observable<BaseResp> {
-        return RetrofitFactory.instance.create(UserCenter_Api::class.java).fastLogin(FastLoginReq(code, mobile)).compose()
 
-    }
 
 
 }

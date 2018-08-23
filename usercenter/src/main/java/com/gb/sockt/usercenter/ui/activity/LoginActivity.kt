@@ -101,7 +101,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
             }
             Logger.i("=================${Thread.currentThread().name}")
             runOnUiThread {
-                this.mPresenter.weiXinLogin(openid, nickname)
+                this.mPresenter.weiXinLogin(openid, nickname,"Android",getPushId())
             }
         }
 
@@ -237,7 +237,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
                 })
                 .subscribe {
 //                    Logger.d(it)
-                    mPresenter.login(mobile, MD5Utils.toMD5(pwd))
+                    mPresenter.login(mobile, MD5Utils.toMD5(pwd),"Android",getPushId())
                 }
 
         //微信登陆

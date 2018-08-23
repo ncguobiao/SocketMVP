@@ -17,12 +17,10 @@ import com.gb.sockt.blutoothcontrol.R
 import com.gb.sockt.blutoothcontrol.injection.component.DaggerBluetoothComponent
 import com.gb.sockt.blutoothcontrol.injection.module.BluetoothModule
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
-import com.gb.sockt.blutoothcontrol.listener.BleDataChangeListener
+import com.gb.sockt.blutoothcontrol.listener.BleMultiDataChangeListener
 import com.gb.sockt.blutoothcontrol.mvp.presenter.impl.BluetoothPresenterImpl
-import com.gb.sockt.blutoothcontrol.mvp.view.BluetoothView
 import com.gb.sockt.blutoothcontrol.ui.activity.BluetoothControlActivity
-import com.gb.sockt.blutoothcontrol.ble.BlueToothControl
-import com.inuker.bluetooth.library.BluetoothClient
+import com.gb.sockt.blutoothcontrol.ble.multi.BlueToothMultiControl
 import com.jakewharton.rxbinding2.view.RxView
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.fragment_ce.*
@@ -32,6 +30,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import com.example.baselibrary.utils.DateUtils
 import com.example.baselibrary.utils.SpUtils
+import com.gb.sockt.blutoothcontrol.mvp.view.BluetoothMultiView
 import com.mylhyl.circledialog.CircleDialog
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -77,18 +76,13 @@ import io.reactivex.schedulers.Schedulers
 /**
  * 多路设备
  */
-class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothView, View.OnClickListener {
-
-
+class MultiWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(),BluetoothMultiView ,View.OnClickListener {
 
     private lateinit var mContext: BluetoothControlActivity
-    private lateinit var mClient: BluetoothClient
     private var hourArray: Array<out String>? = null
     private var selectHour: String? = null
     private val viewList = ArrayList<View>()
-    @Inject
-    @field:[Named("BluetoothCEControll")]
-    lateinit var mBlueToothCEControlImpl: BlueToothControl
+
     private var deviceCurrentStatus: Boolean = false//设备当前状态
     //是否切换视图显示倒计时页面
     private var isSwitchView: Boolean = false
@@ -100,22 +94,25 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
     private var isAddTimeAndDeviceIsNotBusy: Boolean = false
 
     private var isFirstToUse: Boolean = false
-//
+
+    @Inject
+    @field:[Named("BluetoothMultiControl")]
+    lateinit var mBLEMultiControlImpl: BlueToothMultiControl
 //    @Inject
 //    @field:[Named("BluetoothMulitControl")]
-//    lateinit var mBluetoothMulitControl: BlueToothControl
+//    lateinit var mBluetoothMulitControl: BlueToothMultiControl
 
     companion object {
-        fun newInstance(id: String): MulitWayFragment {
+        fun newInstance(id: String): MultiWayFragment {
             var args: Bundle = Bundle()
 //            args.putString("todo_id_key", id)
-            var editFragment: MulitWayFragment = newInstance()
+            var editFragment: MultiWayFragment = newInstance()
             editFragment.arguments = args
             return editFragment
         }
 
-        fun newInstance(): MulitWayFragment {
-            return MulitWayFragment()
+        fun newInstance(): MultiWayFragment {
+            return MultiWayFragment()
         }
 
         private val mHandler: Handler = Handler()
@@ -134,7 +131,6 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
     override fun injectComponent() {
         DaggerBluetoothComponent.builder()
                 .activityComponent(mActivityComponent)
-//                .bluetoothModule(BluetoothModule(Constant.DEVICE_CE, activity))
                 .bluetoothModule(BluetoothModule(Constant.DEVICE_CD, activity))
                 .build()
                 .inject(this)
@@ -149,27 +145,13 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
         Logger.d("mac=${mContext.macAddress}")
 
         //设置macAddress
-        mBlueToothCEControlImpl.setMAC(mContext.macAddress, object : BleConnectListener {
+        mBLEMultiControlImpl.setMAC(mContext.macAddress, object : BleConnectListener {
             override fun connectOnSuccess() {
                 tv_state?.text = resources.getText(R.string.connect_success)
                 tv_state?.setTextColor(resources.getColor(R.color.tv_color))
                 activity_ll_control?.apply {
                     snackbar(activity_ll_control, R.string.connect_success)
                 }
-//                if (ll_time_count_down != null && ll_time_count_down.visibility == View.VISIBLE) {//充电倒计时显示的情况下
-//                    if (ll_time_group != null) {
-//                        ll_time_group.visibility = View.GONE//隐藏时间选择
-//                    }
-//                    if (bt_start != null) {
-//                        bt_start.visibility = View.GONE//隐藏开始充电按钮
-//                    }
-//                } else {
-//                    if (ll_time_group != null) {
-//                        ll_time_group.visibility = View.VISIBLE
-//                    }
-//                    if (bt_start != null) {
-//                        bt_start.visibility = View.VISIBLE
-//                    }
                 if (isSwitchView) {//充电倒计时显示的情况下
                     ll_time_group?.visibility = View.GONE//隐藏时间选择
                     bt_start?.visibility = View.GONE//隐藏开始充电按钮
@@ -181,7 +163,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                 iv_gif?.setImageResource(R.drawable.success)
 
                 mHandler?.postDelayed({
-                    mBlueToothCEControlImpl.requestSeed()
+                    mBLEMultiControlImpl.requestSeed()
                 }, 500)
             }
 
@@ -200,49 +182,9 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                     tv_state?.text = " 连接失败！"
                     tv_state?.setTextColor(resources.getColor(R.color.connect_fail))
                     //显示重连蓝牙弹窗
-                    mContext.showBleConnectDialog()
+                    mContext.showBleConnectDialog(mBLEMultiControlImpl)
                 }
 
-//                if (ll_time_count_down != null && ll_time_count_down.visibility == View.GONE) {
-////                    if (!operationSuccess) {
-////                        if (isShowConnectDialog) {//不显示连接是否连接dialog
-////                            if (isReconnect) {
-////                                ThreadPoolUtils.execute(Runnable {
-////                                    try {
-////                                        Thread.sleep(1000)
-////                                    } catch (e: InterruptedException) {
-////                                        e.printStackTrace()
-////                                    }
-////
-////                                    mBlueToothCEControlImpl.connectDeviceIfNeeded()
-////                                })
-////
-////                            } else {
-////                                if (mHandler != null) {
-////                                    val msg = Message.obtain()
-////                                    msg.what = SHOW_CONNECT_DIALOG
-////                                    mHandler.sendMessage(msg)
-////                                }
-////                            }
-////                        }
-////                    }
-//                    if (iv_gif != null) {
-//                        iv_gif.setImageResource(R.drawable.connect_fail)
-//                    }
-//                    if (tv_state != null) {
-//                        tv_state.text = " 连接失败！"
-//                        tv_state.setTextColor(resources.getColor(R.color.connect_fail))
-//                    }
-//
-//                } else {
-//                    if (iv_gif != null) {
-//                        iv_gif.setImageResource(R.drawable.success)
-//                    }
-//                    if (tv_state != null) {
-//                        tv_state.text = " 正在充电中..."
-//                        tv_state.setTextColor(resources.getColor(R.color.tv_color))
-//                    }
-//                }
             }
 
             //蓝牙连接成功
@@ -250,10 +192,13 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                 showToast("该设备不支持蓝牙")
             }
             //注册广播
-        }).registerBoradcastRecvier()
+        }).registerBroadcastReceiver()
+
+
                 //设置响应监听
-                .setResponeListener(object : BleDataChangeListener {
-                    override fun seedSuccess() {
+        mBLEMultiControlImpl.setResponseListener(object : BleMultiDataChangeListener {
+
+                    override fun requestSeedSuccess() {
                         Logger.d("获取种子成功")
                     }
 
@@ -262,7 +207,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                     }
 
                     override fun checkSeedSuccess() {
-                        mBlueToothCEControlImpl?.getBLEDeviceInfo(deviceWay = mContext?.deviceWay)
+                        mBLEMultiControlImpl?.getBLEDeviceInfo(deviceWay = mContext?.deviceWay)
                     }
 
                     override fun checkSeedOnFailure(msg: String) {
@@ -276,7 +221,6 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                     override fun deviceCurrentState(isBusy: Boolean) {
                         deviceCurrentStatus = isBusy
                         if (isBusy) {
-
                             Logger.d("设备正在使用中")
                         } else {
                             Logger.d("设备空闲")
@@ -326,7 +270,6 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                 //连接蓝牙
                 .connect()
 
-
     }
 
     /**
@@ -339,7 +282,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
             mContext?.showDeviceIsBusyDialog()
         } else {
             //设备空闲,开启设备
-            mBlueToothCEControlImpl?.openDeivce(selectHour, mContext?.deviceWay, equipElectiic = "")
+            mBLEMultiControlImpl?.openDevice(selectHour, mContext?.deviceWay, equipElectiic = "")
         }
 
         isFirstToUse = true
@@ -348,7 +291,6 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
     override fun showFillMoneyDialog() {
         mContext?.showFillMoneyDialog()
 
-        showToast("提示充钱")
     }
 
     /**
@@ -368,7 +310,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
         Logger.d("账户余额充足，可以加时,当前设备状态：${deviceCurrentStatus}")
         if (deviceCurrentStatus) {
             //忙碌（设备正在使用，传递本次加时时间）
-            mBlueToothCEControlImpl.addTimeToBle(
+            mBLEMultiControlImpl.addTimeToBle(
                     selectHour,
                     deviceWay = mContext?.deviceWay,
                     equipElectiic = ""
@@ -376,7 +318,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
         } else {
             //设备断电，开启设备传总时间（剩余时间+加时是啊见）
             val selectHourInt = selectHour?.toInt()
-            mBlueToothCEControlImpl.openDeivce(
+            mBLEMultiControlImpl.openDevice(
                     (selectHourInt!! + remainHour).toString(),
                     deviceWay = mContext?.deviceWay,
                     equipElectiic = ""
@@ -391,7 +333,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
 
     }
 
-    override fun openSuccess2ServiceOnSuceess(usedTime: String) {
+    override fun openSuccess2ServiceOnSuccess(usedTime: String) {
         showToast("设备已开启,可以开始充电")
         //切换视图
         switchView(usedTime.toLong()*3600)
@@ -425,7 +367,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                     if (!deviceCurrentStatus) {
                         remainHour = DateUtils.getHour(remain)
                         //设备断点下开启
-                        mBlueToothCEControlImpl.openDeivce(
+                        mBLEMultiControlImpl.openDevice(
                                 remainHour.toString(),
                                 deviceWay = mContext?.deviceWay,
                                 equipElectiic = ""
@@ -437,26 +379,26 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                 }
                 .setPositive("加时使用") {
                     addTimeToDeviceDialog?.dismiss()
-                    if (mBlueToothCEControlImpl.getConnectState()) {
+                    if (mBLEMultiControlImpl.getConnectState()) {
                         mPresenter.addTimeCanUse(getUserID(), deviceId = mContext?.deviceId!!, time = selectHour!!)
                     } else {
-                        mContext?.showBleConnectDialog()
+                        mContext?.showBleConnectDialog(mBLEMultiControlImpl)
                     }
 
                 }
                 .setCancelable(true).show(fragmentManager)
     }
 
-    /**
-     * 操作蓝牙加时
-     */
-    private fun addTimeToDevice(addTime: String) {
-        mBlueToothCEControlImpl?.addTimeToBle(
-                addTime
-                , deviceWay = mContext?.deviceWay,
-                equipElectiic = ""
-        )
-    }
+//    /**
+//     * 操作蓝牙加时
+//     */
+//    private fun addTimeToDevice(addTime: String) {
+//        mBLEMultiControlImpl?.addTimeToBle(
+//                addTime
+//                , deviceWay = mContext?.deviceWay,
+//                equipElectiic = ""
+//        )
+//    }
 
 
     private fun hideAddTimeToDeviceDialog() {
@@ -465,7 +407,8 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
     }
 
     /**
-     * 显示隐藏相关视图
+     * 显示隐藏相关视图并开始倒计时
+     * param 秒
      */
     private fun switchView(usedTime: Long) {
         isSwitchView = true
@@ -532,25 +475,21 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
     private fun showTimeCountDown(deadlineTime: Long) {
         Observable.just(true)
                 .subscribeOn(Schedulers.io())
-                .flatMap(object : Function<Any, Observable<Long>> {
-                    override fun apply(t: Any): Observable<Long> {
+                .flatMap {
+                    //此处可以更新ui
 
-                        //此处可以更新ui
-                        return Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
-                                .take(deadlineTime)
-                                //将递增数字替换成递减的倒计时数字
-                                .map(object : Function<Long, Long> {
-                                    override fun apply(aLong: Long): Long {
-//                                Logger.d("aLong:$aLong")
-//                                Logger.d("map thread is :${Thread.currentThread().getName()} ")
-                                        return deadlineTime - (aLong + 1)
-                                    }
-                                    //切换到 Android 的主线程。.observeOn(AndroidSchedulers.mainThread())
-                                }).observeOn(AndroidSchedulers.mainThread())
-
-                    }
-
-                })
+                    Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
+                            .take(deadlineTime)
+                            //将递增数字替换成递减的倒计时数字
+                            .map(object : Function<Long, Long> {
+                                override fun apply(aLong: Long): Long {
+                                    //                                Logger.d("aLong:$aLong")
+                                    //                                Logger.d("map thread is :${Thread.currentThread().getName()} ")
+                                    return deadlineTime - (aLong + 1)
+                                }
+                                //切换到 Android 的主线程。.observeOn(AndroidSchedulers.mainThread())
+                            }).observeOn(AndroidSchedulers.mainThread())
+                }
                 .subscribe { it ->
                     if (it == 0L) {
                         tv_time_count_down?.text = "已完成使用"
@@ -593,7 +532,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
                         showToast("请选择充电时间")
                         return@subscribe
                     }
-                    if (!mBlueToothCEControlImpl.getConnectState()) {
+                    if (!mBLEMultiControlImpl.getConnectState()) {
                         showToast("请先连接蓝牙")
                         return@subscribe
                     }
@@ -662,7 +601,7 @@ class MulitWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothVie
     override fun onDestroy() {
         super.onDestroy()
         hideAddTimeToDeviceDialog()
-        mBlueToothCEControlImpl.unregisterBoradcastRecvier()
-        mBlueToothCEControlImpl.close()
+        mBLEMultiControlImpl.unregisterBroadcastReceiver()
+        mBLEMultiControlImpl.close()
     }
 }

@@ -3,7 +3,8 @@
     package="com.gb.sockt.blutoothcontrol">
 
     <application>
-        <activity android:name=".ui.activity.BluetoothControlActivity"></activity>
+        <activity android:name=".ui.activity.BluetoothControlActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

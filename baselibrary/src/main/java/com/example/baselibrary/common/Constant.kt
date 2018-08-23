@@ -21,6 +21,7 @@ object Constant {
     const val DEVICE_ID: String = "device_id"
     const val DEVICE_CE: String = "CE"
     const val DEVICE_CD: String = "CD"
+    const val DEVICE_SINGLE: String = "single"
 
     //sp name
     const val SP_NAME: String = "MyAgent_save"

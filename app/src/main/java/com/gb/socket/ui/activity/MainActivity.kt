@@ -2,7 +2,6 @@ package com.gb.socket.ui.activity
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -18,7 +17,7 @@ import com.example.provider.router.RouterPath
 import com.gb.socket.App
 import com.gb.socket.R
 import com.gb.socket.injection.module.MainModule
-import com.gb.socket.mvp.presenter.MainPresenterImpl
+import com.gb.socket.mvp.presenter.impl.MainPresenterImpl
 import com.gb.socket.mvp.view.MainView
 import com.gb.sockt.usercenter.injection.component.DaggerMainComponent
 import com.orhanobut.logger.Logger
@@ -26,7 +25,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import javax.inject.Inject
 import android.content.Intent
-import android.graphics.Color
 import android.os.Handler
 import android.os.Message
 import android.support.v7.widget.DefaultItemAnimator
@@ -36,22 +34,30 @@ import android.view.View
 import com.alibaba.android.arouter.launcher.ARouter
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.Constant
+import com.example.baselibrary.dao.GreenDaoHelper
+import com.example.baselibrary.dao.model.DeviceUseRecords
 import com.example.baselibrary.utils.BleUtils
 import com.example.baselibrary.utils.BluetoothClientManager
+import com.example.baselibrary.utils.DateUtils
 import com.example.baselibrary.zxing.app.CaptureActivity
+
 import com.gb.socket.data.domain.DeviceInfo
 import com.gb.socket.data.domain.RecordsMergeBean
 import com.gb.socket.listener.OnRecyclerItemClickListener
 //import com.gb.socket.ui.adapter.MainRecords1Adapter
 import com.gb.socket.ui.adapter.MainRecordsAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
+import io.reactivex.android.schedulers.AndroidSchedulers
+import org.greenrobot.greendao.rx.RxDao
 import java.lang.ref.WeakReference
 import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
 /**
  * @date 创建时间：2018/8/15
  * @author :guobiao
- * @Description
+ * @Description 主界面
  * @version
  */
 @Route(path = RouterPath.Main.PATH_HOME)
@@ -139,8 +145,6 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
                             requestPremissionSetting("相机")
                         }
                     }
-
-
         }
         // Must be done during an initialization phase like onCreate
 //        RxView.clicks(bt_scan)
@@ -148,6 +152,12 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 //                .subscribe {
 //                    if (it) toast("扫码权限通过") else toast("没有扫码权限")
 //                }
+
+
+        iv_user.onClick {
+
+        }
+
 
         initRecyclerView()
 
@@ -209,12 +219,12 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
             return
         }
         deviceId = data.id
-        if (deviceId == null || deviceId!!.isEmpty()) {
+        if (deviceId.isNullOrEmpty()) {
             toast("二维码未入库,设备id为空")
             return
         }
         rate = data.rate
-        if (rate == null || rate!!.isEmpty()) {
+        if (rate.isNullOrEmpty()) {
             toast("二维码未入库,设备费率为空")
             return
         }
@@ -283,7 +293,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
                     redirectTo(Constant.DEVICE_CE)
                 }
                 it.startsWith("CD") -> redirectTo(Constant.DEVICE_CD)
-                else -> toast("仅支持CD或CE设备")
+                else ->
+                    redirectTo(Constant.DEVICE_SINGLE)
             }
         }
 
@@ -293,26 +304,28 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
      *  跳转页面
      */
     private fun redirectTo(deviceType: String) {
-//        startActivity<BluetoothControlActivity>(
-//                Constant.FRAGMENT_TAG to Constant.FRAGMENT_DEVICE_RECORDS,
-//                Constant.DEVICE_NAME to deviceName + "-" + way,
-//                Constant.DEVICE_MAC to macAddress,
-//                Constant.DEVICE_WAY to way
-//
-//        )
-
-        ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
-                .withTransition(com.gb.sockt.usercenter.R.anim.anim_in, com.gb.sockt.usercenter.R.anim.anim_out)
-                .withString(Constant.DEVICE_NAME, deviceName + "-" + way)
-                .withString(Constant.DEVICE_MAC, macAddress)
-                .withString(Constant.DEVICE_WAY, way)
-                .withString(Constant.DEVICE_TYPE, Constant.DEVICE_CE)
-                .withString(Constant.DEVICE_RATE, rate)
-                .withString(Constant.DEVICE_ID, deviceId)
-                .navigation()
+        if (deviceType == Constant.DEVICE_SINGLE) {
+            ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
+                    .withTransition(com.gb.sockt.usercenter.R.anim.anim_in, com.gb.sockt.usercenter.R.anim.anim_out)
+                    .withString(Constant.DEVICE_NAME, "$deviceName")
+                    .withString(Constant.DEVICE_MAC, macAddress)
+                    .withString(Constant.DEVICE_TYPE, deviceType)
+                    .withString(Constant.DEVICE_RATE, rate)
+                    .withString(Constant.DEVICE_ID, deviceId)
+                    .navigation()
+        } else {
+            ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
+                    .withTransition(com.gb.sockt.usercenter.R.anim.anim_in, com.gb.sockt.usercenter.R.anim.anim_out)
+                    .withString(Constant.DEVICE_NAME, "$deviceName-$way")
+                    .withString(Constant.DEVICE_MAC, macAddress)
+                    .withString(Constant.DEVICE_WAY, way)
+                    .withString(Constant.DEVICE_TYPE, deviceType)
+                    .withString(Constant.DEVICE_RATE, rate)
+                    .withString(Constant.DEVICE_ID, deviceId)
+                    .navigation()
+        }
 
     }
-
 
     override fun uploadLocationSuccess() {
         Logger.d("位置信息上传成功")
@@ -433,6 +446,9 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         //获取当前使用记录
 
 //        mPresenter.getMergeData("No","","",getUserID(),"CDZ")
+
+//        val pool = Executors.newScheduledThreadPool(1)
+//        pool.scheduleAtFixedRate(task, 0, 1000, TimeUnit.MILLISECONDS)
     }
 
 
@@ -499,10 +515,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
 
 
     override fun showRecords(list: ArrayList<RecordsMergeBean>?) {
-
-
         list?.let {
-            if (it.size>0){
+            if (it.size > 0) {
                 rl_main_image.visibility = View.GONE
                 mRecyclerView?.visibility = View.VISIBLE
 //            mList?.apply {
@@ -521,6 +535,15 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         banner.startAutoPlay()
         //获取使用记录
         mPresenter.getRecords(getUserID(), "CDZ")
+        val dao = GreenDaoHelper.getInstance().daoSession.deviceUseRecordsDao
+//        val loadAll = dao?.loadAll()
+//        val size = loadAll?.size as Int
+//        if (size > 0) {
+//
+////            mPresenter.upLoadRecords()
+//        }
+
+
     }
 
     override fun onResume() {
@@ -545,10 +568,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView {
         mHandler?.let {
             it.removeCallbacksAndMessages(null)
         }
-
-
     }
-
 
     //退出
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

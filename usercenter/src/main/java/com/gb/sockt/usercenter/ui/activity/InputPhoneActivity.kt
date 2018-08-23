@@ -110,7 +110,7 @@ class InputPhoneActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView, Pla
                 }
             }
             runOnUiThread {
-                mPresenter.weiXinLogin(openid, nickname)
+                mPresenter.weiXinLogin(openid, nickname,"Android",getPushId())
             }
 
 

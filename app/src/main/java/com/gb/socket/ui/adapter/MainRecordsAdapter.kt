@@ -31,7 +31,7 @@ class MainRecordsAdapter(context: Context, data: ArrayList<RecordsMergeBean>, la
         if (null != data.records2G) {//2G设备
             holder.setViewVisibility(R.id.btn_close, View.VISIBLE)
             holder.setViewVisibility(R.id.tv_time_count_down, View.GONE)
-
+            holder.setViewVisibility(R.id.ll_container, View.VISIBLE)
             val startTime = data?.records2G?.useTemporary?.startDate//开始使用时间
             val useTime = System.currentTimeMillis() - format.parse(startTime).time//已经使用
             val usedTime = DateUtils.getTimeFormat(useTime / 1000)
@@ -65,7 +65,7 @@ class MainRecordsAdapter(context: Context, data: ArrayList<RecordsMergeBean>, la
         } else {
             holder.setViewVisibility(R.id.btn_close, View.GONE)
             holder.setViewVisibility(R.id.tv_time_count_down, View.VISIBLE)
-
+            holder.setViewVisibility(R.id.ll_container, View.GONE)
             val deviceId = data.recordsBean?.deviceId
             holder.setText(R.id.tv_device_num, deviceId ?: "")
 
@@ -99,6 +99,5 @@ class MainRecordsAdapter(context: Context, data: ArrayList<RecordsMergeBean>, la
     fun setOnItemClick(onItemClickListener: OnRecyclerItemClickListener) {
         this.onItemClickListener = onItemClickListener
     }
-
 
 }

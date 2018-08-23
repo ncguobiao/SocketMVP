@@ -3,6 +3,9 @@ package com.gb.socket;
 /**
  * Created by liuguangli on 17/4/24.
  */
+
+import com.example.baselibrary.dao.GreenDaoHelper;
+import com.example.baselibrary.utils.DateUtils;
 import com.orhanobut.logger.Logger;
 
 import org.junit.Test;
@@ -24,13 +27,20 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class TestOkHttp3 {
+
+    @Test
+    public void testDB() {
+
+    }
+
     /**
      * 测试 OkHttp Get 方法
      */
     @Test
     public void testGet() {
+
         TestKotlin t = new TestKotlin();
-                t.testGet();
+        t.testTime();
 
         // 创建 OkHttpClient 对象
         OkHttpClient client = new OkHttpClient();
@@ -76,7 +86,7 @@ public class TestOkHttp3 {
     }
 
     /**
-     *  测试拦截器
+     * 测试拦截器
      */
     @Test
     public void testInterceptor() {
@@ -86,7 +96,7 @@ public class TestOkHttp3 {
             public Response intercept(Chain chain) throws IOException {
 
                 long start = System.currentTimeMillis();
-                Request request  = chain.request();
+                Request request = chain.request();
                 Response response = chain.proceed(request);
                 long end = System.currentTimeMillis();
                 System.out.println("interceptor: cost time = " + (end - start));
@@ -111,46 +121,46 @@ public class TestOkHttp3 {
     }
 
     /**
-     *  测试缓存
+     * 测试缓存
      */
     @Test
     public void testCache() {
         // 创建缓存对象
         Cache cache = new Cache(new File("cache.cache"), 1024 * 1024);
-            // 创建 OkHttpClient 对象
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .cache(cache)
-                    .build();
-            // 创建 Request 对象
-            Request request = new Request.Builder()
-                    .url("http://httpbin.org/get?id=id")
-                    .cacheControl(CacheControl.FORCE_NETWORK)
-                    .build();
-            // OkHttpClient 执行 Request
-            try {
-                Response response = client.newCall(request).execute();
-                Response responseCache = response.cacheResponse();
-                Response responseNet = response.networkResponse();
-                if (responseCache != null) {
-                    // 从缓存响应
-                    System.out.println("response from cache");
-                }
-                if (responseNet != null) {
-                    // 从缓存响应
-                    System.out.println("response from net");
-                }
+        // 创建 OkHttpClient 对象
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cache(cache)
+                .build();
+        // 创建 Request 对象
+        Request request = new Request.Builder()
+                .url("http://httpbin.org/get?id=id")
+                .cacheControl(CacheControl.FORCE_NETWORK)
+                .build();
+        // OkHttpClient 执行 Request
+        try {
+            Response response = client.newCall(request).execute();
+            Response responseCache = response.cacheResponse();
+            Response responseNet = response.networkResponse();
+            if (responseCache != null) {
+                // 从缓存响应
+                System.out.println("response from cache");
+            }
+            if (responseNet != null) {
+                // 从缓存响应
+                System.out.println("response from net");
+            }
 
-                System.out.println("response:" + response.body().string());
+            System.out.println("response:" + response.body().string());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testScheduledExecutorService(){
+    public void testScheduledExecutorService() {
 
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
-        TimerTask t1 = new TimerTask(){
+        TimerTask t1 = new TimerTask() {
 
             @Override
             public void run() {

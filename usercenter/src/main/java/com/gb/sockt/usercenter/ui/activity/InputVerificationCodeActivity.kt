@@ -286,7 +286,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                         ConstantSP.USER_TYPE_REGIST//注册
                         -> {
                             if (mobile != null && code != null) {
-                                mPresenter.register(mobile!!, mobile!!, it, code!!)
+                                mPresenter.register(mobile!!, mobile!!, it, code!!,"Android",getPushId())
                             }
                         }
                         ConstantSP.USER_TYPE_FORGET_PWD//忘记密码
@@ -296,7 +296,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                             }
                         }
                         ConstantSP.USER_LOGIN_FOR_FASTLOGIN -> if (mobile != null && code != null) {
-                            mPresenter.fastLogin(mobile!!, it)
+                            mPresenter.fastLogin(mobile!!, it,"Android",getPushId())
                         }
                         else -> Logger.e("语音验证码类型错误")
                     }

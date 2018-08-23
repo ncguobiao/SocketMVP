@@ -49,7 +49,7 @@ class RegistPresenterImpl @Inject constructor() : RegistPresenter, BasePresenter
     /**
      * 用户注册后登陆
      */
-    override fun register(mobile: String, username: String, pwd: String, code: String) {
+    override fun register(mobile: String, username: String, pwd: String, code: String, operateType:String, pushId:String) {
         if (!preparReq(getView(), this)) return
         service.register(mobile, username, pwd, code)
                 .compose()
@@ -76,7 +76,7 @@ class RegistPresenterImpl @Inject constructor() : RegistPresenter, BasePresenter
                     //登陆
                     override fun apply(t: Boolean): ObservableSource<BaseResp> {
                         if (t) {
-                            return service.login(mobile, pwd)
+                            return service.login(mobile, pwd,operateType, pushId)
                         }
                         return Observable.empty()
                     }
@@ -150,9 +150,9 @@ class RegistPresenterImpl @Inject constructor() : RegistPresenter, BasePresenter
     /**
      * 快捷登陆
      */
-    override fun fastLogin(mobile: String, code: String) {
+    override fun fastLogin(mobile: String, code: String, operateType:String, pushId:String) {
         if (!preparReq(getView(), this)) return
-        service.fastLogin(code, mobile)
+        service.fastLogin(code, mobile,operateType, pushId)
                 .execute(object : BaseSubscriber<BaseResp>(getView()!!) {
                     override fun onNext(t: BaseResp) {
                         if ("0000" == t.returnCode) {

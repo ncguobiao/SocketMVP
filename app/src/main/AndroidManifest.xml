@@ -76,7 +76,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-
         tools:replace="android:icon,android:theme">
         <!--杀马特刘海屏-->
         <meta-data
@@ -95,9 +94,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.MainActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            />
-        <!-- 微信支付 -->
+            >
+    </activity>
+    <!-- 微信支付 -->
         <activity
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
@@ -115,6 +116,27 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <receiver
+            android:name="com.gb.socket.receiver.MessageReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION" />
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+                <category android:name="com.gb.socket" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data android:name="JPUSH_APPKEY" android:value="${JPUSH_APPKEY}"
+            tools:replace="android:value"
+            />
+        <meta-data android:name="JPUSH_CHANNEL" android:value="${JPUSH_CHANNEL}"
+            tools:replace="android:value"
+            />
     </application>
 
 
