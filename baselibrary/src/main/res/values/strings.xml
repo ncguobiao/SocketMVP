@@ -149,7 +149,6 @@
         <item>10小时</item>
         <item>11小时</item>
         <item>12小时</item>
-
     </string-array>
 
     <string-array name="show_money">
@@ -189,8 +188,7 @@
         <item>170分钟</item>
     </string-array>
 
-    <string-array name="hour_display">
-        <item>12</item>
+    <string-array name="hours">
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -202,6 +200,7 @@
         <item>9</item>
         <item>10</item>
         <item>11</item>
+        <item>12</item>
     </string-array>
     <string name="android_auto_update_dialog_title">发现新版本</string>
     <string name="android_auto_update_notify_ticker">发现新版本,点击进行升级</string>

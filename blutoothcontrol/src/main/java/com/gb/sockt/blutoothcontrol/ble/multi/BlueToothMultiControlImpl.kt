@@ -540,6 +540,7 @@ open class BlueToothMultiControlImpl constructor(deviceTag: String, val context:
 
 
     override fun close() {
+        Logger.d("APP主动断开蓝牙")
         mClient?.disconnect(macAddress)
         mClient = null
     }

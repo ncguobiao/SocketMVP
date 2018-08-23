@@ -95,6 +95,8 @@ class MultiWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(),BluetoothMult
 
     private var isFirstToUse: Boolean = false
 
+    private var currentPosition = -1
+
     @Inject
     @field:[Named("BluetoothMultiControl")]
     lateinit var mBLEMultiControlImpl: BlueToothMultiControl
@@ -141,7 +143,7 @@ class MultiWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(),BluetoothMult
     @SuppressLint("ResourceType")
     override fun lazyLoad() {
         //时间数组
-        hourArray = resources.getStringArray(R.array.hour_display)
+        hourArray = resources.getStringArray(R.array.hours)
         Logger.d("mac=${mContext.macAddress}")
 
         //设置macAddress
@@ -521,9 +523,7 @@ class MultiWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(),BluetoothMult
         viewList.add(bt_time5)
         viewList.add(bt_edit)
 
-        bt_edit.onClick {
-            changeSelectTimeColor(v = this.bt_edit)
-        }
+        initSelectHourView()
 
         RxView.clicks(bt_start)
                 .throttleFirst(3, TimeUnit.SECONDS)
@@ -541,20 +541,42 @@ class MultiWayFragment : BaseMvpFragment<BluetoothPresenterImpl>(),BluetoothMult
 
     }
 
+    private fun initSelectHourView() {
+        val pickerUISettings = mContext?.pickerUISettings()
+        mPickerUI.setOnClickItemPickerUIListener { _, position, valueResult ->
+            currentPosition = position
+            Logger.d("选择了position:$position")
+            val hour = hourArray!![position]
+            selectHour = hour
+            //计算此次花费金额
+            mathMoney(selectHour!!)
+            showToast("选择了:${hour}小时")
+        }
+        bt_edit.onClick {
+            mPickerUI.visibility = View.VISIBLE
+            mPickerUI.setSettings(pickerUISettings)
+            if (currentPosition == -1) {
+                mPickerUI.slide()
+            } else {
+                mPickerUI.slide(currentPosition)
+            }
+        }
+    }
+
 
     override fun onClick(v: View?) {
         v?.let {
             when (it) {
                 bt_time1 ->
-                    selectHour = hourArray!![1]
+                    selectHour = hourArray!![0]
                 bt_time2 ->
-                    selectHour = hourArray!![2]
+                    selectHour = hourArray!![1]
                 bt_time3 ->
-                    selectHour = hourArray!![3]
+                    selectHour = hourArray!![2]
                 bt_time4 ->
-                    selectHour = hourArray!![4]
+                    selectHour = hourArray!![3]
                 bt_time5 ->
-                    selectHour = hourArray!![5]
+                    selectHour = hourArray!![4]
             }
             Logger.d("选择时间:${selectHour}小时")
             changeSelectTimeColor(v)

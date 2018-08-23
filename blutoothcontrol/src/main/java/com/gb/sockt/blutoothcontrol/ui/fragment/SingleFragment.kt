@@ -6,7 +6,10 @@ import android.os.Handler
 import android.support.v4.app.DialogFragment
 import android.text.TextUtils
 import android.view.View
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.dpizarro.uipicker.library.picker.PickerUI
+import com.dpizarro.uipicker.library.picker.PickerUISettings
 import com.example.baselibrary.base.BaseMvpFragment
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.Constant
@@ -28,6 +31,7 @@ import javax.inject.Named
 import com.example.baselibrary.utils.DateUtils
 import com.example.baselibrary.utils.SpUtils
 import com.example.baselibrary.utils.ThreadPoolUtils
+import com.gb.sockt.blutoothcontrol.ble.BluetoothConfig.options
 import com.gb.sockt.blutoothcontrol.listener.BaseBLEDataListener
 import com.gb.sockt.blutoothcontrol.mvp.presenter.impl.BluetoothSinglePresenterImpl
 import com.gb.sockt.blutoothcontrol.mvp.view.BluetoothCommonView
@@ -38,6 +42,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -92,9 +97,9 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
     //是否切换视图显示倒计时页面
     private var isSwitchView: Boolean = false
 
-
     private var isFirstToUse: Boolean = false
 
+    private var currentPosition = -1
 
     private var remingTime: Long = 0L
 
@@ -137,7 +142,7 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
     @SuppressLint("ResourceType")
     override fun lazyLoad() {
         //时间数组
-        hourArray = resources.getStringArray(R.array.hour_display)
+        hourArray = resources.getStringArray(R.array.hours)
         Logger.d("mac=${mContext.macAddress}")
 
         //设置macAddress
@@ -224,7 +229,7 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
                         } else {
                             switchView(remingTime)
                         }
-                        mHandler?.postDelayed({mBlueToothSingeControlImpl?.close()},5000)
+                        mHandler?.postDelayed({ mBlueToothSingeControlImpl?.close() }, 5000)
 
                     }
 
@@ -349,6 +354,7 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
 
         tv_device_num.text = mContext?.deviceName ?: ""
         tv_device_rate.text = "${mContext?.rate_yuan ?: ""}元/小时"
+        mPickerUI.visibility = View.GONE
 
         bt_time1.onClick(this)
         bt_time2.onClick(this)
@@ -361,10 +367,8 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
         viewList.add(bt_time4)
         viewList.add(bt_time5)
         viewList.add(bt_edit)
-
-        bt_edit.onClick {
-            changeSelectTimeColor(v = this.bt_edit)
-        }
+        //自定义选择时间
+        initSelectHourView()
 
         RxView.clicks(bt_start)
                 .throttleFirst(3, TimeUnit.SECONDS)
@@ -380,21 +384,48 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
                     mPresenter.requestSurplusTime(getUserID(), mContext.deviceId!!, selectHour!!)
                 })
 
+
     }
+
+    /**
+     * 自定义选择时间
+     */
+    private fun initSelectHourView() {
+        val pickerUISettings = mContext?.pickerUISettings()
+        mPickerUI.setOnClickItemPickerUIListener { _, position, valueResult ->
+            currentPosition = position
+            Logger.d("选择了position:$position")
+            val hour = hourArray!![position]
+            selectHour = hour
+            //计算此次花费金额
+            mathMoney(selectHour!!)
+            showToast("选择了:${hour}小时")
+        }
+        bt_edit.onClick {
+            mPickerUI.visibility = View.VISIBLE
+            mPickerUI.setSettings(pickerUISettings)
+            if (currentPosition == -1) {
+                mPickerUI.slide()
+            } else {
+                mPickerUI.slide(currentPosition)
+            }
+        }
+    }
+
 
     override fun onClick(v: View?) {
         v?.let {
             when (it) {
                 bt_time1 ->
-                    selectHour = hourArray!![1]
+                    selectHour = hourArray!![0]
                 bt_time2 ->
-                    selectHour = hourArray!![2]
+                    selectHour = hourArray!![1]
                 bt_time3 ->
-                    selectHour = hourArray!![3]
+                    selectHour = hourArray!![2]
                 bt_time4 ->
-                    selectHour = hourArray!![4]
+                    selectHour = hourArray!![3]
                 bt_time5 ->
-                    selectHour = hourArray!![5]
+                    selectHour = hourArray!![4]
             }
             Logger.d("选择时间:${selectHour}小时")
             changeSelectTimeColor(v)
@@ -407,7 +438,7 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
     /**
      * 修改选择时间按钮颜色
      */
-    private fun changeSelectTimeColor(v: View) {
+    private fun changeSelectTimeColor(v: View?) {
         viewList.forEach {
             if (v == it) {
                 v.background = resources.getDrawable(R.drawable.circle_btn_pressed_bg)

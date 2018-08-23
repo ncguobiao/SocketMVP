@@ -2,6 +2,7 @@ package com.gb.sockt.blutoothcontrol.ui.activity
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
@@ -20,10 +21,12 @@ import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.toast
 import android.os.Build
+import com.dpizarro.uipicker.library.picker.PickerUISettings
 import com.gb.sockt.blutoothcontrol.ui.fragment.SingleFragment
 import java.lang.reflect.AccessibleObject.setAccessible
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.util.*
 
 
 // 在支持路由的页面上添加注解(必选)
@@ -225,18 +228,25 @@ class BluetoothControlActivity : BaseActivity() {
     }
 
     fun hideDeviceIsBusyDialog() {
-        deviceIsBusyDialog?.dismiss()
+        if (deviceIsBusyDialog!=null&&deviceIsBusyDialog!!.isVisible){
+            deviceIsBusyDialog?.dismissAllowingStateLoss()
+        }
         deviceIsBusyDialog = null
+
     }
 
     fun hideBleConnectDialog() {
-        bleConnectDialog?.dismiss()
+        if (bleConnectDialog!=null&&bleConnectDialog!!.isVisible){
+            bleConnectDialog?.dismissAllowingStateLoss()
+        }
         bleConnectDialog = null
     }
 
 
     fun hideFillMomeyDialog() {
-        fillMoneyDialog?.dismiss()
+        if (fillMoneyDialog!=null&&fillMoneyDialog!!.isVisible){
+            fillMoneyDialog?.dismissAllowingStateLoss()
+        }
         fillMoneyDialog = null
     }
 
@@ -248,6 +258,32 @@ class BluetoothControlActivity : BaseActivity() {
 
     }
 
+    /**
+     * pickerUI设置
+     */
+    fun pickerUISettings(): PickerUISettings? {
+        val show_time = resources.getStringArray(R.array.show_time)?.toMutableList()
+        val pickerUISettings = PickerUISettings.Builder().withItems(show_time)
+                .withBackgroundColor(getRandomColor())
+                .withAutoDismiss(true)
+                .withItemsClickables(true)
+                .withUseBlur(false)
+                .build()
+        return pickerUISettings
+    }
+
+    /**
+     * 随机颜色
+     */
+    private fun getRandomColor(): Int {
+        // generate the random integers for r, g and b value
+        val rand = Random()
+        val r = rand.nextInt(255)
+        val g = rand.nextInt(255)
+        val b = rand.nextInt(255)
+        return Color.rgb(r, g, b)
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         invokeFragmentManagerNoteStateNotSaved()
@@ -256,7 +292,7 @@ class BluetoothControlActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (!isFinishing)
-        super.onBackPressed()
+            super.onBackPressed()
     }
 
     private fun invokeFragmentManagerNoteStateNotSaved() {
@@ -283,8 +319,6 @@ class BluetoothControlActivity : BaseActivity() {
 
         } catch (ex: Exception) {
         }
-
-
     }
 
 

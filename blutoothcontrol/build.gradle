@@ -17,7 +17,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+//        //模糊效果
+//        renderscriptTargetApi 19
+//        renderscriptSupportModeEnabled为true
     }
 
     buildTypes {
@@ -40,6 +42,7 @@ dependencies {
     //ARouter
     kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
     implementation project(':provider')
+    implementation project(':PickerUI_library')
 }
 
 apply plugin: 'kotlin-android'

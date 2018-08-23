@@ -14,7 +14,7 @@ object BluetoothConfig {
     val serviceUUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
     val characteristicUUID1 = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
     val characteristicUUID2 = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb")
-    val options = BleConnectOptions.Builder()
+    var options = BleConnectOptions.Builder()
             .setConnectRetry(3)
             .setConnectTimeout(20000)
             .setServiceDiscoverRetry(3)

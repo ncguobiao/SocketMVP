@@ -98,6 +98,7 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
 
     private var isFirstToUse: Boolean = false
 
+    private var currentPosition =-1
 
     private val circleGetElectricRunnable = object : Runnable {
         override fun run() {
@@ -108,15 +109,10 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
         }
     }
 
-//
-//    @Inject
-//    @field:[Named("BluetoothMulitControl")]
-//    lateinit var mBluetoothMulitControl: BlueToothMultiControl
 
     companion object {
         fun newInstance(id: String): CEFragment {
             var args: Bundle = Bundle()
-//            args.putString("todo_id_key", id)
             var editFragment: CEFragment = newInstance()
             editFragment.arguments = args
             return editFragment
@@ -152,7 +148,7 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
     @SuppressLint("ResourceType")
     override fun lazyLoad() {
         //时间数组
-        hourArray = resources.getStringArray(R.array.hour_display)
+        hourArray = resources.getStringArray(R.array.hours)
         Logger.d("mac=${mContext.macAddress}")
 
         //设置macAddress
@@ -163,20 +159,6 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
                 activity_ll_control?.apply {
                     snackbar(activity_ll_control, R.string.connect_success)
                 }
-//                if (ll_time_count_down != null && ll_time_count_down.visibility == View.VISIBLE) {//充电倒计时显示的情况下
-//                    if (ll_time_group != null) {
-//                        ll_time_group.visibility = View.GONE//隐藏时间选择
-//                    }
-//                    if (bt_start != null) {
-//                        bt_start.visibility = View.GONE//隐藏开始充电按钮
-//                    }
-//                } else {
-//                    if (ll_time_group != null) {
-//                        ll_time_group.visibility = View.VISIBLE
-//                    }
-//                    if (bt_start != null) {
-//                        bt_start.visibility = View.VISIBLE
-//                    }
                 if (isSwitchView) {//充电倒计时显示的情况下
                     ll_time_group?.visibility = View.GONE//隐藏时间选择
                     bt_start?.visibility = View.GONE//隐藏开始充电按钮
@@ -489,29 +471,6 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
 
     }
 
-//    private fun addTimeSwitchView(reminTime: Long) {
-//        val totalCacheTime = SpUtils.getInt(BaseApplication.getAppContext(), getUserID() + mContext?.deviceId)
-//        isSwitchView = true
-//        ll_time_group?.visibility = View.GONE
-//        iv_gif?.setImageResource(R.drawable.success)
-//        tv_state?.text = "正在充电中..."
-//        tv_state?.setTextColor(resources.getColor(R.color.tv_color))
-//        bt_start?.visibility = View.GONE
-//        ll_time_count_down?.visibility = View.VISIBLE
-//        tv_time?.text = "本次充电时长${totalCacheTime}小时"
-//
-//        iv_time_count_down?.let {
-//            Glide.with(activity)
-//                    .asGif()
-//                    .load("file:///android_asset/time.gif")
-//                    .into(iv_time_count_down)
-//
-//        }
-//
-//        //显示倒计时
-//        showTimeCountDown(reminTime)
-//
-//    }
 
     /**
      * 显示倒计时
@@ -564,9 +523,7 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
         viewList.add(bt_time5)
         viewList.add(bt_edit)
 
-        bt_edit.onClick {
-            changeSelectTimeColor(v = this.bt_edit)
-        }
+        initSelectHourView()
 
         RxView.clicks(bt_start)
                 .throttleFirst(3, TimeUnit.SECONDS)
@@ -584,19 +541,41 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
 
     }
 
+    private fun initSelectHourView() {
+        val pickerUISettings = mContext?.pickerUISettings()
+        mPickerUI.setOnClickItemPickerUIListener { _, position, valueResult ->
+            currentPosition = position
+            Logger.d("选择了position:$position")
+            val hour = hourArray!![position]
+            selectHour = hour
+            //计算此次花费金额
+            mathMoney(selectHour!!)
+            showToast("选择了:${hour}小时")
+        }
+        bt_edit.onClick {
+            mPickerUI.visibility = View.VISIBLE
+            mPickerUI.setSettings(pickerUISettings)
+            if (currentPosition == -1) {
+                mPickerUI.slide()
+            } else {
+                mPickerUI.slide(currentPosition)
+            }
+        }
+    }
+
     override fun onClick(v: View?) {
         v?.let {
             when (it) {
                 bt_time1 ->
-                    selectHour = hourArray!![1]
+                    selectHour = hourArray!![0]
                 bt_time2 ->
-                    selectHour = hourArray!![2]
+                    selectHour = hourArray!![1]
                 bt_time3 ->
-                    selectHour = hourArray!![3]
+                    selectHour = hourArray!![2]
                 bt_time4 ->
-                    selectHour = hourArray!![4]
+                    selectHour = hourArray!![3]
                 bt_time5 ->
-                    selectHour = hourArray!![5]
+                    selectHour = hourArray!![4]
             }
             Logger.d("选择时间:${selectHour}小时")
             changeSelectTimeColor(v)
