@@ -76,7 +76,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon,android:theme">
+        tools:replace="android:icon">
         <!--杀马特刘海屏-->
         <meta-data
             android:name="android.max_aspect"

@@ -18,7 +18,7 @@ import com.gb.socket.R
 import com.gb.socket.injection.module.MainModule
 import com.gb.socket.mvp.presenter.impl.MainPresenterImpl
 import com.gb.socket.mvp.view.MainView
-import com.gb.sockt.usercenter.injection.component.DaggerMainComponent
+import com.gb.sockt.center.injection.component.DaggerMainComponent
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
@@ -64,7 +64,6 @@ import java.util.*
 @Route(path = RouterPath.Main.PATH_HOME)
 class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationView.OnNavigationItemSelectedListener {
 
-
     private val QRCODE = 18666
     //地图管理
     @Inject
@@ -82,9 +81,6 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
     private var deviceId: String? = null
 
     private val mList = ArrayList<RecordsMergeBean>()
-
-
-    private lateinit var cycleTask: Runnable
 
     private val linearLayoutManager by lazy {
         LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -196,8 +192,14 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.wallet -> toast("钱包")
-            R.id.recharge_records -> toast("钱包")
-            R.id.use_records -> toast("钱包")
+            R.id.recharge_records ->
+                ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+                        .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+                        .navigation()
+            R.id.use_records ->
+                ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+                        .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+                        .navigation()
             R.id.help -> toast("钱包")
             R.id.about_us -> toast("钱包")
             R.id.opinion_feedback -> toast("钱包")
@@ -324,7 +326,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
     private fun redirectTo(deviceType: String) {
         if (deviceType == Constant.DEVICE_SINGLE) {
             ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
-                    .withTransition(com.gb.sockt.usercenter.R.anim.anim_in, com.gb.sockt.usercenter.R.anim.anim_out)
+                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
                     .withString(Constant.DEVICE_NAME, "$deviceName")
                     .withString(Constant.DEVICE_MAC, macAddress)
                     .withString(Constant.DEVICE_TYPE, deviceType)
@@ -333,7 +335,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                     .navigation()
         } else {
             ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
-                    .withTransition(com.gb.sockt.usercenter.R.anim.anim_in, com.gb.sockt.usercenter.R.anim.anim_out)
+                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
                     .withString(Constant.DEVICE_NAME, "$deviceName-$way")
                     .withString(Constant.DEVICE_MAC, macAddress)
                     .withString(Constant.DEVICE_WAY, way)
@@ -471,11 +473,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
 
 
     override fun initData() {
-
-
 //        bugly更新
 //        Beta.checkUpgrade()
-
         rxPermissions = RxPermissions(this)
 
         val mClient = BluetoothClientManager.getClient()
@@ -499,17 +498,6 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
 
         mHandler?.obtainMessage(0)?.sendToTarget()
 
-        //检查位置信息
-//        rxPermissions.request(Manifest.permission.ACCESS_FINE_LOCATION
-//                , Manifest.permission.ACCESS_COARSE_LOCATION)
-//                .subscribe {
-//                    if (it) {
-//                        Logger.e("定位权限获取成功")
-//                    } else {
-//                        Logger.e("定位权限获取失败")
-//                    }
-//                }
-
     }
 
     private fun showUserInfo() {
@@ -521,7 +509,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
         val ivUserPhoto = headerView?.findViewById(R.id.iv_user_photo) as ImageView
         val tvSetting = headerView?.findViewById(R.id.tv_setting) as RelativeLayout
         tvSetting.onClick {
-          toast("设置")
+            toast("设置")
         }
 
         val userName = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_NAME)
@@ -536,7 +524,6 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                     .load(userWeiXinPhoto)
                     .apply(options)
                     .into(iv_user_photo)
-
         } else {
             if (userPhoto.isNotEmpty() && "男" == userPhoto) {
                 ivUserPhoto.setImageResource(R.drawable.man_photo)

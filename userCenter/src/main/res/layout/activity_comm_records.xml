@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_charge"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <RelativeLayout
+            android:id="@+id/iv_back"
+            style="@style/click_style">
+
+            <ImageView style="@style/back_style" />
+        </RelativeLayout>
+
+
+        <TextView
+            style="@style/tv_center_style"
+            android:text="@string/user_record" />
+    </RelativeLayout>
+
+    <View style="@style/line_style" />
+
+    <FrameLayout
+
+        android:id="@+id/comm_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
+</LinearLayout>

@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gb.sockt.center">
+
+    <application>
+        <activity
+            android:name="com.gb.sockt.center.ui.activity.CommRecordsActivity"
+            android:screenOrientation="portrait"></activity>
+    </application>
+
+</manifest>

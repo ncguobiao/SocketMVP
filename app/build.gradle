@@ -56,9 +56,7 @@ dependencies {
     kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
     implementation project(':provider')
     implementation project(':accountCenter')
-    implementation project(':blutoothcontrol')
-
-
-
+    implementation project(':bluetoothcontrol')
+    implementation project(':userCenter')
 }
 

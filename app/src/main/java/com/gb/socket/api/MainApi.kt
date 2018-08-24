@@ -6,7 +6,7 @@ import com.gb.socket.data.domain.BannerReq
 import com.gb.socket.data.domain.DeviceInfoReq
 import com.gb.socket.data.domain.RecordReq
 import com.gb.socket.data.domain.UploadLocationReq
-import com.gb.sockt.usercenter.data.domain.LoginReq
+import com.gb.sockt.accountcenter.data.domain.LoginReq
 import io.reactivex.Observable
 import retrofit2.http.Body
 import retrofit2.http.POST

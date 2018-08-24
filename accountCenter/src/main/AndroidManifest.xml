@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gb.sockt.usercenter">
+    package="com.gb.sockt.center">
     <!-- 微信支付 -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <application

@@ -22,7 +22,7 @@ class RouterPath {
     class UserCenter {
         companion object {
             //登陆页面
-            const val PATH_LOGIN = "/usercenter/login"
+            const val PATH_USER_CENTER = "/User/center"
         }
     }
 
