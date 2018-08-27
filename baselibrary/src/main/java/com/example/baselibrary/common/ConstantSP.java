@@ -48,4 +48,8 @@ public class ConstantSP {
     public static final String LOGIN_TYPE = "login_type";
     public static final String CODE_TYPE = "code_type";
     public static final String CODE_TAG = "code_tag";
+
+    public static final String RECORD_TYPE = "record_type";
+    public static final String RECHARGE_RECORDS = "recharge_records";
+    public static final String USE_RECORDS = "use_records";
 }

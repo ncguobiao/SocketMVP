@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gb.sockt.center">
-    <!-- 微信支付 -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    package="com.gb.socket.accountcenter">
+
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity
-            android:name=".ui.activity.LoginActivity"
+            android:name="com.gb.socket.accountcenter.ui.activity.LoginActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".ui.activity.RegisterActivity" />
-        <activity android:name=".ui.activity.InputPhoneActivity"></activity>
+        <activity android:name="com.gb.socket.accountcenter.ui.activity.RegisterActivity" />
+        <activity android:name="com.gb.socket.accountcenter.ui.activity.InputPhoneActivity"></activity>
 
 
-        <activity android:name=".ui.activity.InputVerificationCodeActivity"/>
+        <activity android:name="com.gb.sockt.accountcenter.com.gb.socket.accountcenter.ui.activity.InputVerificationCodeActivity"/>
 
     </application>
 

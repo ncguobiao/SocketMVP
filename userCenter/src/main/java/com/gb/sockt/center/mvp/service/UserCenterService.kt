@@ -12,4 +12,7 @@ interface UserCenterService {
 
 
     fun getRechargeRecords(userId:String): Observable<BaseResp>
+
+
+    fun deleteUserRecord(appType: String, useDeviceId: String, userId: String): Observable<BaseResp>
 }

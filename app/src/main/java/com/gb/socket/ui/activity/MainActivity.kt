@@ -193,13 +193,10 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
         when (item.itemId) {
             R.id.wallet -> toast("钱包")
             R.id.recharge_records ->
-                ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
-                        .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
-                        .navigation()
+                redirectTo( ConstantSP.RECHARGE_RECORDS)
             R.id.use_records ->
-                ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
-                        .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
-                        .navigation()
+                redirectTo( ConstantSP.USE_RECORDS)
+
             R.id.help -> toast("钱包")
             R.id.about_us -> toast("钱包")
             R.id.opinion_feedback -> toast("钱包")
@@ -266,12 +263,12 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
         mClient?.let {
             if (it.isBluetoothOpened) {
                 //蓝牙开启状态，检查位置信息
-                checkLocationPremissionAndNavigation()
+                checkLocationPermissionAndNavigation()
             } else {
                 //开启蓝牙
                 if (it.openBluetooth()) {
                     //蓝牙开启状态，检查位置信息
-                    checkLocationPremissionAndNavigation()
+                    checkLocationPermissionAndNavigation()
                 } else {
 //                    longSnackbar(bt_scan,"请先到手机设置页面，打开蓝牙" )
                     toast("请先到手机设置页面，打开蓝牙")
@@ -286,7 +283,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
     /**
      * 校验位置信息权限
      */
-    private fun checkLocationPremissionAndNavigation() {
+    private fun checkLocationPermissionAndNavigation() {
         rxPermissions
                 .request(Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -323,27 +320,35 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
     /**
      *  跳转页面
      */
-    private fun redirectTo(deviceType: String) {
-        if (deviceType == Constant.DEVICE_SINGLE) {
-            ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
+    private fun redirectTo(type: String) {
+        when (type) {
+            ConstantSP.RECHARGE_RECORDS -> ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+                    .withString(ConstantSP.RECORD_TYPE, ConstantSP.RECHARGE_RECORDS)
+                    .navigation()
+            ConstantSP.USE_RECORDS -> ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+                    .withString(ConstantSP.RECORD_TYPE, ConstantSP.USE_RECORDS)
+                    .navigation()
+            Constant.DEVICE_SINGLE -> ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
                     .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
                     .withString(Constant.DEVICE_NAME, "$deviceName")
                     .withString(Constant.DEVICE_MAC, macAddress)
-                    .withString(Constant.DEVICE_TYPE, deviceType)
+                    .withString(Constant.DEVICE_TYPE, type)
                     .withString(Constant.DEVICE_RATE, rate)
                     .withString(Constant.DEVICE_ID, deviceId)
                     .navigation()
-        } else {
-            ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
+            else -> ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
                     .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
                     .withString(Constant.DEVICE_NAME, "$deviceName-$way")
                     .withString(Constant.DEVICE_MAC, macAddress)
                     .withString(Constant.DEVICE_WAY, way)
-                    .withString(Constant.DEVICE_TYPE, deviceType)
+                    .withString(Constant.DEVICE_TYPE, type)
                     .withString(Constant.DEVICE_RATE, rate)
                     .withString(Constant.DEVICE_ID, deviceId)
                     .navigation()
         }
+
 
     }
 
@@ -361,7 +366,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
             return true
         }
         if (!result1!!.contains("?")) {
-            if (ckeckMac(result1)) return true
+            if (checkMac(result1)) return true
         } else {
             val str = result1.split("\\?".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
             if (str.size != 2) {
@@ -369,13 +374,13 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                 return true
             }
             result1 = str[1]
-            if (ckeckMac(result1)) return true
+            if (checkMac(result1)) return true
         }
         return false
     }
 
     //检查二维码
-    private fun ckeckMac(result: String): Boolean {
+    private fun checkMac(result: String): Boolean {
         if (result.contains("-")) {
             val strings = result.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             resultLength = strings.size

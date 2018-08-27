@@ -17,7 +17,6 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        //模糊效果
 //        renderscriptTargetApi 19
@@ -47,113 +46,17 @@ dependencies {
     //ARouter
     kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
     implementation project(':provider')
-    implementation project(':PickerUI_library')
-}
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-tasks.withType(Javadoc) {
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.addStringOption('encoding', 'UTF-8')
-}
-//task javadoc(type: Javadoc) {
-//    options.encoding "UTF-8"
-//    options.charSet 'UTF-8'
-//}
-
-def libname = 'bluetoothcontrol'//项目的名字 这个与之后生成的路径无关，单纯是在网站上的显示
-def libdesc = 'This is Android bluttooth controller' //项目的名字 这个与之后生成的路径无关，单纯是在网站上的显示
-version = rootProject.ext.version//版本号，这个我们写在ext中了，没看到的朋友，往前看
-group = rootProject.ext.group//这个就是路径名的group了
-//生成源文件
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-//生成文档
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options.encoding "UTF-8"
-    options.charSet 'UTF-8'
-    options.author true
-    options.version true
-    failOnError false
+    implementation project(':PickerUILibrary')
 }
 
-//文档打包成jar
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+apply plugin: 'maven'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'ncguobiao'
+    groupId = 'com.gb'
+    artifactId = 'bluetoothLibrary'
+    version = '1.0.0'
+    description = 'THis is Android Bluetooth controler'
+    website = "https://github.com/ncguobiao/${rootProject.name}"
 }
-//拷贝javadoc文件
-task copyDoc(type: Copy) {
-    from "${buildDir}/docs/"
-    into "docs"
-}
-
-//上传到jcenter所需要的源码文件
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-// 配置maven库，生成POM.xml文件
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging rootProject.ext.packaging
-                name libname
-                url siteUrl
-                licenses {
-                    license {
-                        name libname
-                        url rootProject.ext.siteUrl
-                    }
-                }
-                developers {
-                    developer {
-                        id rootProject.ext.id
-                        name rootProject.ext.name
-                        email rootProject.ext.email
-                    }
-                }
-                scm {
-                    connection rootProject.ext.gitUrl
-                    developerConnection rootProject.ext.gitUrl
-                    url rootProject.ext.siteUrl
-                }
-            }
-        }
-    }
-}
-
-Properties properties = new Properties()//先要读取local.properties中的name和key
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-bintray {
-    user = properties.getProperty("BINTRAY_USER")    //读取 local.properties 文件里面的 bintray.user
-    key = properties.getProperty("BINTRAY_KEY")   //读取 local.properties 文件里面的 bintray.apikey
-    configurations = ['archives']
-    pkg {
-        repo = "maven"
-        name = libname    //发布到JCenter上的项目名字，必须填写
-        desc = libdesc    //项目描述
-        websiteUrl = rootProject.ext.siteUrl
-        vcsUrl = rootProject.ext.gitUrl
-        licenses = ["Apache-2.0"]
-        publish = true
-    }
-}
-
-
-
-//publish {
-//    userOrg = 'ncguobiao'
-//    groupId = 'com.gb'
-//    artifactId = 'bluetoothLibrary'
-//    version = '1.0.0'
-//    description = 'THis is Android Bluetooth controler'
-//    website = "https://github.com/ncguobiao/${rootProject.name}"
-//}

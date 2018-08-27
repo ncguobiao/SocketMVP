@@ -4,6 +4,7 @@ import com.example.baselibrary.common.BaseResp
 import com.example.baselibrary.compose
 import com.example.baselibrary.data.net.RetrofitFactory
 import com.gb.sockt.center.api.UserCenterApi
+import com.gb.sockt.center.data.domain.DeleteUserRecordReq
 import com.gb.sockt.center.data.domain.ParameterReq
 import com.gb.sockt.center.data.domain.RechargeRecordsReq
 import com.gb.sockt.center.data.domain.UseRecordsReq
@@ -44,5 +45,10 @@ class UseCenterRepository @Inject constructor(){
     fun getRechargeRecords(userId:String): Observable<BaseResp>{
         return RetrofitFactory.instance.create(UserCenterApi::class.java)
                 .getRechargeRecords(RechargeRecordsReq(userId)).compose()
+    }
+
+    fun deleteUserRecord(appType: String, useDeviceId: String, userId: String): Observable<BaseResp>{
+        return RetrofitFactory.instance.create(UserCenterApi::class.java)
+                .deleteUserRecord(DeleteUserRecordReq(appType, useDeviceId, userId)).compose()
     }
 }

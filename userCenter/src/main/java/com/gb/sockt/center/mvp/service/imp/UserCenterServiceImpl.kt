@@ -11,6 +11,7 @@ import javax.inject.Inject
  */
 class UserCenterServiceImpl @Inject constructor() : UserCenterService {
 
+
     @Inject
     lateinit var repository: UseCenterRepository
 
@@ -21,5 +22,9 @@ class UserCenterServiceImpl @Inject constructor() : UserCenterService {
 
     override fun getRechargeRecords(userId: String): Observable<BaseResp> {
         return repository.getRechargeRecords(userId)
+    }
+
+    override fun deleteUserRecord(appType: String, useDeviceId: String, userId: String): Observable<BaseResp> {
+        return repository.deleteUserRecord(appType, useDeviceId, userId)
     }
 }

@@ -23,7 +23,6 @@ import org.jetbrains.anko.toast
 import android.os.Build
 import com.dpizarro.uipicker.library.picker.PickerUISettings
 import com.gb.sockt.blutoothcontrol.ui.fragment.SingleFragment
-import java.lang.reflect.AccessibleObject.setAccessible
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.*
@@ -261,14 +260,13 @@ class BluetoothControlActivity : BaseActivity() {
      * pickerUI设置
      */
     fun pickerUISettings(): PickerUISettings? {
-        val show_time = resources.getStringArray(R.array.show_time)?.toMutableList()
-        val pickerUISettings = PickerUISettings.Builder().withItems(show_time)
+        val showTime = resources.getStringArray(R.array.show_time)?.toMutableList()
+        return PickerUISettings.Builder().withItems(showTime)
                 .withBackgroundColor(getRandomColor())
                 .withAutoDismiss(true)
                 .withItemsClickables(true)
                 .withUseBlur(false)
                 .build()
-        return pickerUISettings
     }
 
     /**

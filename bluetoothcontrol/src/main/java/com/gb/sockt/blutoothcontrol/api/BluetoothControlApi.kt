@@ -2,7 +2,6 @@ package com.gb.sockt.blutoothcontrol.api
 
 import com.example.baselibrary.api.UriConstant
 import com.example.baselibrary.common.BaseResp
-import com.example.baselibrary.common.Constant
 import com.gb.sockt.blutoothcontrol.data.domain.RequestCantUseReq
 import io.reactivex.Observable
 import retrofit2.http.Body

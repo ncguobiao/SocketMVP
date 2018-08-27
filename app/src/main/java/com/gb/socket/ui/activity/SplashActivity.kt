@@ -12,7 +12,7 @@ import com.gb.socket.R
 import com.tbruyelle.rxpermissions2.RxPermissions
 import java.util.*
 import com.example.baselibrary.utils.BluetoothClientManager
-import com.gb.sockt.accountcenter.ui.activity.LoginActivity
+import com.gb.socket.accountcenter.ui.activity.LoginActivity
 import com.orhanobut.logger.Logger
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
