@@ -25,7 +25,7 @@ import java.util.*
 /**
  * Created by guobiao on 2018/8/9.
  */
-open class BlueToothSingeControlImpl constructor(deviceTag: String, val context: Context?) : BlueToothSingeControl {
+open class BlueToothSingeControlImpl constructor( val context: Context?) : BlueToothSingeControl {
 
 
     private var mcontext: WeakReference<Context>? = null
@@ -33,7 +33,6 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
     private var mClient: BluetoothClient? = null
 
     private var mBleConnectListener: BleConnectListener? = null
-    private var EQUIP_TYPE: Byte = 0
     private lateinit var msg: String
     private var macAddress: String? = null
     private var mBleDataChangeListener: BaseBLEDataListener? = null
@@ -41,9 +40,6 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
     private var mConnectStatusListener: BleConnectStatusListener
     private var filter: IntentFilter? = null
     private lateinit var macBytes: ByteArray
-
-
-
 
     override fun setMAC(mac: String?, bleConnectListener: BleConnectListener?): BlueToothSingeControlImpl {
         this.macAddress = mac
@@ -64,13 +60,13 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
     }
 
     init {
-        when (deviceTag) {
-            Constant.DEVICE_CE ->
-                EQUIP_TYPE = Integer.parseInt("D1", 16).toByte()
-            Constant.DEVICE_CD ->
-                EQUIP_TYPE = Integer.parseInt("B1", 16).toByte()
-            else -> Logger.d("单路设备")
-        }
+//        when (deviceTag) {
+//            Constant.DEVICE_CE ->
+//                EQUIP_TYPE = Integer.parseInt("D1", 16).toByte()
+//            Constant.DEVICE_CD ->
+//                EQUIP_TYPE = Integer.parseInt("B1", 16).toByte()
+//            else -> Logger.d("单路设备")
+//        }
 
         //获取蓝牙对象
         mClient = BluetoothClientManager.getClient()
@@ -143,8 +139,6 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
         msg = "获取电压"
         write(value)
     }
-
-
 
 
     override fun openDevice(keys: ByteArray) {
@@ -274,20 +268,20 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
         this.mBleConnectListener = bleConnectListener
     }
 
-    //校验密码
-    override fun sendAndCheckSeed(keys: ByteArray) {
-        val b0 = Integer.parseInt("27", 16).toByte()
-        val b1 = Integer.parseInt("02", 16).toByte()
-        val b3 = Integer.parseInt("04", 16).toByte()
-        val b4 = keys[0]
-        val b5 = keys[1]
-        val b6 = keys[2]
-        val b7 = keys[3]
-        val b8 = BleUtils.getCheckCode(byteArrayOf(b0, b1, EQUIP_TYPE, b3, b4, b5, b6, b7))
-        val value = byteArrayOf(b0, b1, EQUIP_TYPE, b3, b4, b5, b6, b7, b8)
-        msg = "发送加密种子"
-        write(value)
-    }
+//    //校验密码
+//    override fun sendAndCheckSeed(keys: ByteArray) {
+//        val b0 = Integer.parseInt("27", 16).toByte()
+//        val b1 = Integer.parseInt("02", 16).toByte()
+//        val b3 = Integer.parseInt("04", 16).toByte()
+//        val b4 = keys[0]
+//        val b5 = keys[1]
+//        val b6 = keys[2]
+//        val b7 = keys[3]
+//        val b8 = BleUtils.getCheckCode(byteArrayOf(b0, b1, EQUIP_TYPE, b3, b4, b5, b6, b7))
+//        val value = byteArrayOf(b0, b1, EQUIP_TYPE, b3, b4, b5, b6, b7, b8)
+//        msg = "发送加密种子"
+//        write(value)
+//    }
 
     /**
      * 请求种子
@@ -302,7 +296,6 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
         val b5 = macBytes[4]
         val b6 = macBytes[5]
         val b7 = Integer.parseInt("C1", 16).toByte()
-
         val b8 = Integer.parseInt("27", 16).toByte()
         val b9 = Integer.parseInt("01", 16).toByte()
         val b10 = time.toByte()
@@ -316,7 +309,7 @@ open class BlueToothSingeControlImpl constructor(deviceTag: String, val context:
     /**
      * 连接设备
      */
-    fun connectDevice() {
+    private fun connectDevice() {
         mClient?.let {
             mClient!!.connect(getMAC(), BluetoothConfig.options) { code, data ->
                 when (code) {

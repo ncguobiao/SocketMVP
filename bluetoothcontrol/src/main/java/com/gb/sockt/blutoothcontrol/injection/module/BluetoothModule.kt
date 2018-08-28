@@ -35,8 +35,8 @@ class BluetoothModule constructor(private val deviceTag: String, val activity: A
 
     @Named("BlueToothSingeControl")
     @Provides
-    fun providelueToothSingeControl(): BlueToothSingeControl {
-        return BlueToothSingeControlImpl(deviceTag, activity)
+    fun provideBlueToothSingeControl(): BlueToothSingeControl {
+        return BlueToothSingeControlImpl(activity)
     }
 
     @Provides

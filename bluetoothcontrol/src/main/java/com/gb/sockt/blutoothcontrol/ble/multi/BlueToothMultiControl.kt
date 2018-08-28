@@ -14,6 +14,9 @@ interface BlueToothMultiControl : BaseBLEControl {
 
     fun getBLEDeviceInfo(deviceWay:String?)
 
+    //发送加密种子
+    fun sendAndCheckSeed(keys: ByteArray)
+
     /**
      * 请求种子
      */

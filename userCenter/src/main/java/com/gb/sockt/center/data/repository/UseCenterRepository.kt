@@ -4,10 +4,7 @@ import com.example.baselibrary.common.BaseResp
 import com.example.baselibrary.compose
 import com.example.baselibrary.data.net.RetrofitFactory
 import com.gb.sockt.center.api.UserCenterApi
-import com.gb.sockt.center.data.domain.DeleteUserRecordReq
-import com.gb.sockt.center.data.domain.ParameterReq
-import com.gb.sockt.center.data.domain.RechargeRecordsReq
-import com.gb.sockt.center.data.domain.UseRecordsReq
+import com.gb.sockt.center.data.domain.*
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -50,5 +47,10 @@ class UseCenterRepository @Inject constructor(){
     fun deleteUserRecord(appType: String, useDeviceId: String, userId: String): Observable<BaseResp>{
         return RetrofitFactory.instance.create(UserCenterApi::class.java)
                 .deleteUserRecord(DeleteUserRecordReq(appType, useDeviceId, userId)).compose()
+    }
+
+     fun deletePayMent(appType: String, paymentId: String, userId: String): Observable<BaseResp>{
+        return RetrofitFactory.instance.create(UserCenterApi::class.java)
+                .deletePayMent(DeleteRechargeRecordReq(appType, paymentId, userId)).compose()
     }
 }

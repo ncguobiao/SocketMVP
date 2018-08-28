@@ -31,10 +31,7 @@ import kotlinx.android.synthetic.main.fragment_use_records.*
  * Created by guobiao on 2018/8/23.
  */
 class UseRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView {
-    override fun deleteRechargeRecordOnSuccess() {
 
-
-    }
 
 
     private var isRefresh = false
@@ -97,6 +94,13 @@ class UseRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView 
 
     override fun onDataIsNull() {
         showToast("获取数据失败")
+    }
+
+    override fun deleteRechargeRecordOnSuccess() {}
+
+    override fun deleteUseRecordOnSuccess() {
+        mList?.removeAt(adapterPosition)
+        mAdapter?.notifyItemRemoved(adapterPosition)
     }
 
     override fun showRechargeRecords(dataList: List<RechargeRecordsBean>) {
@@ -196,9 +200,8 @@ class UseRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView 
 
             if (direction == SwipeMenuRecyclerView.RIGHT_DIRECTION) {
                 //                mRecyclerView.setItemViewSwipeEnabled(true);
-//
-//                val deviceid = mDataList[adapterPosition].id
-//                mPresenter.deleteUserRecord("CDZ", deviceid, getUserID())
+                val deviceId = mList[adapterPosition].id
+                mPresenter.deleteUserRecord("CDZ", deviceId, getUserID())
 
                 //                ToastUtil.showSingleToast("list第" + adapterPosition + "; 右侧菜单第" + menuPosition);
             } else if (direction == SwipeMenuRecyclerView.LEFT_DIRECTION) {

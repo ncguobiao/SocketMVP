@@ -132,7 +132,7 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
     override fun injectComponent() {
         DaggerBluetoothComponent.builder()
                 .activityComponent(mActivityComponent)
-                .bluetoothModule(BluetoothModule(Constant.DEVICE_CE, activity))
+                .bluetoothModule(BluetoothModule(Constant.DEVICE_SINGLE, activity))
                 .build()
                 .inject(this)
 
@@ -470,8 +470,9 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
 
     override fun onDestroy() {
         super.onDestroy()
+        mHandler?.removeCallbacksAndMessages(null)
         mBlueToothSingeControlImpl.unregisterBroadcastReceiver()
         mBlueToothSingeControlImpl.close()
-        mHandler?.removeCallbacksAndMessages(null)
+
     }
 }

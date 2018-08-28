@@ -1,9 +1,11 @@
 package com.gb.sockt.center.mvp.service.imp
 
 import com.example.baselibrary.common.BaseResp
+import com.gb.sockt.center.data.domain.DeleteUserRecordReq
 import com.gb.sockt.center.data.repository.UseCenterRepository
 import com.gb.sockt.center.mvp.service.UserCenterService
 import io.reactivex.Observable
+import retrofit2.http.Body
 import javax.inject.Inject
 
 /**
@@ -26,5 +28,9 @@ class UserCenterServiceImpl @Inject constructor() : UserCenterService {
 
     override fun deleteUserRecord(appType: String, useDeviceId: String, userId: String): Observable<BaseResp> {
         return repository.deleteUserRecord(appType, useDeviceId, userId)
+    }
+
+    override fun deletePayMent(appType: String, paymentId: String, userId: String): Observable<BaseResp>{
+        return repository.deletePayMent(appType, paymentId, userId)
     }
 }

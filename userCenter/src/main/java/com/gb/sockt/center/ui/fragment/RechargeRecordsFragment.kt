@@ -7,6 +7,7 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.ViewGroup
 import com.example.baselibrary.base.BaseMvpFragment
+import com.example.baselibrary.data.net.execption.ErrorStatus
 import com.example.baselibrary.showToast
 import com.gb.sockt.center.R
 import com.gb.sockt.center.data.domain.RechargeRecordsBean
@@ -29,14 +30,6 @@ import kotlinx.android.synthetic.main.fragment_use_records.*
  * Created by guobiao on 2018/8/23.
  */
 class RechargeRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView {
-
-    override fun showUseRecords(dataBean: UseRecordBean) {
-
-
-    }
-
-    override fun showError(msg: String, errorCode: Int) {
-    }
 
     private var mTitle: String? = null
     private var deviceName: String? = null
@@ -89,6 +82,19 @@ class RechargeRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), Records
         mLayoutStatusView?.showContent()
         mRefreshLayout.finishRefresh()
     }
+
+    override fun deleteUseRecordOnSuccess() {}
+
+    override fun showUseRecords(dataBean: UseRecordBean) {}
+
+    override fun showError(msg: String, errorCode: Int) {
+        if (errorCode == ErrorStatus.NETWORK_ERROR) {
+            mLayoutStatusView?.showNoNetwork()
+        } else {
+            mLayoutStatusView?.showError()
+        }
+    }
+
 
     override fun deleteRechargeRecordOnSuccess() {
         mDataList?.removeAt(adapterPosition)
@@ -183,7 +189,7 @@ class RechargeRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), Records
                 //                mRecyclerView.setItemViewSwipeEnabled(true);
 
                 val deviceid = mDataList[adapterPosition].id
-                mPresenter.deleteUserRecord("CDZ", deviceid, getUserID())
+                mPresenter.deletePayMent("CDZ", deviceid, getUserID())
 
                 //                ToastUtil.showSingleToast("list第" + adapterPosition + "; 右侧菜单第" + menuPosition);
             } else if (direction == SwipeMenuRecyclerView.LEFT_DIRECTION) {

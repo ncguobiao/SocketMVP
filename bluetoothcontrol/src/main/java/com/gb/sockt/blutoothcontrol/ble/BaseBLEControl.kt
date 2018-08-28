@@ -17,9 +17,6 @@ interface BaseBLEControl {
      */
     fun setMAC(mac: String?, bleConnectListener: BleConnectListener?): BaseBLEControl
 
-    //发送加密种子
-    fun sendAndCheckSeed(keys: ByteArray)
-
 
 
     fun connect()

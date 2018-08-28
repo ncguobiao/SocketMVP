@@ -12,5 +12,8 @@ interface RecordsPresenter{
 
     fun deleteUserRecord(appType: String, useDeviceId: String, userId: String)
 
+
+    fun deletePayMent(appType: String, paymentId: String, userId: String)
+
     fun loadMoreData()
 }

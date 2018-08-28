@@ -2,6 +2,7 @@ package com.gb.sockt.center.api
 
 import com.example.baselibrary.api.UriConstant
 import com.example.baselibrary.common.BaseResp
+import com.gb.sockt.center.data.domain.DeleteRechargeRecordReq
 import com.gb.sockt.center.data.domain.DeleteUserRecordReq
 import com.gb.sockt.center.data.domain.RechargeRecordsReq
 import com.gb.sockt.center.data.domain.UseRecordsReq
@@ -34,5 +35,12 @@ interface UserCenterApi {
 //   @POST("DeviceService/DerviceReturn/deleteUseDevice")
     @POST(UriConstant.TEST_USER_DEVICE_URL+"DeviceService/DerviceReturn/deleteUseDevice")
     fun deleteUserRecord(@Body req: DeleteUserRecordReq): Observable<BaseResp>
+
+    /**
+     * 删除充值记录
+     */
+//    @POST("UserService/PayHistory/deletePayment")
+    @POST(UriConstant.TEST_USER_URL+"UserService/PayHistory/deletePayment")
+    fun deletePayMent(@Body req: DeleteRechargeRecordReq): Observable<BaseResp>
 
 }

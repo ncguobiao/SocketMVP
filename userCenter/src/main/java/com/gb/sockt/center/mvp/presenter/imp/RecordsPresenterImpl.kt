@@ -12,6 +12,7 @@ import com.gb.sockt.center.data.domain.UseRecordBean
 import com.gb.sockt.center.mvp.presenter.RecordsPresenter
 import com.gb.sockt.center.mvp.service.UserCenterService
 import com.gb.sockt.center.mvp.view.RecordsView
+import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
@@ -76,7 +77,25 @@ class RecordsPresenterImpl @Inject constructor() : RecordsPresenter, BasePresent
 
     override fun deleteUserRecord(appType: String, useDeviceId: String, userId: String) {
         if (!preparReq(getView(), this)) return
-        service.getRechargeRecords(userId)
+        service.deleteUserRecord(appType, useDeviceId, userId)
+                .compose(lifecycleProvider.bindToLifecycle())
+                .compose()
+                .subscribe(object :BaseSubscriber<BaseResp>(getView()!!){
+                    override fun onNext(t: BaseResp) {
+                        if ("0000"==t.returnCode){
+                            getView()?.deleteUseRecordOnSuccess()
+                        }else{
+                            getView()?.onError("删除失败，原因${t.returnCode}")
+                        }
+
+                    }
+                })
+
+    }
+
+    override fun deletePayMent(appType: String, paymentId: String, userId: String){
+        if (!preparReq(getView(), this)) return
+        service.deletePayMent(appType, paymentId, userId)
                 .compose(lifecycleProvider.bindToLifecycle())
                 .compose()
                 .subscribe(object :BaseSubscriber<BaseResp>(getView()!!){
@@ -89,7 +108,6 @@ class RecordsPresenterImpl @Inject constructor() : RecordsPresenter, BasePresent
 
                     }
                 })
-
     }
 
     override fun loadMoreData() {

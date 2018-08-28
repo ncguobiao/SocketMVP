@@ -30,16 +30,14 @@ import java.util.*
 /**
  * Created by guobiao on 2018/8/9.
  */
- interface  BlueToothSingeControl  : BaseBLEControl {
-
-
+interface BlueToothSingeControl : BaseBLEControl {
 
 
     fun readVoltage()
 
     fun openDevice(keys: ByteArray)
 
-   fun requestSeed(time:String)
+    fun requestSeed(time: String)
 }
 
 

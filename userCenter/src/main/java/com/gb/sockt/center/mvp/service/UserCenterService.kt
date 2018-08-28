@@ -15,4 +15,6 @@ interface UserCenterService {
 
 
     fun deleteUserRecord(appType: String, useDeviceId: String, userId: String): Observable<BaseResp>
+
+     fun deletePayMent(appType: String, paymentId: String, userId: String): Observable<BaseResp>
 }

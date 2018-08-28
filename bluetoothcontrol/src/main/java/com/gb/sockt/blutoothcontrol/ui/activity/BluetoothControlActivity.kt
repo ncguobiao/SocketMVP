@@ -132,14 +132,14 @@ class BluetoothControlActivity : BaseActivity() {
             if (it.isBluetoothOpened) {
                 //蓝牙开启状态，检查位置信息
                 Logger.e("蓝牙开启")
-                checkLocationPremissionAndNavigation()
+                checkLocationPermissionAndNavigation()
 
             } else {
                 Logger.e("蓝牙开启未开启")
                 //开启蓝牙
                 if (it.openBluetooth()) {
                     //蓝牙开启状态，检查位置信息
-                    checkLocationPremissionAndNavigation()
+                    checkLocationPermissionAndNavigation()
                 } else {
 //                    longSnackbar(bt_scan,"请先到手机设置页面，打开蓝牙" )
                     toast("请先到手机设置页面，打开蓝牙")
@@ -153,7 +153,7 @@ class BluetoothControlActivity : BaseActivity() {
     /**
      * 校验位置信息权限
      */
-    private fun checkLocationPremissionAndNavigation() {
+    private fun checkLocationPermissionAndNavigation() {
         RxPermissions(this)
                 .request(Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION

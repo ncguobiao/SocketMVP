@@ -15,4 +15,6 @@ interface RecordsView :IBaseView {
     fun showUseRecords(dataBean: UseRecordBean)
 
     fun deleteRechargeRecordOnSuccess()
+
+    fun deleteUseRecordOnSuccess()
 }
