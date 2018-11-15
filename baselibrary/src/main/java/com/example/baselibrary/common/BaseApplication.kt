@@ -37,7 +37,7 @@ open class BaseApplication : MultiDexApplication() {
             val myApplication = context.applicationContext as BaseApplication
             return myApplication.refWatcher
         }
-        fun getAppContext() :Context{
+        fun getApplication() :Context{
             return mContext
         }
     }

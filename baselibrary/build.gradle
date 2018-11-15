@@ -81,6 +81,7 @@ dependencies {
 
     //Logger
     api 'com.orhanobut:logger:2.2.0'
+    //eventbus
     api 'de.greenrobot:eventbus:3.0.0-beta1'
     //多视图
     api project(':multiple-status-view')
@@ -206,4 +207,8 @@ dependencies {
     api 'cn.jiguang.sdk:jcore:1.2.3'  // 此处以JCore 1.1.9 版本为例。
 
     api 'com.mylhyl:circleDialog:2.4.2'
+
+    api project(':PickerUILibrary')
+
+    api('com.paypal.sdk:paypal-android-sdk:2.16.0')
 }

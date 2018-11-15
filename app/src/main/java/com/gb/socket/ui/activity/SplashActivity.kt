@@ -42,11 +42,11 @@ class SplashActivity : BaseActivity() {
         val calendar = Calendar.getInstance()
         val currentDate = calendar.get(Calendar.DAY_OF_MONTH)
         Log.d("test", currentDate.toString() + "")
-        val date = SpUtils.getInt(App.getAppContext(), ConstantSP.CURRENT_DATE)
+        val date = SpUtils.getInt(App.getApplication(), ConstantSP.CURRENT_DATE)
         if (date != currentDate) {
-            SpUtils.put(App.getAppContext(), ConstantSP.CURRENT_DATE, currentDate)
-            SpUtils.put(App.getAppContext(), ConstantSP.MSG_COUNT, 5)
-            SpUtils.put(App.getAppContext(), ConstantSP.VOICE_MSG_COUNT, 2)
+            SpUtils.put(App.getApplication(), ConstantSP.CURRENT_DATE, currentDate)
+            SpUtils.put(App.getApplication(), ConstantSP.MSG_COUNT, 5)
+            SpUtils.put(App.getApplication(), ConstantSP.VOICE_MSG_COUNT, 2)
         }
     }
 
@@ -116,7 +116,7 @@ class SplashActivity : BaseActivity() {
         if (!bluetoothOpened) {
             val b = BluetoothClientManager.getClient().openBluetooth()
         }
-        val isLogin = SpUtils.getBoolean(App.getAppContext(), ConstantSP.IS_LOGIN)
+        val isLogin = SpUtils.getBoolean(App.getApplication(), ConstantSP.IS_LOGIN)
         if (isLogin) {
             startActivity<MainActivity>()
             finish()

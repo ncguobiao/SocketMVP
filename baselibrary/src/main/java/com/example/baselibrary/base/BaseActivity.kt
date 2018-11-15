@@ -16,7 +16,6 @@ import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.utils.AppUtils
 import com.example.baselibrary.utils.databus.RxBus
 import com.mylhyl.circledialog.CircleDialog
-import com.mylhyl.circledialog.CircleParams
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -61,7 +60,7 @@ open class BaseActivity : RxAppCompatActivity() {
      * 去开启设置页面
      */
     protected fun requestPremissionSetting(msg: String) {
-        alert("未获取${msg}权限，请到\"系统权限\"-\"应用管理中\"开启${msg}权限，方可正常使用", BaseApplication.getAppContext().getString(R.string.app_name)) {
+        alert("未获取${msg}权限，请到\"系统权限\"-\"应用管理中\"开启${msg}权限，方可正常使用", BaseApplication.getApplication().getString(R.string.app_name)) {
             yesButton {
                 startActivity(Intent(Settings.ACTION_SETTINGS))
             }
@@ -73,7 +72,7 @@ open class BaseActivity : RxAppCompatActivity() {
      * 打开蓝牙设置
      */
     protected fun requestOpenBluetooth() {
-        alert("蓝牙未打开，请开启蓝牙，方可正常使用", BaseApplication.getAppContext().getString(R.string.app_name)) {
+        alert("蓝牙未打开，请开启蓝牙，方可正常使用", BaseApplication.getApplication().getString(R.string.app_name)) {
             yesButton {
                 startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
             }

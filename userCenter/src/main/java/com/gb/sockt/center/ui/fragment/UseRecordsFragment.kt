@@ -16,13 +16,13 @@ import com.gb.sockt.center.injection.module.UserCenterModule
 import com.gb.sockt.center.mvp.presenter.imp.RecordsPresenterImpl
 import com.gb.sockt.center.mvp.view.RecordsView
 import com.gb.sockt.center.ui.activity.CommRecordsActivity
-import com.gb.sockt.center.ui.adapter.RechargeRecordsAdapter
 import com.gb.sockt.center.ui.adapter.UseRecordsAdapter
 import com.orhanobut.logger.Logger
 import com.scwang.smartrefresh.header.MaterialHeader
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
 import kotlinx.android.synthetic.main.fragment_use_records.*
@@ -31,7 +31,6 @@ import kotlinx.android.synthetic.main.fragment_use_records.*
  * Created by guobiao on 2018/8/23.
  */
 class UseRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView {
-
 
 
     private var isRefresh = false
@@ -52,12 +51,14 @@ class UseRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView 
     }
 
     companion object {
-        fun newInstance(id: String): UseRecordsFragment {
+        fun getInstance(): UseRecordsFragment {
             var args: Bundle = Bundle()
             var editFragment: UseRecordsFragment = newInstance()
             editFragment.arguments = args
             return editFragment
         }
+
+
 
         fun newInstance(): UseRecordsFragment {
             return UseRecordsFragment()
@@ -156,12 +157,12 @@ class UseRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), RecordsView 
             mAdapter.clearData()
             getRecords(curPage)
         }
-
-        if (activity is CommRecordsActivity){
-            // 设置监听器。
-            mRecyclerView.setSwipeMenuCreator((activity as CommRecordsActivity).swipeMenuCreator)
-        }
-
+//
+//        if (activity is CommRecordsActivity){
+//            // 设置监听器。
+//            mRecyclerView.setSwipeMenuCreator((activity as CommRecordsActivity).swipeMenuCreator)
+//        }
+        mRecyclerView.setSwipeMenuCreator(swipeMenuCreator)
         mRecyclerView.setSwipeMenuItemClickListener(mMenuItemClickListener)
         mRecyclerView?.adapter = mAdapter
 

@@ -22,7 +22,7 @@ fun Fragment.showToast(content: String): Toast {
 
 
 fun Context.showToast(content: String): Toast {
-    val toast = Toast.makeText(BaseApplication.getAppContext(), content, Toast.LENGTH_SHORT)
+    val toast = Toast.makeText(BaseApplication.getApplication(), content, Toast.LENGTH_SHORT)
     toast.show()
     return toast
 }
@@ -36,7 +36,7 @@ fun <T> Observable<T>.compose(): Observable<T> {
 }
 
 fun getColor(colorId: Int): Int {
-    return BaseApplication.getAppContext().resources.getColor(colorId)
+    return BaseApplication.getApplication().resources.getColor(colorId)
 }
 
 inline val Fragment.act: Activity?

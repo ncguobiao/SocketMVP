@@ -83,7 +83,7 @@ class LoginActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView
             if (res.containsKey("headimgurl")) {
                 val headimgurl = res.get("headimgurl") as String
                 Logger.i("headimgurl： $headimgurl")
-                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_WEIXIN_PHOTO, headimgurl)
+                SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_WEIXIN_PHOTO, headimgurl)
             }
             if (res.containsKey("sex")) {
                 val sex = res["sex"] as Int

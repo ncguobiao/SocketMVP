@@ -62,4 +62,5 @@ subprojects {
         }
     }
 
+    tasks.getByPath(":bluetoothControl:releaseAndroidJavadocs").enabled = false
 }

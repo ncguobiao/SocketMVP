@@ -92,7 +92,7 @@ class InputPhoneActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView, Pla
             if (res.containsKey("headimgurl")) {
                 val headimgurl = res.get("headimgurl") as String
                 Logger.e("headimgurl： $headimgurl")
-                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_WEIXIN_PHOTO, headimgurl)
+                SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_WEIXIN_PHOTO, headimgurl)
             }
             if (res.containsKey("sex")) {
                 val sex = res["sex"] as Int
@@ -179,7 +179,7 @@ class InputPhoneActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView, Pla
 
     override fun initData() {
         codeType = intent.extras.getString(ConstantSP.CODE_TYPE)
-        appContext = BaseApplication.getAppContext()
+        appContext = BaseApplication.getApplication()
         //注册销毁activity事件
         EventBus.getDefault().register(this)
 
@@ -349,7 +349,7 @@ class InputPhoneActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView, Pla
         val ok = v.findViewById(R.id.ok) as TextView
         val spanableInfo = SpannableString(
                 "我们将要发送验证码到这个手机号:")
-        val foregroundColorSpan = ForegroundColorSpan(BaseApplication.getAppContext().resources.getColor(R.color.blue))
+        val foregroundColorSpan = ForegroundColorSpan(BaseApplication.getApplication().resources.getColor(R.color.blue))
         spanableInfo.setSpan(foregroundColorSpan, 6, 9, Spannable.SPAN_INCLUSIVE_INCLUSIVE
         )
         (v.findViewById<View>(R.id.tv_dialog_message) as TextView).text = spanableInfo
@@ -367,7 +367,7 @@ class InputPhoneActivity : BaseMvpActivity<LoginPresenterImpl>(), LoginView, Pla
             if (!isFinishing) {
                 connectDialog.dismiss()
             }
-            val msgCount = SpUtils.getInt(BaseApplication.getAppContext(), ConstantSP.MSG_COUNT)
+            val msgCount = SpUtils.getInt(BaseApplication.getApplication(), ConstantSP.MSG_COUNT)
             if (msgCount <= 0) {
                 toast(R.string.notify_msg_count)
                 return@setOnClickListener

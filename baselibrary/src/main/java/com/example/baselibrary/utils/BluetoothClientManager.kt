@@ -16,7 +16,7 @@ class BluetoothClientManager {
             if (mClient == null) {
                 synchronized(BluetoothClientManager::class.java) {
                     if (mClient == null) {
-                        mClient = BluetoothClient(BaseApplication.getAppContext())
+                        mClient = BluetoothClient(BaseApplication.getApplication())
                     }
                 }
             }

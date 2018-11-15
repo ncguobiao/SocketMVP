@@ -1,5 +1,7 @@
 package com.example.baselibrary.common;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created by dongdong on 2016/5/19.
  */
@@ -52,4 +54,7 @@ public class ConstantSP {
     public static final String RECORD_TYPE = "record_type";
     public static final String RECHARGE_RECORDS = "recharge_records";
     public static final String USE_RECORDS = "use_records";
+
+
+    public static final String WALLET="wallet";
 }

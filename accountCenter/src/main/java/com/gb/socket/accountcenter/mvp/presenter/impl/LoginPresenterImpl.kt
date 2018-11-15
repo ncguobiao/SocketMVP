@@ -36,12 +36,12 @@ open class LoginPresenterImpl @Inject constructor() : LoginPresenter, BasePresen
 //                            val data = Gson().fromJson<LoginBean>(jsonReader, LoginBean::class.java)
                             if (data != null) {
                                 //保存用户数据
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_ID, data.id)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.MOBILE, data.mobile)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.AUTH_TOKEN, data.authToken)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.IS_LOGIN, true)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_NAME, data.userName)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.LOGIN_TYPE, ConstantSP.USER_LOGIN_FOR_PWD)//普通登录
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_ID, data.id)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.MOBILE, data.mobile)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.AUTH_TOKEN, data.authToken)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.IS_LOGIN, true)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_NAME, data.userName)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.LOGIN_TYPE, ConstantSP.USER_LOGIN_FOR_PWD)//普通登录
                                 getView()?.loginSuccess()
                                 Logger.e("账号密码登陆")
                             } else {
@@ -75,12 +75,12 @@ open class LoginPresenterImpl @Inject constructor() : LoginPresenter, BasePresen
 //                            jsonReader.isLenient = true
 //                            val data = Gson().fromJson<LoginBean>(jsonReader, LoginBean::class.java)
                             if (data != null) {
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_ID, data.id)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.MOBILE, data.mobile)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.AUTH_TOKEN, data.authToken)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.IS_LOGIN, true)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_NAME, data.userName)
-                                SpUtils.put(BaseApplication.getAppContext(), ConstantSP.LOGIN_TYPE, ConstantSP.USER_LOGIN_FOR_WEIXIN)//微信登陆
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_ID, data.id)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.MOBILE, data.mobile)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.AUTH_TOKEN, data.authToken)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.IS_LOGIN, true)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_NAME, data.userName)
+                                SpUtils.put(BaseApplication.getApplication(), ConstantSP.LOGIN_TYPE, ConstantSP.USER_LOGIN_FOR_WEIXIN)//微信登陆
                                 getView()?.loginSuccess()
                                 Logger.e("微信登陆成功")
                             } else {

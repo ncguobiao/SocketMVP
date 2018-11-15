@@ -226,7 +226,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
         }
 
         val spanableInfo = SpannableString("我们将要发送验证码到这个手机号:")
-        foregroundColorSpan = ForegroundColorSpan(BaseApplication.getAppContext().resources.getColor(R.color.BLUE))
+        foregroundColorSpan = ForegroundColorSpan(BaseApplication.getApplication().resources.getColor(R.color.BLUE))
         spanableInfo.setSpan(foregroundColorSpan, 6, 9, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         tv_content.text = spanableInfo
         mobile?.let {
@@ -307,7 +307,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(Function<Any, ObservableSource<Boolean>> {
-                    val voiceMsgCount: Int = SpUtils.getInt(BaseApplication.getAppContext(), ConstantSP.VOICE_MSG_COUNT)
+                    val voiceMsgCount: Int = SpUtils.getInt(BaseApplication.getApplication(), ConstantSP.VOICE_MSG_COUNT)
                     if (voiceMsgCount <= 0) {
                         toast(R.string.notify_msg_count)
                         return@Function Observable.empty()
@@ -329,9 +329,9 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                         ConstantSP.USER_LOGIN_FOR_FASTLOGIN -> getCode(mobile, "B", false)
                     }
                     showVoiceDialog()
-                    var voiceMsgCount: Int = SpUtils.getInt(BaseApplication.getAppContext(), ConstantSP.VOICE_MSG_COUNT)
+                    var voiceMsgCount: Int = SpUtils.getInt(BaseApplication.getApplication(), ConstantSP.VOICE_MSG_COUNT)
                     voiceMsgCount--
-                    SpUtils.put(BaseApplication.getAppContext(), ConstantSP.VOICE_MSG_COUNT, voiceMsgCount)
+                    SpUtils.put(BaseApplication.getApplication(), ConstantSP.VOICE_MSG_COUNT, voiceMsgCount)
                 }
                 .flatMap(countDown())
 
@@ -344,7 +344,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                 bt_voice_code?.visibility = View.VISIBLE
 //                RxView.enabled(bt_voice_code).accept(true)
 //                RxTextView.text(bt_voice_code).accept("发送验证码")
-                tv_time_countdown?.setTextColor(BaseApplication.getAppContext().resources.getColor(R.color.BLUE))
+                tv_time_countdown?.setTextColor(BaseApplication.getApplication().resources.getColor(R.color.BLUE))
                 tv_time_countdown?.setText(R.string.not_get_verification_code)
             } else {
 //                RxTextView.text(bt_voice_code).accept("剩余 $aLong 秒")
@@ -368,7 +368,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
         return object : Function<Any, ObservableSource<Long>> {
             override fun apply(t: Any): ObservableSource<Long>? {
                 //更新发送按钮的状态并初始化显现倒计时文字
-                tv_time_countdown?.setTextColor(BaseApplication.getAppContext().resources.getColor(R.color.text_light_color))
+                tv_time_countdown?.setTextColor(BaseApplication.getApplication().resources.getColor(R.color.text_light_color))
 //                Logger.e("countDown")
                 return Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
                         .take(MAX_COUNT_TIME)
@@ -398,9 +398,9 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .doOnNext {
 
-                            var msgCount = SpUtils.getInt(BaseApplication.getAppContext(), ConstantSP.MSG_COUNT)
+                            var msgCount = SpUtils.getInt(BaseApplication.getApplication(), ConstantSP.MSG_COUNT)
                             msgCount--
-                            SpUtils.put(BaseApplication.getAppContext(), ConstantSP.MSG_COUNT, msgCount)
+                            SpUtils.put(BaseApplication.getApplication(), ConstantSP.MSG_COUNT, msgCount)
                         }
                         .flatMap(countDown())
                         .subscribe(mConsumerCountTime)
@@ -523,7 +523,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
         v.findViewById<TextView>(R.id.tv_dialog_title).text = "重新获取验证码"
         val spanableInfo = SpannableString(
                 "我们将要发送验证码到这个手机号:")
-        val foregroundColorSpan = ForegroundColorSpan(BaseApplication.getAppContext().resources.getColor(R.color.BLUE))
+        val foregroundColorSpan = ForegroundColorSpan(BaseApplication.getApplication().resources.getColor(R.color.BLUE))
         spanableInfo.setSpan(foregroundColorSpan, 6, 9, Spannable.SPAN_INCLUSIVE_INCLUSIVE
         )
         v.findViewById<TextView>(R.id.tv_dialog_message).text = spanableInfo
@@ -548,7 +548,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
             if (!isFinishing) {
                 connectDialog.dismiss()
             }
-            val msgCount = SpUtils.getInt(BaseApplication.getAppContext(), ConstantSP.MSG_COUNT)
+            val msgCount = SpUtils.getInt(BaseApplication.getApplication(), ConstantSP.MSG_COUNT)
             if (msgCount <= 0) {
                 toast(R.string.notify_msg_count)
                 return@OnClickListener
@@ -562,7 +562,7 @@ class InputVerificationCodeActivity : BaseMvpActivity<RegistPresenterImpl>(), Re
                 ConstantSP.USER_LOGIN_FOR_FASTLOGIN//快捷登陆
                 -> getCode(mobile, "A", true)
             }
-            tv_time_countdown?.setTextColor(BaseApplication.getAppContext().resources.getColor(R.color.text_light_color))
+            tv_time_countdown?.setTextColor(BaseApplication.getApplication().resources.getColor(R.color.text_light_color))
             if (bt_voice_code?.visibility == View.VISIBLE) {
                 bt_voice_code.visibility = View.INVISIBLE
             }

@@ -116,12 +116,12 @@ class RegistPresenterImpl @Inject constructor() : RegistPresenter, BasePresenter
      * 保存登陆信息
      */
     private fun successLoginAndSave(data: LoginBean, loginType: String) {
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_ID, data.id)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.MOBILE, data.mobile)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.AUTH_TOKEN, data.authToken)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.IS_LOGIN, true)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.USER_NAME, data.userName)
-        SpUtils.put(BaseApplication.getAppContext(), ConstantSP.LOGIN_TYPE, loginType)//普通登录
+        SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_ID, data.id)
+        SpUtils.put(BaseApplication.getApplication(), ConstantSP.MOBILE, data.mobile)
+        SpUtils.put(BaseApplication.getApplication(), ConstantSP.AUTH_TOKEN, data.authToken)
+        SpUtils.put(BaseApplication.getApplication(), ConstantSP.IS_LOGIN, true)
+        SpUtils.put(BaseApplication.getApplication(), ConstantSP.USER_NAME, data.userName)
+        SpUtils.put(BaseApplication.getApplication(), ConstantSP.LOGIN_TYPE, loginType)//普通登录
         getView()?.loginResultSuc()
     }
 
@@ -135,7 +135,7 @@ class RegistPresenterImpl @Inject constructor() : RegistPresenter, BasePresenter
                 .execute(object : BaseSubscriber<BaseResp>(getView()!!) {
                     override fun onNext(t: BaseResp) {
                         if ("0000" == t.returnCode) {
-                            SpUtils.put(BaseApplication.getAppContext(), ConstantSP.IS_LOGIN, false)
+                            SpUtils.put(BaseApplication.getApplication(), ConstantSP.IS_LOGIN, false)
                             SpUtils.remove(ConstantSP.USER_PWD)
                             getView()?.forgetPwdSuc()
                         } else {

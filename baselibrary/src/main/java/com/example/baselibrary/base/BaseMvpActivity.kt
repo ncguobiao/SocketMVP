@@ -1,18 +1,11 @@
 package com.example.baselibrary.base
 
 
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.provider.Settings
 import android.support.annotation.LayoutRes
-import android.support.v4.app.DialogFragment
-import android.support.v4.content.ContextCompat
-import android.text.TextUtils
 import android.view.View
 import com.alibaba.android.arouter.launcher.ARouter
 import com.classic.common.MultipleStatusView
-import com.example.baselibrary.R
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.ConstantSP
 import com.example.baselibrary.injection.component.ActivityComponent
@@ -21,9 +14,6 @@ import com.example.baselibrary.injection.module.ActivityMoudle
 import com.example.baselibrary.injection.module.LifecycleProviderModule
 import com.example.baselibrary.utils.SpUtils
 import com.example.baselibrary.widght.ProgressLoading
-import com.mylhyl.circledialog.CircleDialog
-import de.greenrobot.event.EventBus
-import org.jetbrains.anko.alert
 import javax.inject.Inject
 
 
@@ -148,7 +138,7 @@ abstract class BaseMvpActivity<T : BasePresenter<*>> : BaseActivity(), IBaseView
     }
 
     fun getUserID(): String {
-        return SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_ID)
+        return SpUtils.getString(BaseApplication.getApplication(), ConstantSP.USER_ID)
     }
 
 

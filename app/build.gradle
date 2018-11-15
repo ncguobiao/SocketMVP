@@ -30,6 +30,10 @@ android {
                 JPUSH_APPKEY : "7aa637a0f623827577f3934d", //JPush上注册的包名对应的appkey.
                 JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
         ]
+        packagingOptions {
+            doNotStrip '*/mips/*.so'
+            doNotStrip '*/mips64/*.so'
+        }
 
     }
     buildTypes {
@@ -61,7 +65,11 @@ dependencies {
     kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
     implementation project(':provider')
     implementation project(':accountCenter')
-    implementation project(':bluetoothcontrol')
+    implementation "com.gb:bluetoothLibrary:1.0.0"
+//    implementation project(':bluetoothControl')
     implementation project(':userCenter')
+
+
+
 }
 

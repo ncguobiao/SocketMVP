@@ -1,11 +1,9 @@
 package com.gb.sockt.center.ui.fragment
 
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.ViewGroup
 import com.example.baselibrary.base.BaseMvpFragment
 import com.example.baselibrary.data.net.execption.ErrorStatus
 import com.example.baselibrary.showToast
@@ -23,7 +21,6 @@ import com.scwang.smartrefresh.header.MaterialHeader
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
 import com.yanzhenjie.recyclerview.swipe.*
-import kotlinx.android.synthetic.main.activity_comm_records.*
 import kotlinx.android.synthetic.main.fragment_use_records.*
 
 /**
@@ -59,7 +56,10 @@ class RechargeRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), Records
             return fragment
         }
 
+        private var swipeMenuCreator: SwipeMenuCreator?=null
+
         fun newInstance(): RechargeRecordsFragment {
+
             return RechargeRecordsFragment()
         }
     }
@@ -151,11 +151,11 @@ class RechargeRecordsFragment : BaseMvpFragment<RecordsPresenterImpl>(), Records
 
         mRecyclerView.layoutManager = LinearLayoutManager(activity)
         mRecyclerView.itemAnimator = DefaultItemAnimator()
-        if (activity is CommRecordsActivity){
-            // 设置监听器。
-            mRecyclerView.setSwipeMenuCreator((activity as CommRecordsActivity).swipeMenuCreator)
-        }
-
+//        if (activity is CommRecordsActivity){
+//            // 设置监听器。
+//            mRecyclerView.setSwipeMenuCreator(swipeMenuCreator)
+//        }
+        mRecyclerView.setSwipeMenuCreator(swipeMenuCreator)
         mRecyclerView.setSwipeMenuItemClickListener(mMenuItemClickListener)
         //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
         mRecyclerView.setHasFixedSize(true)

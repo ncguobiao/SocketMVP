@@ -1,0 +1,70 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+
+kapt {
+    arguments {
+        arg("moduleName", project.getName())
+    }
+}
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        //模糊效果
+//        renderscriptTargetApi 19
+//        renderscriptSupportModeEnabled为true
+
+    }
+    lintOptions {
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //Dagger2
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    //ARouter
+    kapt "com.alibaba:arouter-compiler:$arouter_compiler_version"
+    implementation project(':provider')
+
+}
+
+apply plugin: 'maven'
+apply plugin: 'com.novoda.bintray-release'
+task javadoc(type: Javadoc) {
+    options.encoding = "utf-8"
+}
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+publish {
+    userOrg = 'ncguobiao'
+    groupId = 'com.gb'
+    artifactId = 'bluetoothLibrary'
+    version = '1.0.0'
+    description = 'THis is Android Bluetooth controler'
+    website = "https://github.com/ncguobiao/${rootProject.name}"
+}

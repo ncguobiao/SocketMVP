@@ -1,11 +1,13 @@
 package com.example.baselibrary.base
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.classic.common.MultipleStatusView
+import com.example.baselibrary.R
 import com.example.baselibrary.act
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.Constant
@@ -15,6 +17,8 @@ import com.example.baselibrary.injection.component.DaggerActivityComponent
 import com.example.baselibrary.injection.module.ActivityMoudle
 import com.example.baselibrary.injection.module.LifecycleProviderModule
 import com.example.baselibrary.utils.SpUtils
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem
 import javax.inject.Inject
 
 /**
@@ -22,7 +26,21 @@ import javax.inject.Inject
  *  Fragment基类，业务相关
  */
 abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), IBaseView {
-
+    val swipeMenuCreator = SwipeMenuCreator { _, swipeRightMenu, _ ->
+        val width = resources.getDimensionPixelSize(R.dimen.dp_70)
+        // 1. MATCH_PARENT 自适应高度，保持和Item一样高;
+        // 2. 指定具体的高，比如80;
+        // 3. WRAP_CONTENT，自身高度，不推荐;
+        val height = ViewGroup.LayoutParams.MATCH_PARENT
+        val deleteItem = SwipeMenuItem(activity)
+                .setBackground(R.drawable.selector_red)
+                .setImage(R.mipmap.ic_action_delete)
+                .setText("删除")
+                .setTextColor(Color.WHITE)
+                .setWidth(width)
+                .setHeight(height)
+        swipeRightMenu.addMenuItem(deleteItem)// 添加菜单到右侧。
+    }
     @Inject
     lateinit var mPresenter: T
 

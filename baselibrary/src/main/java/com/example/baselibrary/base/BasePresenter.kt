@@ -72,7 +72,7 @@ open class BasePresenter<T : IBaseView> : IPresenter<T> {
         检查网络是否可用
      */
     fun checkNetWork():Boolean{
-        if(!NetworkUtil.isNetworkAvailable(BaseApplication.getAppContext())){
+        if(!NetworkUtil.isNetworkAvailable(BaseApplication.getApplication())){
             getView()?.let {
                 getView()!!.onError("网络不可用,请检查网络")
                 getView()!!.showNetDialog()

@@ -6,6 +6,8 @@ import android.content.Intent
 import cn.jpush.android.api.JPushInterface
 import android.util.Log
 import com.alibaba.android.arouter.launcher.ARouter
+import com.example.baselibrary.base.BaseActivity
+import com.gb.socket.App
 import com.orhanobut.logger.Logger
 import org.json.JSONObject
 
@@ -23,8 +25,14 @@ class MessageReceiver:BroadcastReceiver() {
         when {
             JPushInterface.ACTION_REGISTRATION_ID == intent.action -> Log.d(TAG, "JPush用户注册成功")
             JPushInterface.ACTION_MESSAGE_RECEIVED == intent.action -> {
-                Logger.d("接受到推送下来的自定义消息:${ bundle.getString(JPushInterface.EXTRA_MESSAGE)}")
+                val message = bundle.getString(JPushInterface.EXTRA_MESSAGE)
+                Logger.d("接受到推送下来的自定义消息:${ message}")
 //                Bus.send(MessageBadgeEvent(true))
+                if (context is BaseActivity){
+                   if (!context.isDestroyed){
+                       App.getApplication().showDialog("有新消息","$message")
+                   }
+                }
 
             }
             JPushInterface.ACTION_NOTIFICATION_RECEIVED == intent.action -> Log.d(TAG, "接受到推送下来的通知")

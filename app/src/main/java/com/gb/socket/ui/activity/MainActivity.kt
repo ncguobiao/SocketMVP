@@ -49,6 +49,7 @@ import com.gb.socket.data.domain.DeviceInfo
 import com.gb.socket.data.domain.RecordsMergeBean
 import com.gb.socket.listener.OnRecyclerItemClickListener
 import com.gb.socket.ui.adapter.MainRecordsAdapter
+import com.gb.sockt.blutoothcontrol.ui.activity.BluetoothControlActivity
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.main_content_layout.*
 import kotlinx.android.synthetic.main.nav_header_drawer_layout__one.*
@@ -115,7 +116,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                 latitude = locationInfo?.latitude.toString()
                 longitude = locationInfo?.longitude.toString()
                 Logger.d("经纬度=$latitude:$longitude")
-                SpUtils.put(App.getAppContext(), ConstantSP.USER_ADDRESS, mLbsLayer.city)
+                SpUtils.put(App.getApplication(), ConstantSP.USER_ADDRESS, mLbsLayer.city)
             }
 
             override fun onLocationChanged(locationInfo: LocationInfo?) {
@@ -132,8 +133,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
 //                //申请的权限全部允许
                             Logger.d("扫码权限通过")
                             startActivityForResult(
-                                    Intent(BaseApplication.getAppContext(), CaptureActivity::class.java),
-//                                    Intent(BaseApplication.getAppContext(), ActivityScanerCode::class.java),
+                                    Intent(BaseApplication.getApplication(), CaptureActivity::class.java),
+//                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),
                                     QRCODE
                             )
                         } else {
@@ -191,7 +192,8 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.wallet -> toast("钱包")
+            R.id.wallet ->
+                redirectTo( ConstantSP.WALLET)
             R.id.recharge_records ->
                 redirectTo( ConstantSP.RECHARGE_RECORDS)
             R.id.use_records ->
@@ -322,14 +324,18 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
      */
     private fun redirectTo(type: String) {
         when (type) {
-            ConstantSP.RECHARGE_RECORDS -> ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
-                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
-                    .withString(ConstantSP.RECORD_TYPE, ConstantSP.RECHARGE_RECORDS)
-                    .navigation()
-            ConstantSP.USE_RECORDS -> ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
-                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
-                    .withString(ConstantSP.RECORD_TYPE, ConstantSP.USE_RECORDS)
-                    .navigation()
+            ConstantSP.WALLET->navigatTo(type)
+
+            ConstantSP.RECHARGE_RECORDS -> navigatTo(type)
+//                ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+//                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+//                    .withString(ConstantSP.RECORD_TYPE, ConstantSP.RECHARGE_RECORDS)
+//                    .navigation()
+            ConstantSP.USE_RECORDS -> navigatTo(type)
+//                    ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+//                    .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+//                    .withString(ConstantSP.RECORD_TYPE, ConstantSP.USE_RECORDS)
+//                    .navigation()
             Constant.DEVICE_SINGLE -> ARouter.getInstance().build(RouterPath.BLUETOOTH.PATH_BLUETOOTH_CONTROLL)
                     .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
                     .withString(Constant.DEVICE_NAME, "$deviceName")
@@ -349,6 +355,14 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                     .navigation()
         }
 
+
+    }
+
+    private fun navigatTo(type: String) {
+        ARouter.getInstance().build(RouterPath.UserCenter.PATH_USER_CENTER)
+                .withTransition(com.gb.sockt.center.R.anim.anim_in, com.gb.sockt.center.R.anim.anim_out)
+                .withString(ConstantSP.RECORD_TYPE, type)
+                .navigation()
 
     }
 
@@ -517,11 +531,11 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
             toast("设置")
         }
 
-        val userName = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_NAME)
-        val mobile = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.MOBILE)
-        val userPhoto = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_PHOTO)
-        val userWeiXinPhoto = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_WEIXIN_PHOTO)
-        val loginType = SpUtils.getString(BaseApplication.getAppContext(), ConstantSP.USER_LOGIN_TYPE)
+        val userName = SpUtils.getString(BaseApplication.getApplication(), ConstantSP.USER_NAME)
+        val mobile = SpUtils.getString(BaseApplication.getApplication(), ConstantSP.MOBILE)
+        val userPhoto = SpUtils.getString(BaseApplication.getApplication(), ConstantSP.USER_PHOTO)
+        val userWeiXinPhoto = SpUtils.getString(BaseApplication.getApplication(), ConstantSP.USER_WEIXIN_PHOTO)
+        val loginType = SpUtils.getString(BaseApplication.getApplication(), ConstantSP.USER_LOGIN_TYPE)
         if (loginType.isNotEmpty() && ConstantSP.USER_LOGIN_FOR_WEIXIN == loginType && userWeiXinPhoto.isNotEmpty()) {
 
             val options = RequestOptions.circleCropTransform()
