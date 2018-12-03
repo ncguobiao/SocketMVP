@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gb.socket.accountcenter">
+    package="com.gb.socket1.accountcenter">
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity
-            android:name="com.gb.socket.accountcenter.ui.activity.LoginActivity"
+            android:name="com.gb.socket1.accountcenter.ui.activity.LoginActivity"
             android:launchMode="singleTask" />
-        <activity android:name="com.gb.socket.accountcenter.ui.activity.RegisterActivity" />
-        <activity android:name="com.gb.socket.accountcenter.ui.activity.InputPhoneActivity"></activity>
+        <activity android:name="com.gb.socket1.accountcenter.ui.activity.RegisterActivity" />
+        <activity android:name="com.gb.socket1.accountcenter.ui.activity.InputPhoneActivity"></activity>
 
 
         <activity android:name="com.gb.sockt.accountcenter.com.gb.socket.accountcenter.ui.activity.InputVerificationCodeActivity"/>

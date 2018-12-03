@@ -3,4 +3,6 @@
     <string name="qrcode_error">二维码数据错误!</string>
     <string name="open">打开</string>
     <string name="close">关闭</string>
+    <string name="connect">连接蓝牙</string>
+    <string name="disconnect">断开连接</string>
 </resources>

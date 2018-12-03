@@ -7,8 +7,8 @@ import com.gb.sockt.blutoothcontrol.ble.multi.BlueToothMultiControl
 import com.gb.sockt.blutoothcontrol.ble.multi.BlueToothMultiControlImpl
 import com.gb.sockt.blutoothcontrol.mvp.service.BluetoothContrlService
 import com.gb.sockt.blutoothcontrol.mvp.service.imp.BluetoothControlServiceImpl
-import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingeControl
-import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingeControlImpl
+import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingleControl
+import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingleControlImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -33,10 +33,10 @@ class BluetoothModule constructor(private val deviceTag: String, val activity: A
         return BlueToothMultiControlImpl(deviceTag, activity)
     }
 
-    @Named("BlueToothSingeControl")
+    @Named("BlueToothSingleControl")
     @Provides
-    fun provideBlueToothSingeControl(): BlueToothSingeControl {
-        return BlueToothSingeControlImpl(activity)
+    fun provideBlueToothSingeControl(): BlueToothSingleControl {
+        return BlueToothSingleControlImpl(activity)
     }
 
     @Provides

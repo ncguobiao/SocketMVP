@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.gb.socket">
+    package="com.gb.socket1">
 
     <permission
-        android:name="com.gb.socket.permission.JPUSH_MESSAGE"
+        android:name="com.gb.socket1.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -87,12 +87,23 @@
             android:value="bcd5c2e8b8eee608d8ead5f620441fb1" />
 
         <activity android:name=".ui.activity.SplashActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+
+        <activity android:name=".ui.activity.BluetoothTestConnectActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
@@ -118,7 +129,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <receiver
-            android:name="com.gb.socket.receiver.MessageReceiver"
+            android:name=".receiver.MessageReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTRATION" />

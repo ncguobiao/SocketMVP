@@ -11,9 +11,9 @@ import com.example.baselibrary.utils.BluetoothClientManager
 import com.example.baselibrary.utils.ThreadPoolUtils
 import com.gb.sockt.blutoothcontrol.ble.BaseBLEControl
 import com.gb.sockt.blutoothcontrol.ble.BluetoothConfig
-import com.gb.sockt.blutoothcontrol.listener.BaseBLEDataListener
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
 import com.gb.sockt.blutoothcontrol.listener.BleMultiDataChangeListener
+import com.gb.sockt.blutoothcontrol.listener.BluetoothTestListener
 import com.inuker.bluetooth.library.BluetoothClient
 import com.inuker.bluetooth.library.Constants
 import com.inuker.bluetooth.library.Constants.*
@@ -56,8 +56,8 @@ open class BlueToothMultiControlImpl constructor(deviceTag: String, val context:
         return this
     }
 
-    override fun setResponseListener(baseBLEDataListener: BaseBLEDataListener?): BaseBLEControl {
-        if ( baseBLEDataListener is BleMultiDataChangeListener)
+    override fun setResponseListener(baseBLEDataListener: BleMultiDataChangeListener): BaseBLEControl {
+
         this.mBleDataChangeListener = baseBLEDataListener
         return this
     }

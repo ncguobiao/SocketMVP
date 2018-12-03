@@ -1,10 +1,7 @@
 package com.gb.sockt.blutoothcontrol.ble
 
-import com.gb.sockt.blutoothcontrol.ble.multi.BlueToothMultiControl
-import com.gb.sockt.blutoothcontrol.listener.BaseBLEDataListener
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
-import com.gb.sockt.blutoothcontrol.listener.BleMultiDataChangeListener
-import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingeControl
+import com.gb.sockt.blutoothcontrol.listener.BluetoothTestListener
 
 /**
  * Created by guobiao on 2018/8/9.
@@ -33,7 +30,7 @@ interface BaseBLEControl {
     fun setConnectListener(bleConnectListener: BleConnectListener)
 
 
-    fun setResponseListener(baseBLEDataListener: BaseBLEDataListener?): BaseBLEControl
+
 
     /**
      * 关闭

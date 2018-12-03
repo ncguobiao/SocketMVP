@@ -201,7 +201,7 @@ class CEFragment : BaseMvpFragment<BluetoothPresenterImpl>(), BluetoothMultiView
             //注册广播
         }).registerBroadcastReceiver()
                 //设置响应监听
-                .setResponseListener(object : BleCEDataChangeListener {
+        mBlueToothCEControlImpl .setResponseListener(object : BleCEDataChangeListener {
 
                     override fun requestSeedSuccess() {
                         Logger.d("获取种子成功")

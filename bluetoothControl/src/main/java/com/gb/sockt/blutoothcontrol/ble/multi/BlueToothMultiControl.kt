@@ -10,6 +10,9 @@ import com.gb.sockt.blutoothcontrol.listener.BleMultiDataChangeListener
  */
 interface BlueToothMultiControl : BaseBLEControl {
 
+
+    fun setResponseListener(mBleMultiDataChangeListener: BleMultiDataChangeListener): BaseBLEControl
+
     fun addTimeToBle(time: String?, deviceWay: String?, equipElectiic: String?)
 
     fun getBLEDeviceInfo(deviceWay:String?)

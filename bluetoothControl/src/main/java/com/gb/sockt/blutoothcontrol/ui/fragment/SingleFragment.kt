@@ -29,7 +29,7 @@ import com.example.baselibrary.utils.SpUtils
 import com.gb.sockt.blutoothcontrol.listener.BaseBLEDataListener
 import com.gb.sockt.blutoothcontrol.mvp.presenter.impl.BluetoothSinglePresenterImpl
 import com.gb.sockt.blutoothcontrol.mvp.view.BluetoothSingleView
-import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingeControl
+import com.gb.sockt.blutoothcontrol.uitls.BlueToothSingleControl
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
@@ -82,8 +82,8 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
     private var selectHour: String? = null
     private val viewList = ArrayList<View>()
     @Inject
-    @field:[Named("BlueToothSingeControl")]
-    lateinit var mBlueToothSingeControlImpl: BlueToothSingeControl
+    @field:[Named("BlueToothSingleControl")]
+    lateinit var mBlueToothSingeControlImpl: BlueToothSingleControl
 
     private var deviceCurrentStatus: Boolean = false//设备当前状态
     //是否切换视图显示倒计时页面
@@ -186,8 +186,9 @@ class SingleFragment : BaseMvpFragment<BluetoothSinglePresenterImpl>(), Bluetoot
             }
             //注册广播
         }).registerBroadcastReceiver()
+
                 //设置响应监听
-                .setResponseListener(object : BaseBLEDataListener {
+        mBlueToothSingeControlImpl.setResponseListener(object : BaseBLEDataListener {
                     override fun showVoltageAndElectricity(voltage: Int, electricity: Int) {
                         tv_voltage.text = "${voltage}V"
 
