@@ -80,9 +80,6 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         }
     }
 
-
-
-
     override fun sendAdd() {
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("01", 0x10).toByte()
@@ -131,6 +128,18 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         msg = "发送Less"
         write(value)
 
+    }
+
+
+    fun findAllMAC() {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("03", 0x10).toByte()
+        val b2 = Integer.parseInt("00", 0x10).toByte()
+        val b3 =Integer.parseInt("72", 0x10).toByte()
+        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2,b3))
+        val value = byteArrayOf(b0, b1, b2, b3,b4)
+        msg = "发送查询MAC"
+        write(value)
     }
 
     //蓝牙数据写入方法
@@ -186,14 +195,23 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
                         Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
                             it.size > 2 && it[1].toInt() == 0x01
-                                    && it[2].toInt() == 0x07 -> {
+                                   -> {
                                 mBluetoothTestListener?.onAdd(BleUtils.byteArrayToHexString(receiveValue))
 
                             }
                             it.size > 2 && it[1].toInt() == 0x02
-                                    && it[2].toInt() == 0x07 -> {
+                                    -> {
                                 mBluetoothTestListener?.onLess(BleUtils.byteArrayToHexString(receiveValue))
                             }
+                            it.size > 5 && it[1].toInt() == 0x03 -> {
+                                val dataLength = it[2]
+                                val currentCount = it[3]
+                                val totalCount= it[4]
+
+                                mBluetoothTestListener?.onFindAllMAC(BleUtils.byteArrayToHexString(receiveValue))
+                            }
+
+
                             else -> {
                                 mBluetoothTestListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
@@ -262,7 +280,7 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         }
     }
 
-     fun getMAC(): String {
+    private fun getMAC(): String {
         if (null == macAddress) {
             throw ExceptionInInitializerError("macAddress is not set")
         }
@@ -313,4 +331,6 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
     fun setMACAddress(address: String) {
         this.address =address
     }
+
+
 }

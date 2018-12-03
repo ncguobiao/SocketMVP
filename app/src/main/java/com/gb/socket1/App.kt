@@ -60,6 +60,7 @@ class App : BaseApplication() {
         initJPush()
 
 
+
 //        RxTool.init(this);
 //        ZXingLibrary.initDisplayOpinion(this)
     }

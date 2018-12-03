@@ -28,6 +28,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
     private var startTime: Long = 0L
 
     private var sb: StringBuffer? = null
+    private var mac: String? = null
 
     private val mBluetoothTestImpl by lazy {
         com.gb.sockt.blutoothcontrol.ble.test.BluetoothTestImpl(this)
@@ -37,7 +38,9 @@ class BluetoothTestConnectActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_test_connect)
-        mBluetoothTestImpl.setMAC("00:00:A1:00:00:95", object : BleConnectListener {
+        mac = intent.getStringExtra("mac")
+
+        mBluetoothTestImpl.setMAC(mac, object : BleConnectListener {
             //                    mBluetoothTestImpl.setMAC("00:00:A1:00:00:81", object : BleConnectListener {
 //        mBluetoothTestImpl.setMAC("00:00:CD:00:00:01", object : BleConnectListener {
             override fun connectOnError() {
@@ -56,9 +59,9 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun connectOnSuccess() {
                 mProgressBar.visibility = View.GONE
                 val endTimeMillis = System.currentTimeMillis()
-                Logger.d("endTimeMillis:$endTimeMillis")
+//                Logger.d("endTimeMillis:$endTimeMillis")
                 val consumTime = endTimeMillis - startTime
-                Logger.d("consumTime:$consumTime")
+//                Logger.d("consumTime:$consumTime")
                 mConsumTime.text = "连接耗时：${consumTime}ms"
                 mTvState.text = "连接成功"
                 mTvState.setTextColor(Color.GREEN)
@@ -89,13 +92,17 @@ class BluetoothTestConnectActivity : BaseActivity() {
                 mTvReciver?.text = "接收Less数据：$data"
             }
 
+            override fun onFindAllMAC(byteArrayToHexString: String?) {
+
+            }
+
         })
 
         mBluetoothTestImpl.registerBroadcastReceiver()
 
         mbtnConnect.onClick {
             if (!mBluetoothTestImpl?.getConnectState())
-            mTvMessage?.text = ""
+                mTvMessage?.text = ""
             mTvReciver?.text = ""
             mProgressBar.visibility = View.VISIBLE
             mBluetoothTestImpl?.connect()
@@ -104,7 +111,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
         }
 
         mBtnDisconnect.onClick {
-            if (mBluetoothTestImpl?.getConnectState()){
+            if (mBluetoothTestImpl?.getConnectState()) {
                 mProgressBar.visibility = View.GONE
                 mTvMessage?.text = ""
                 mTvReciver?.text = ""
@@ -112,7 +119,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
                 sb = StringBuffer()
                 mConsumTime.text = ""
                 mBluetoothTestImpl?.close()
-            }else{
+            } else {
                 toast("蓝牙已断开")
             }
 
@@ -122,11 +129,11 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
+
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val stringArray = resources.getStringArray(R.array.macs)
                 val mac = stringArray[position].toUpperCase()
 //                val formatAddress = formatAddress(mac)
-
                 mEditText.setText(mac)
                 toast("已选择:${mac}")
             }
@@ -144,7 +151,12 @@ class BluetoothTestConnectActivity : BaseActivity() {
             mTvReciver?.text = ""
             if (mBluetoothTestImpl?.getConnectState())
                 mBluetoothTestImpl?.sendLess() else showToast("请先连接设备")
-
+        }
+        find.onClick {
+            mTvMessage?.text = ""
+            mTvReciver?.text = ""
+            if (mBluetoothTestImpl?.getConnectState())
+                mBluetoothTestImpl?.findAllMAC() else showToast("请先连接设备")
         }
 
         mEditText.addTextChangedListener(object : TextWatcher {
@@ -176,7 +188,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
                 }
             }
             mTvMessage?.text = "输入MAC地址-${sb.toString()}"
-            mDeviceName?.text = "连接设备MAC-${sb.toString()}"
+            mDeviceName?.text = "连接设备MAC-${mac}"
             Logger.i(sb.toString())
             mBluetoothTestImpl?.setMACAddress(sb.toString())
         } else {

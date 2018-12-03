@@ -71,5 +71,7 @@ dependencies {
 
 
     compile project(path: ':bluetoothControl')
+
+//    implementation files('libs/zxing.jar')
 }
 

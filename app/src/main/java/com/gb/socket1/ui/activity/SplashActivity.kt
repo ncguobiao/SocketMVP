@@ -8,10 +8,11 @@ import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.ConstantSP
 import com.example.baselibrary.utils.SpUtils
 import com.gb.socket1.App
-import com.gb.socket1.R
+
 import com.tbruyelle.rxpermissions2.RxPermissions
 import java.util.*
 import com.example.baselibrary.utils.BluetoothClientManager
+import com.gb.socket1.R
 import com.gb.socket1.accountcenter.ui.activity.LoginActivity
 import com.orhanobut.logger.Logger
 import org.jetbrains.anko.startActivity
@@ -51,7 +52,7 @@ class SplashActivity : BaseActivity() {
     }
 
 
-    fun layoutId(): Int {
+    private fun layoutId(): Int {
         return R.layout.activity_splash
     }
 

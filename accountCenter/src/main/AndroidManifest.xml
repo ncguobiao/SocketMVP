@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.gb.socket1.accountcenter">
 
     <application
@@ -13,7 +14,7 @@
         <activity android:name="com.gb.socket1.accountcenter.ui.activity.InputPhoneActivity"></activity>
 
 
-        <activity android:name="com.gb.sockt.accountcenter.com.gb.socket.accountcenter.ui.activity.InputVerificationCodeActivity"/>
+        <activity android:name="com.gb.socket1.accountcenter.ui.activity.InputVerificationCodeActivity"/>
 
     </application>
 
