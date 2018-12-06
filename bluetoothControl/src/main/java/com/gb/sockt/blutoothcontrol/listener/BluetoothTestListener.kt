@@ -15,5 +15,5 @@ interface BluetoothTestListener {
 
     fun onWriteSuccess(msg: String)
 
-    fun onFindAllMAC(byteArrayToHexString: String?)
+    fun onFindAllMAC(count: Int, map: MutableList<Byte>)
 }

@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.onClick
 import com.example.baselibrary.showToast
+import com.example.baselibrary.utils.BleUtils
 import com.gb.socket1.R
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
 import com.gb.sockt.blutoothcontrol.listener.BluetoothTestListener
@@ -29,7 +30,6 @@ class BluetoothTestConnectActivity : BaseActivity() {
 
     private var sb: StringBuffer? = null
     private var mac: String? = null
-
     private val mBluetoothTestImpl by lazy {
         com.gb.sockt.blutoothcontrol.ble.test.BluetoothTestImpl(this)
     }
@@ -71,6 +71,11 @@ class BluetoothTestConnectActivity : BaseActivity() {
 
 
         mBluetoothTestImpl.setResponseListener(object : BluetoothTestListener {
+            override fun onFindAllMAC(count: Int, map: MutableList<Byte>) {
+                sb?.append("  \r\n第${count}帧，MAC=${BleUtils.byteArrayToHexString(map.toByteArray())}\r\n")
+                mTvReciver?.text = "查询MAC数据：${sb.toString()}"
+            }
+
             override fun onWriteFaile(msg: String) {
                 mTvMessage?.text = msg
             }
@@ -92,9 +97,15 @@ class BluetoothTestConnectActivity : BaseActivity() {
                 mTvReciver?.text = "接收Less数据：$data"
             }
 
-            override fun onFindAllMAC(byteArrayToHexString: String?) {
-
-            }
+//            override fun onFindAllMAC(map: MutableMap<Int, MutableList<Byte>>) {
+//
+//                Logger.e("===========")
+//                map.entries.forEach {
+//                    sb?.append("MAC=${BleUtils.byteArrayToHexString(it.component2().toByteArray())}\r\n")
+//                    Logger.e("当前帧=${it.component1()} 值=${it.component2()}")
+//                }
+//                mTvReciver?.text = "查询MAC数据：${sb.toString()}"
+//            }
 
         })
 
@@ -157,6 +168,12 @@ class BluetoothTestConnectActivity : BaseActivity() {
             mTvReciver?.text = ""
             if (mBluetoothTestImpl?.getConnectState())
                 mBluetoothTestImpl?.findAllMAC() else showToast("请先连接设备")
+        }
+        open.onClick {
+            mTvMessage?.text = ""
+            mTvReciver?.text = ""
+            if (mBluetoothTestImpl?.getConnectState())
+                mBluetoothTestImpl?.open() else showToast("请先连接设备")
         }
 
         mEditText.addTextChangedListener(object : TextWatcher {

@@ -23,9 +23,9 @@ import java.util.*
 /**
  * Created by guobiao on 2018/11/15.
  */
-class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
+class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
 
-    private var address: String?=null
+    private var address: String? = null
     private var mcontext: WeakReference<Context>? = null
 
     private var mClient: BluetoothClient? = null
@@ -38,6 +38,13 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
     private lateinit var mConnectStatusListener: BleConnectStatusListener
     private var filter: IntentFilter? = null
     private lateinit var macBytes: ByteArray
+    private val sb by lazy {
+        StringBuffer()
+    }
+
+    private val map by lazy {
+        LinkedHashMap<Int, MutableList<Byte>>()
+    }
 
     init {
 //        when (deviceTag) {
@@ -97,9 +104,9 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         val b12 = macBytes[3]
         val b13 = macBytes[4]
         val b14 = macBytes[5]
-        val b15 =Integer.parseInt("72", 0x10).toByte()
-        val b16 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9,b10,b11,b12,b13,b14,b15))
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10,b11,b12,b13,b14,b15,b16)
+        val b15 = Integer.parseInt("72", 0x10).toByte()
+        val b16 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16)
         msg = "发送Add"
         write(value)
     }
@@ -122,9 +129,9 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         val b12 = macBytes[3]
         val b13 = macBytes[4]
         val b14 = macBytes[5]
-        val b15 =Integer.parseInt("72", 0x10).toByte()
-        val b16 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9,b10,b11,b12,b13,b14,b15))
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10,b11,b12,b13,b14,b15,b16)
+        val b15 = Integer.parseInt("72", 0x10).toByte()
+        val b16 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16)
         msg = "发送Less"
         write(value)
 
@@ -135,11 +142,23 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("03", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
-        val b3 =Integer.parseInt("72", 0x10).toByte()
-        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2,b3))
-        val value = byteArrayOf(b0, b1, b2, b3,b4)
+        val b3 = Integer.parseInt("72", 0x10).toByte()
+        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3))
+        val value = byteArrayOf(b0, b1, b2, b3, b4)
         msg = "发送查询MAC"
         write(value)
+    }
+
+    fun open() {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("04", 0x10).toByte()
+        val b2 = Integer.parseInt("00", 0x10).toByte()
+        val b3 = Integer.parseInt("72", 0x10).toByte()
+        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3))
+        val value = byteArrayOf(b0, b1, b2, b3, b4)
+        msg = "钥匙使能"
+        write(value)
+
     }
 
     //蓝牙数据写入方法
@@ -195,23 +214,73 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
                         Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
                             it.size > 2 && it[1].toInt() == 0x01
-                                   -> {
+                            -> {
                                 mBluetoothTestListener?.onAdd(BleUtils.byteArrayToHexString(receiveValue))
 
                             }
                             it.size > 2 && it[1].toInt() == 0x02
-                                    -> {
+                            -> {
                                 mBluetoothTestListener?.onLess(BleUtils.byteArrayToHexString(receiveValue))
                             }
                             it.size > 5 && it[1].toInt() == 0x03 -> {
                                 val dataLength = it[2]
                                 val currentCount = it[3]
-                                val totalCount= it[4]
+                                val totalCount = it[4]
+                                if (currentCount <= totalCount) {
+                                    if (dataLength >= 6) {
+                                        val i = dataLength / 6
+                                        for (j in 0 until i) {
+                                            Logger.e("j=${j}")
+                                            val dataArr = mutableListOf<Byte>()
+                                            it.forEachIndexed { index, _ ->
+//                                                Logger.e("index${index}")
+                                                if (index < 6) {
+//                                                    Logger.e("index${index} data=${it[index + 6 * j + 5]}")
+                                                    dataArr.add(it[index + 6 * j + 5])
+                                                }
+                                            }
+                                            Logger.e("j${j} data=${dataArr}")
+                                            mBluetoothTestListener?.onFindAllMAC(j+1,dataArr)
 
-                                mBluetoothTestListener?.onFindAllMAC(BleUtils.byteArrayToHexString(receiveValue))
+                                        }
+
+                                    }
+                                    else{
+
+                                    }
+                                }else{
+                                }
+                            }it.size > 5 && it[1].toInt() == 0x04 -> {
+                                val dataLength = it[2]
+                                val currentCount = it[3]
+                                val totalCount = it[4]
+                                if (currentCount <= totalCount) {
+                                    if (dataLength >= 6) {
+                                        val i = dataLength / 6
+                                        for (j in 0 until i) {
+                                            Logger.e("j=${j}")
+                                            val dataArr = mutableListOf<Byte>()
+                                            it.forEachIndexed { index, _ ->
+//                                                Logger.e("index${index}")
+                                                if (index < 6) {
+//                                                    Logger.e("index${index} data=${it[index + 6 * j + 5]}")
+                                                    dataArr.add(it[index + 6 * j + 5])
+                                                }
+                                            }
+                                            Logger.e("j${j} data=${dataArr}")
+                                            mBluetoothTestListener?.onFindAllMAC(j+1,dataArr)
+
+                                        }
+
+                                    }
+                                    else{
+
+                                    }
+                                }else{
+
+                                }
+
                             }
-
-
                             else -> {
                                 mBluetoothTestListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
@@ -226,7 +295,7 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
 
 
     override fun setMAC(mac: String?, bleConnectListener: BleConnectListener?): BaseBLEControl {
-        if (mac.isNullOrEmpty()){
+        if (mac.isNullOrEmpty()) {
             throw IllegalArgumentException("MAC地址异常")
         }
         this.macAddress = mac
@@ -239,7 +308,6 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
         }
         return this
     }
-
 
 
     override fun connect() {
@@ -329,8 +397,10 @@ class BluetoothTestImpl constructor( val context: Context?):BluetoothTest {
     }
 
     fun setMACAddress(address: String) {
-        this.address =address
+        this.address = address
     }
+
+
 
 
 }
