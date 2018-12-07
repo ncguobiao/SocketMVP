@@ -220,7 +220,7 @@ open class BlueToothSingleControlImpl constructor(val context: Context?) : BlueT
             if (code == REQUEST_SUCCESS) {
                 Logger.e("开启通知成功")
             } else {
-                Logger.e("开启通知失败")
+//                Logger.e("开启通知失败")
             }
         }
 

@@ -18,7 +18,7 @@ import org.jetbrains.anko.toast
 /**
  * Created by guobiao on 2018/12/3.
  */
-class ScanQRcodeActivity : BaseActivity() {
+class ScanQRCodeActivity : BaseActivity() {
     private var resultLength: Int = 0
     private var macAddress: String?= null
     private var deviceName: String?= null
@@ -32,7 +32,7 @@ class ScanQRcodeActivity : BaseActivity() {
         /*
         * 打开默认二维码扫描界面
         */
-        button1.onClick {
+        mScan.onClick {
             rxPermissions
                     .request(Manifest.permission.CAMERA)
                     .subscribe {
@@ -50,6 +50,16 @@ class ScanQRcodeActivity : BaseActivity() {
                         }
                     }
         }
+
+        button1.onClick {
+            checkBLE()
+        }
+
+
+    }
+
+    override fun doSomethingWithBluetoothOpened() {
+        startActivity<BluetoothKeyActivity>()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

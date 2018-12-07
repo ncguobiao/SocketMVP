@@ -120,31 +120,9 @@ class BluetoothControlActivity : BaseActivity() {
         Logger.e("deviceName=${deviceName},macAddress=${macAddress},deviceWay=${deviceWay}")
     }
 
-    /**
-     * 检查蓝牙
-     */
-    private fun checkBLE() {
-        val mClient = BluetoothClientManager.getClient()
-        mClient?.let {
-            if (it.isBluetoothOpened) {
-                //蓝牙开启状态，检查位置信息
-                Logger.e("蓝牙开启")
-                checkLocationPermissionAndNavigation()
 
-            } else {
-                Logger.e("蓝牙开启未开启")
-                //开启蓝牙
-                if (it.openBluetooth()) {
-                    //蓝牙开启状态，检查位置信息
-                    checkLocationPermissionAndNavigation()
-                } else {
-//                    longSnackbar(bt_scan,"请先到手机设置页面，打开蓝牙" )
-                    toast("请先到手机设置页面，打开蓝牙")
-                    requestOpenBluetooth()
-                }
-            }
-        }
-
+    override fun doSomethingWithBluetoothOpened() {
+        checkLocationPermissionAndNavigation()
     }
 
     /**

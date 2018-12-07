@@ -11,7 +11,4 @@ interface BluetoothTest : BaseBLEControl {
 
     fun setResponseListener(mBluetoothTestListener: BluetoothTestListener)
 
-    fun sendAdd()
-
-    fun sendLess()
 }

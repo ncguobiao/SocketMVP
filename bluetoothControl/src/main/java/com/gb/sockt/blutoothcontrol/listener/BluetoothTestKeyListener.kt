@@ -3,11 +3,15 @@ package com.gb.sockt.blutoothcontrol.listener
 /**
  * Created by guobiao on 2018/11/15.
  */
-interface BluetoothTestListener {
+interface BluetoothTestKeyListener {
 
-    fun onAdd(data:String)
+    fun onConfigMAC(data:String)
 
-    fun onLess(data:String)
+    fun onSendkeyOne(data:String)
+
+    fun onSendkeyTwo(data:String)
+
+
 
     fun onError(data:String)
 
@@ -15,5 +19,5 @@ interface BluetoothTestListener {
 
     fun onWriteSuccess(msg: String)
 
-    fun onFindAllMAC(count: Int, map: MutableList<Byte>)
+
 }

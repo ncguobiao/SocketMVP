@@ -109,7 +109,7 @@
 
 
         <activity
-            android:name=".ui.activity.ScanQRcodeActivity"
+            android:name=".ui.activity.ScanQRCodeActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -118,6 +118,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.BluetoothKeyActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
+
         <!-- 微信支付 -->
         <activity
             android:name=".wxapi.WXPayEntryActivity"

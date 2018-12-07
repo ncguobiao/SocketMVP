@@ -14,6 +14,7 @@ import cn.jpush.android.api.JPushInterface.getRegistrationID
 import com.example.baselibrary.R
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.utils.AppUtils
+import com.example.baselibrary.utils.BluetoothClientManager
 import com.example.baselibrary.utils.databus.RxBus
 import com.mylhyl.circledialog.CircleDialog
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
@@ -135,6 +136,33 @@ open class BaseActivity : RxAppCompatActivity() {
     protected fun getPushId():String{
         return getRegistrationID(this)
     }
+
+    /**
+     * 检查蓝牙
+     */
+    fun checkBLE() {
+        val mClient = BluetoothClientManager.getClient()
+        mClient?.let {
+            if (it.isBluetoothOpened) {
+                doSomethingWithBluetoothOpened()
+                //蓝牙开启状态，检查位置信息
+
+            } else {
+                //开启蓝牙
+                if (it.openBluetooth()) {
+                    //蓝牙开启状态，检查位置信息
+                    doSomethingWithBluetoothOpened()
+                } else {
+//                    longSnackbar(bt_scan,"请先到手机设置页面，打开蓝牙" )
+                    toast("请先到手机设置页面，打开蓝牙")
+                    requestOpenBluetooth()
+                }
+            }
+        }
+
+    }
+
+    open fun doSomethingWithBluetoothOpened() {}
 }
 
 

@@ -64,7 +64,7 @@ import java.util.*
 @Route(path = RouterPath.Main.PATH_HOME)
 class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationView.OnNavigationItemSelectedListener {
 
-    private val QRCODE = 18666
+
     //地图管理
     @Inject
     lateinit var mLbsLayer: ILbsLayer
@@ -134,7 +134,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                             startActivityForResult(
                                     Intent(BaseApplication.getApplication(), CaptureActivity::class.java),
 //                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),
-                                    QRCODE
+                                    Constant.QRCODE
                             )
                         } else {
 //                //只要有一个权限被拒绝，就会执行
@@ -210,7 +210,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            QRCODE ->//扫码逻辑
+            Constant.QRCODE ->//扫码逻辑
             {
                 if (resultCode == Activity.RESULT_OK) {
                     val result = data?.getStringExtra("SCAN_RESULT")
@@ -227,6 +227,10 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
 
             }
         }
+    }
+
+    override fun doSomethingWithBluetoothOpened() {
+        checkLocationPermissionAndNavigation()
     }
 
     //获取设备信息
@@ -256,29 +260,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
         checkBLE()
     }
 
-    /**
-     * 检查蓝牙
-     */
-    private fun checkBLE() {
-        val mClient = BluetoothClientManager.getClient()
-        mClient?.let {
-            if (it.isBluetoothOpened) {
-                //蓝牙开启状态，检查位置信息
-                checkLocationPermissionAndNavigation()
-            } else {
-                //开启蓝牙
-                if (it.openBluetooth()) {
-                    //蓝牙开启状态，检查位置信息
-                    checkLocationPermissionAndNavigation()
-                } else {
-//                    longSnackbar(bt_scan,"请先到手机设置页面，打开蓝牙" )
-                    toast("请先到手机设置页面，打开蓝牙")
-                    requestOpenBluetooth()
-                }
-            }
-        }
 
-    }
 
 
     /**
