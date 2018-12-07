@@ -149,6 +149,7 @@ class ScanQRCodeActivity : BaseActivity() {
         }
         val split = this.macAddress?.split(":".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
         if (split?.size != 6) {
+            Logger.e("split:${split?.size}")
             toast(R.string.qrcode_error)
             return true
         }

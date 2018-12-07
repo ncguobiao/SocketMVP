@@ -203,7 +203,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
         mEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 val text = mEditText.text.toString().trim().toUpperCase()
-                checkMac(text)
+                checkMacAddress(text)
 
             }
 
@@ -292,6 +292,25 @@ class BluetoothTestConnectActivity : BaseActivity() {
         return false
     }
 
+    private fun checkMacAddress(text: String) {
+        val charArray = text.toCharArray()
+        val size = charArray.size
+        if (size == 12) {
+            sb = StringBuffer()
+            charArray.forEachIndexed { index, c ->
+                sb?.append(c)
+                if (index % 2 == 1 && index < size - 1) {
+                    sb?.append(":")
+                }
+            }
+            mTvMessage?.text = "输入MAC地址-${sb.toString()}"
+            mDeviceName?.text = "连接设备MAC-${mac}"
+            Logger.i(sb.toString())
+            mBluetoothTestImpl?.setMACAddress(sb.toString())
+        } else {
+            mTvMessage?.text = "输入MAC地址有误"
+        }
+    }
 
 
 
