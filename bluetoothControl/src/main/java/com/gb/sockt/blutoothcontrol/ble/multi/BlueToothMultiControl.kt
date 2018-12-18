@@ -19,11 +19,11 @@ interface BlueToothMultiControl : BaseBLEControl {
 
     //发送加密种子
     fun sendAndCheckSeed(keys: ByteArray)
-
+    fun  requestSeed()
     /**
      * 请求种子
      */
-    fun requestSeed()
+
 //    /**
 //     * 蓝牙响应数据监听
 //     */

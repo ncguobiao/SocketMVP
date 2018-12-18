@@ -24,6 +24,14 @@ class ScanQRCodeActivity : BaseActivity() {
     private var deviceName: String?= null
     private lateinit var rxPermissions: RxPermissions
     private val QRCODE = 18666
+
+
+    companion object {
+        private var clickType :Int = 0
+        private var clickKey :Int = 0
+        private var clickCar :Int = 1
+        private var clickTest :Int = 2
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan_qr_code)
@@ -33,32 +41,42 @@ class ScanQRCodeActivity : BaseActivity() {
         * 打开默认二维码扫描界面
         */
         mScan.onClick {
-            rxPermissions
-                    .request(Manifest.permission.CAMERA)
-                    .subscribe {
-                        if (it) {
-//                //申请的权限全部允许
-                            Logger.d("扫码权限通过")
-                            startActivityForResult(
-                                    Intent(BaseApplication.getApplication(), CaptureActivity::class.java),
-//                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),
-                                    QRCODE
-                            )
-                        } else {
-//                //只要有一个权限被拒绝，就会执行
-                            requestPremissionSetting("相机")
-                        }
-                    }
+            clickType= clickTest
+            openCapture()
         }
 
         button1.onClick {
             checkBLE()
         }
+        button3.onClick {
+            clickType= clickCar
+            openCapture()
+        }
 
 
     }
 
+    private fun openCapture() {
+        rxPermissions
+                .request(Manifest.permission.CAMERA)
+                .subscribe {
+                    if (it) {
+    //                //申请的权限全部允许
+                        Logger.d("扫码权限通过")
+                        startActivityForResult(
+                                Intent(BaseApplication.getApplication(), CaptureActivity::class.java),
+    //                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),
+                                QRCODE
+                        )
+                    } else {
+    //                //只要有一个权限被拒绝，就会执行
+                        requestPremissionSetting("相机")
+                    }
+                }
+    }
+
     override fun doSomethingWithBluetoothOpened() {
+
         startActivity<BluetoothKeyActivity>()
     }
 
@@ -73,7 +91,11 @@ class ScanQRCodeActivity : BaseActivity() {
                 if (resultCode == Activity.RESULT_OK) {
                     val result = data?.getStringExtra("SCAN_RESULT")
                     if (checkQRResult(result)) return
-                    startActivity<BluetoothTestConnectActivity>("mac" to macAddress)
+                    when(clickType){
+                        clickTest->   startActivity<BluetoothTestConnectActivity>("mac" to macAddress)
+                        clickCar->   startActivity<BluetoothCarActivity>("mac" to macAddress)
+                    }
+
 
                 }
 

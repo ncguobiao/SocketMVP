@@ -56,6 +56,15 @@ public class BleUtils {
         return checkCode;
     }
 
+    //售货柜 ,投币器加密专用
+    public static byte checkSeekCode(byte[] bts) {
+        byte checkCode = bts[0];
+        for (int i = 1; i < bts.length; i++) {
+            checkCode = (byte)(checkCode^bts[i]);
+        }
+        return checkCode;
+    }
+
     public static byte checkCode(List<Byte> list) {
         byte checkCode = 0;
         for (int i = 0; i < list.size(); i++) {

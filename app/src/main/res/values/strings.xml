@@ -1,8 +1,13 @@
 <resources>
-    <string name="app_name">充电桩</string>
+    <string name="app_name">蓝牙测试Demo</string>
     <string name="qrcode_error">二维码数据错误!</string>
     <string name="open">打开</string>
     <string name="close">关闭</string>
     <string name="connect">连接蓝牙</string>
     <string name="disconnect">断开连接</string>
+    <string name="config_connect_count">0</string>
+    <string name="clearCoinCount">清除计数</string>
+    <string name="clearConfig">清除配置</string>
+    <string name="coin">开始投币</string>
+    <string name="clear_cache_coin">清除手机投币次数</string>
 </resources>

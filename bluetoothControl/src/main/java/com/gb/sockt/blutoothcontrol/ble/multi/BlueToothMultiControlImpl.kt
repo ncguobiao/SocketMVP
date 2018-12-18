@@ -374,7 +374,10 @@ open class BlueToothMultiControlImpl constructor(deviceTag: String, val context:
             val b0 = Integer.parseInt("27", 16).toByte()
             val b1 = Integer.parseInt("01", 16).toByte()
             val b3 = Integer.parseInt("00", 16).toByte()
-            val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, EQUIP_TYPE, b3))
+//            val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, EQUIP_TYPE, b3))
+//            value = byteArrayOf(b0, b1, EQUIP_TYPE, b3, b4)
+
+            val b4 = Integer.parseInt("84", 16).toByte()
             value = byteArrayOf(b0, b1, EQUIP_TYPE, b3, b4)
         } catch (e: Exception) {
             Logger.e("请求种子指令异常：" + e.toString())

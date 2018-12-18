@@ -5,6 +5,7 @@ import com.example.baselibrary.lbs.GaodeLbsLayerImpl
 import com.example.baselibrary.lbs.ILbsLayer
 import com.gb.socket1.mvp.service.MainService
 import com.gb.socket1.mvp.service.impl.MainServiceImpl
+import com.gb.sockt.blutoothcontrol.ble.car.BluetoothTestCarImpl
 import com.gb.sockt.blutoothcontrol.ble.key.BluetoothTestKeyImpl
 import com.gb.sockt.blutoothcontrol.ble.test.BluetoothTest
 import com.gb.sockt.blutoothcontrol.ble.test.BluetoothTestImpl
@@ -36,5 +37,10 @@ class MainModule constructor(private val context: Activity){
     @Provides
     fun providerBluetoothKeyImpl(): BluetoothTestKeyImpl {
         return BluetoothTestKeyImpl(context)
+    }
+
+    @Provides
+    fun providerBluetoothCarImpl(): BluetoothTestCarImpl {
+        return BluetoothTestCarImpl(context)
     }
 }

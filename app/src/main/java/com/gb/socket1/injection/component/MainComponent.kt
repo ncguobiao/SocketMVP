@@ -3,6 +3,7 @@ package com.gb.sockt.center.injection.component
 import com.example.baselibrary.injection.component.ActivityComponent
 import com.example.baselibrary.injection.scope.PerComponentScope
 import com.gb.socket1.injection.module.MainModule
+import com.gb.socket1.ui.activity.BluetoothCarActivity
 import com.gb.socket1.ui.activity.BluetoothKeyActivity
 import com.gb.socket1.ui.activity.MainActivity
 import dagger.Component
@@ -19,4 +20,5 @@ interface MainComponent {
     fun inject(activity: MainActivity)
 
     fun inject(activity: BluetoothKeyActivity)
+    fun inject(activity: BluetoothCarActivity)
 }

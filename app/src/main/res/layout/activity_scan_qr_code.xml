@@ -17,4 +17,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_20"
         android:text="钥 匙" />
+
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:text="摇摇车" />
 </LinearLayout>

@@ -12,5 +12,4 @@ interface BlueToothCEControl : BlueToothMultiControl {
     fun getDeviceElectric(deviceWay:String)
 
 
-
 }

@@ -306,7 +306,7 @@ class BlueToothCEControlImpl constructor(deviceTag: String, context: Context) :
 //                                    //电压
 //                                    val voltage = getMathVoltage(b1, b2)
 //                                    //电流
-//                                    val electricity = getMathElectricity(b3, b4)
+//                                    val electricity = getMathCount(b3, b4)
 //                                    mBleCEDataChangeListener?.showVoltageAndElectricity(voltage, electricity)
 
                                 }

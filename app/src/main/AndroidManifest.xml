@@ -101,7 +101,12 @@
             android:screenOrientation="portrait">
 
         </activity>
+        <activity
+            android:name=".ui.activity.BluetoothCarActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
 
+        </activity>
         <activity
             android:name=".ui.activity.MainActivity"
             android:launchMode="singleTask"

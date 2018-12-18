@@ -53,5 +53,6 @@ object Constant {
     val CHARACTERISTICUUID1: UUID? = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
 
     const val QRCODE = 18888
+    val COIN_COUNT: String?="coin_count"
 
 }
