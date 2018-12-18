@@ -10,4 +10,5 @@
     <string name="clearConfig">清除配置</string>
     <string name="coin">开始投币</string>
     <string name="clear_cache_coin">清除手机投币次数</string>
+    <string name="clearCoinAndChaceCount">清除设备和手机计数</string>
 </resources>

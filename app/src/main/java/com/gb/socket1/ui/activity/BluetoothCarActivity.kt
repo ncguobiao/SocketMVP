@@ -57,12 +57,16 @@ class BluetoothCarActivity : BaseActivity() {
     }
     private var configCoinCount: Int= 0
 
+    //是否清除计数
+    private var clearCoinState: Boolean=false
     private var mHandler:Handler = @SuppressLint("HandlerLeak")
     object :Handler(){
         override fun handleMessage(msg: Message?) {
             super.handleMessage(msg)
         }
     }
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,13 +91,18 @@ class BluetoothCarActivity : BaseActivity() {
                 mTvState.setTextColor(Color.RED)
                 mProgressBar.visibility = View.GONE
 //
-                if (configCoinCount>0){
-                    //继续连接
-                    presenter?.connect()
+                if (clearCoinState){
+                   toast("正在清除手机计数")
                 }else{
-                    toast("配置投币次数用完")
-                    mTvMessage.text="配置投币次数用完"
+                    if (configCoinCount>0){
+                        //继续连接
+                        presenter?.connect()
+                    }else{
+                        toast("配置投币次数用完")
+                        mTvMessage.text="配置投币次数用完"
+                    }
                 }
+
 
             }
 
@@ -117,8 +126,13 @@ class BluetoothCarActivity : BaseActivity() {
             //设备状态正常
             override fun getDeviceInfoOnIdle() {
                 deviceState = true
-                //自动投币
-                presenter?.coin()
+                if (!clearCoinState){
+                    //自动投币
+                    presenter?.coin()
+                }else{
+                    presenter.clearCount()
+                }
+
             }
 
             override fun onError(data: String) {
@@ -126,19 +140,19 @@ class BluetoothCarActivity : BaseActivity() {
             }
 
             override fun onWriteFailure(msg: String) {
-                Logger.d("onWriteFailure:$msg")
+
             }
 
             override fun onWriteSuccess(msg: String) {
-                Logger.d("onWriteSuccess:$msg")
+
             }
 
             override fun requestOnSuccess(byteArrayToHexString: String?) {
-                Logger.d("requestOnSuccess:$byteArrayToHexString")
+
             }
 
             override fun checkSeekOnSuccess(byteArrayToHexString: String?) {
-                Logger.d("checkSeekOnSuccess:$byteArrayToHexString")
+
             }
 
             override fun getDeviceInfoOnSuccess(count: Int, bleCount: Int) {
@@ -164,11 +178,14 @@ class BluetoothCarActivity : BaseActivity() {
             }
 
             override fun clearCountOnSuccess(byteArrayToHexString: String?) {
-                Logger.d("clearCountOnSuccess:$byteArrayToHexString")
+                clearCoinState = false
+                toast("清除计数成功")
+                SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT, 0L)
+                tvCoinCount.text = "手机成功投币次数=0"
             }
 
             override fun clearConfigOnSuccess(byteArrayToHexString: String?) {
-                Logger.d("clearConfigOnSuccess:$byteArrayToHexString")
+                toast("清除配置成功")
             }
         })
 
@@ -249,6 +266,7 @@ class BluetoothCarActivity : BaseActivity() {
         }
         //清除计数
         mBtnClearCoinCount.onClick {
+            clearCoinState = true
             if (presenter?.getConnectState()) {
                 mProgressBar.visibility = View.GONE
                 mTvMessage?.text = ""
@@ -258,7 +276,7 @@ class BluetoothCarActivity : BaseActivity() {
                 mConsumTime.text = ""
                 presenter?.clearCount()
             } else {
-                toast("蓝牙已断开")
+                presenter.connect()
             }
         }
         //清除配置
