@@ -75,9 +75,6 @@ class BluetoothCarActivity : BaseActivity() {
         mac = intent.getStringExtra("mac")
         Logger.d("mac=${mac}")
 
-        val connectCount = mEditText.text.toString().trim()
-
-
         presenter.setMAC(mac, object : BleConnectListener {
             override fun connectOnError() {
                 showToast("该设备不支持蓝牙")
@@ -97,6 +94,7 @@ class BluetoothCarActivity : BaseActivity() {
                     if (configCoinCount>0){
                         //继续连接
                         presenter?.connect()
+                        startTime = System.currentTimeMillis()
                     }else{
                         toast("配置投币次数用完")
                         mTvMessage.text="配置投币次数用完"
@@ -108,8 +106,7 @@ class BluetoothCarActivity : BaseActivity() {
 
             override fun connectOnSuccess() {
                 mProgressBar.visibility = View.GONE
-                val endTimeMillis = System.currentTimeMillis()
-                val consumTime = endTimeMillis - startTime
+                val consumTime = System.currentTimeMillis() - startTime
                 mConsumTime.text = "连接耗时：${consumTime}ms"
                 mTvState.text = "连接成功"
                 mTvState.setTextColor(Color.GREEN)
@@ -277,6 +274,7 @@ class BluetoothCarActivity : BaseActivity() {
                 presenter?.clearCount()
             } else {
                 presenter.connect()
+                startTime = System.currentTimeMillis()
             }
         }
         //清除配置
