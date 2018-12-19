@@ -22,6 +22,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_bluetooth_car_connect.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
+import java.util.ArrayList
 
 
 /**
@@ -33,107 +34,134 @@ import org.jetbrains.anko.toast
 class BluetoothCarActivity : BaseActivity() {
 
     private var startTime: Long = 0L
-
     private var sb: StringBuffer? = null
     private var mac: String? = null
-
-    private var clickAction: Int = 0
-    private val CLICK_ADD: Int = 1
-    private val CLICK_LESS: Int = 2
-
-    private var resultLength: Int = 0
-
-    private var macAddress: String = ""
-
-    private var deviceName: String = ""
-
     private var deviceState: Boolean = false
     private val presenter by lazy {
         BluetoothTestCarImpl(this)
     }
-
     private val rxPermissions by lazy {
         RxPermissions(this)
     }
-    private var configCoinCount: Int= 0
+    //配置连接次数
+    private var configCoinCount: Int = 0
+
+
+    private var macIndex: Int = 0
 
     //是否清除计数
-    private var clearCoinState: Boolean=false
-    private var mHandler:Handler = @SuppressLint("HandlerLeak")
-    object :Handler(){
-        override fun handleMessage(msg: Message?) {
-            super.handleMessage(msg)
-        }
-    }
+    private var clearCoinState: Boolean = false
+//    private var mHandler: Handler = @SuppressLint("HandlerLeak")
+//    object : Handler() {
+//        override fun handleMessage(msg: Message?) {
+//            super.handleMessage(msg)
+//        }
+//    }
 
+    private var tempCount: Int = 0
 
+    private var macList: ArrayList<String>? = null
 
+    private var tempConfigCoinCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_car_connect)
-        mac = intent.getStringExtra("mac")
-        Logger.d("mac=${mac}")
+//        mac = intent.getStringExtra("mac")
+//        Logger.d("mac=${mac}")
+        macList = intent.getStringArrayListExtra("macList")
+        macList?.let {
+            presenter.setMAC(it[macIndex], object : BleConnectListener {
+                override fun connectOnError() {
+                    showToast("该设备不支持蓝牙")
+                    mTvState.text = "连接错误"
+                    mProgressBar.visibility = View.GONE
+                    mTvState.setTextColor(Color.RED)
+                }
 
-        presenter.setMAC(mac, object : BleConnectListener {
-            override fun connectOnError() {
-                showToast("该设备不支持蓝牙")
-                mTvState.text = "连接错误"
-                mProgressBar.visibility = View.GONE
-                mTvState.setTextColor(Color.RED)
-            }
-
-            override fun connectOnFailure() {
-                mTvState.text = "连接失败"
-                mTvState.setTextColor(Color.RED)
-                mProgressBar.visibility = View.GONE
+                override fun connectOnFailure() {
+                    mTvState.text = "连接失败"
+                    mTvState.setTextColor(Color.RED)
+                    mProgressBar.visibility = View.GONE
 //
-                if (clearCoinState){
-                   toast("正在清除手机计数")
-                }else{
-                    if (configCoinCount>0){
-                        //继续连接
-                        presenter?.connect()
-                        startTime = System.currentTimeMillis()
-                    }else{
-                        toast("配置投币次数用完")
-                        mTvMessage.text="配置投币次数用完"
+                    if (clearCoinState) {
+                        toast("正在清除手机计数")
+                    } else {
+                        //配置的连接次数可用，需要继续连接
+                        if (tempConfigCoinCount > 0) {
+                            //继续连接
+                            macList?.let {
+                                Logger.w("connectOnFailure macIndex=${macIndex},设置MAC=${it[macIndex]}")git
+                                tvMac.text = it[macIndex]
+                                doAsync {
+                                    presenter.clearRequest()
+                                    presenter.setMACAddress(it[macIndex])
+//                                    presenter.close()
+////                                    SystemClock.sleep(3000)
+////                                    presenter.open()
+//                                    SystemClock.sleep(3000)
+                                    presenter.connect()
+                                    startTime = System.currentTimeMillis()
+                                }
+
+                            }
+
+                        } else {
+//                            toast("配置投币次数用完")
+                            mTvMessage.text = "配置投币次数用完"
+                        }
                     }
+                    //清除上一次连接的设备地址
                 }
 
+                override fun connectOnSuccess() {
+                    mProgressBar.visibility = View.GONE
+                    val consumTime = System.currentTimeMillis() - startTime
+                    mConsumTime.text = "连接耗时：${consumTime}ms"
+                    mTvState.text = "连接成功"
+                    mTvState.setTextColor(Color.GREEN)
+                    doAsync {
+                        SystemClock.sleep(300)
+                        presenter.requestSeed()
+                    }
 
-            }
-
-            override fun connectOnSuccess() {
-                mProgressBar.visibility = View.GONE
-                val consumTime = System.currentTimeMillis() - startTime
-                mConsumTime.text = "连接耗时：${consumTime}ms"
-                mTvState.text = "连接成功"
-                mTvState.setTextColor(Color.GREEN)
-                doAsync {
-                    SystemClock.sleep(300)
-                    presenter.requestSeed()
                 }
 
-            }
+            })
+        }
 
-        })
         //蓝牙响应监听
         presenter.setResponseListener(object : BluetoothTestCarListener {
             //设备状态正常
             override fun getDeviceInfoOnIdle() {
                 deviceState = true
-                if (!clearCoinState){
+                if (!clearCoinState) {
                     //自动投币
-                    presenter?.coin()
-                }else{
+                   doAsync {
+                       SystemClock.sleep(300)
+                       presenter.coin()
+                       tempConfigCoinCount--
+                       Logger.d("tempConfigCoinCount=$tempConfigCoinCount")
+                        runOnUiThread {
+                            mEditText?.setText("${tempConfigCoinCount}")
+                        }
+                       macList?.let {
+                          if (macIndex<it.size-1){
+                              macIndex++
+                          }else{
+                              macIndex=0
+                          }
+                           Logger.e("getDeviceInfoOnIdle macIndex=${macIndex},设置MAC=${it[macIndex]}")
+                       }
+                   }
+                } else {
                     presenter.clearCount()
                 }
 
             }
 
             override fun onError(data: String) {
-                Logger.d("onError:$data")
+//                Logger.d("onError:$data")
             }
 
             override fun onWriteFailure(msg: String) {
@@ -153,8 +181,11 @@ class BluetoothCarActivity : BaseActivity() {
             }
 
             override fun getDeviceInfoOnSuccess(count: Int, bleCount: Int) {
-                Logger.d("投币次数=$count , 蓝牙使用次数=$bleCount")
-                tvDeviceCoinCount.text="投币次数=$count , 蓝牙使用次数=$bleCount"
+//                Logger.d("投币次数=$count , 蓝牙使用次数=$bleCount")
+                tvDeviceCoinCount.text = "投币次数=$count , 蓝牙使用次数=$bleCount"
+                val cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT)
+//                tvTotalCoinCount.text = "投币总数:${count + cacheCount}"
+                tempCount = count
             }
 
             override fun getDeviceInfoOnError(error: String) {
@@ -163,15 +194,18 @@ class BluetoothCarActivity : BaseActivity() {
             }
 
             override fun coinOnSuccess(byteArrayToHexString: String?) {
+                Logger.d("coinOnSuccess Data=$byteArrayToHexString")
                 toast("投币成功")
                 var cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT)
-                Logger.d("cacheCount=$cacheCount")
+//                Logger.d("cacheCount=$cacheCount")
                 cacheCount += 1
                 SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT, cacheCount)
                 tvCoinCount.text = "手机成功投币次数=$cacheCount"
-                Logger.d("次数:$cacheCount")
-                configCoinCount--
-                mEditText.setText("${configCoinCount}")
+//                Logger.d("次数:$cacheCount")
+
+
+                tvTotalCoinCount.text = "投币总数:${tempCount + cacheCount}"
+
             }
 
             override fun clearCountOnSuccess(byteArrayToHexString: String?) {
@@ -179,6 +213,7 @@ class BluetoothCarActivity : BaseActivity() {
                 toast("清除计数成功")
                 SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT, 0L)
                 tvCoinCount.text = "手机成功投币次数=0"
+
             }
 
             override fun clearConfigOnSuccess(byteArrayToHexString: String?) {
@@ -190,14 +225,14 @@ class BluetoothCarActivity : BaseActivity() {
         //连接
         mbtnConnect.onClick {
             val connectCount = mEditText.text.toString().trim()
-
-            if (connectCount.isEmpty() ) {
+            if (connectCount.isEmpty()) {
                 toast("请配置投币次数")
                 return@onClick
             }
             //配置的投币次数
             configCoinCount = connectCount.toInt()
-            if (configCoinCount < 1){
+            tempConfigCoinCount = configCoinCount
+            if (configCoinCount < 1) {
                 toast("请配置投币次数，且须大于1次")
                 return@onClick
             }
@@ -206,9 +241,12 @@ class BluetoothCarActivity : BaseActivity() {
                 mTvMessage?.text = ""
             mTvReciver?.text = ""
             mProgressBar.visibility = View.VISIBLE
-            presenter?.connect()
-            startTime = System.currentTimeMillis()
-            Logger.d("startTime:$startTime")
+            macList?.let {
+                presenter.setMACAddress(it[macIndex])
+                tvMac.text = it[macIndex]
+                presenter.connect()
+                startTime = System.currentTimeMillis()
+            }
         }
 
         //断开连接
@@ -247,7 +285,7 @@ class BluetoothCarActivity : BaseActivity() {
                 sb = StringBuffer()
                 mConsumTime.text = ""
                 if (deviceState) {
-                    presenter?.coin()
+                    presenter.coin()
                 } else {
                     toast("设备状态异常")
                 }
@@ -273,8 +311,12 @@ class BluetoothCarActivity : BaseActivity() {
                 mConsumTime.text = ""
                 presenter?.clearCount()
             } else {
-                presenter.connect()
-                startTime = System.currentTimeMillis()
+                macList?.let {
+                    presenter.setMACAddress(it[macIndex])
+                    tvMac.text = it[macIndex]
+                    presenter.connect()
+                    startTime = System.currentTimeMillis()
+                }
             }
         }
         //清除配置

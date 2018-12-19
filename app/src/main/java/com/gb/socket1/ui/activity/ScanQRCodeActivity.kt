@@ -12,6 +12,7 @@ import com.gb.socket1.R
 import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_scan_qr_code.*
+import org.jetbrains.anko.collections.forEachWithIndex
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
@@ -20,18 +21,20 @@ import org.jetbrains.anko.toast
  */
 class ScanQRCodeActivity : BaseActivity() {
     private var resultLength: Int = 0
-    private var macAddress: String?= null
-    private var deviceName: String?= null
+    private var macAddress: String? = null
+    private var deviceName: String? = null
     private lateinit var rxPermissions: RxPermissions
     private val QRCODE = 18666
 
+    private val macList = ArrayList<String>()
 
     companion object {
-        private var clickType :Int = 0
-        private var clickKey :Int = 0
-        private var clickCar :Int = 1
-        private var clickTest :Int = 2
+        private var clickType: Int = 0
+        private var clickKey: Int = 0
+        private var clickCar: Int = 1
+        private var clickTest: Int = 2
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan_qr_code)
@@ -41,7 +44,7 @@ class ScanQRCodeActivity : BaseActivity() {
         * 打开默认二维码扫描界面
         */
         mScan.onClick {
-            clickType= clickTest
+            clickType = clickTest
             openCapture()
         }
 
@@ -49,11 +52,14 @@ class ScanQRCodeActivity : BaseActivity() {
             checkBLE()
         }
         button3.onClick {
-            clickType= clickCar
+            clickType = clickCar
             openCapture()
         }
-
-
+        button4.onClick {
+            clickType = clickCar
+            checkBLE()
+//            macList.clear()
+        }
     }
 
     private fun openCapture() {
@@ -61,23 +67,33 @@ class ScanQRCodeActivity : BaseActivity() {
                 .request(Manifest.permission.CAMERA)
                 .subscribe {
                     if (it) {
-    //                //申请的权限全部允许
+                        //                //申请的权限全部允许
                         Logger.d("扫码权限通过")
                         startActivityForResult(
                                 Intent(BaseApplication.getApplication(), CaptureActivity::class.java),
-    //                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),
+                                //                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),
                                 QRCODE
                         )
                     } else {
-    //                //只要有一个权限被拒绝，就会执行
+                        //                //只要有一个权限被拒绝，就会执行
                         requestPremissionSetting("相机")
                     }
                 }
     }
 
     override fun doSomethingWithBluetoothOpened() {
+        when(clickType){
+            clickKey->startActivity<BluetoothKeyActivity>()
+            clickCar->{
+                if (macList.isEmpty()) {
+                    toast("请先扫码获取MAC")
+                    return
+                }
+                startActivity<BluetoothCarActivity>("macList" to macList)
+            }
 
-        startActivity<BluetoothKeyActivity>()
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -91,9 +107,13 @@ class ScanQRCodeActivity : BaseActivity() {
                 if (resultCode == Activity.RESULT_OK) {
                     val result = data?.getStringExtra("SCAN_RESULT")
                     if (checkQRResult(result)) return
-                    when(clickType){
-                        clickTest->   startActivity<BluetoothTestConnectActivity>("mac" to macAddress)
-                        clickCar->   startActivity<BluetoothCarActivity>("mac" to macAddress)
+                    when (clickType) {
+                        clickTest -> startActivity<BluetoothTestConnectActivity>("mac" to macAddress)
+                        clickCar -> {
+                            if (!macAddress.isNullOrEmpty() && !macList.contains(macAddress))
+                                macList.add(macAddress!!)
+                            toast("添加MAC=${macAddress}成功")
+                        }
                     }
 
 
@@ -127,6 +147,10 @@ class ScanQRCodeActivity : BaseActivity() {
         return false
     }
 
+//    override fun onStop() {
+//        super.onStop()
+//        macList.clear()
+//    }
 
 
     //检查二维码

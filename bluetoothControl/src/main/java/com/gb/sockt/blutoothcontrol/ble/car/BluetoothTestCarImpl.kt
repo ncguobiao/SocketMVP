@@ -1,5 +1,6 @@
 package com.gb.sockt.blutoothcontrol.ble.car
 
+import android.bluetooth.BluetoothGatt
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -26,7 +27,6 @@ import java.util.*
 class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar {
 
 
-    private var address: String? = null
     private var mcontext: WeakReference<Context>? = null
 
     private var mClient: BluetoothClient? = null
@@ -179,10 +179,10 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
             mClient?.write(getMAC(), BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID1, value, BleWriteResponse { code ->
                 if (code == Constants.REQUEST_SUCCESS) {
                     mBluetoothTestCarListener?.onWriteSuccess("${msg}:${writeData}==成功")
-                    Logger.w("${msg}:${writeData}==成功")
+//                    Logger.w("${msg}:${writeData}==成功")
                 } else {
                     mBluetoothTestCarListener?.onWriteFailure("${msg}:${writeData}==失败")
-                    Logger.w("${msg}:${writeData}--失败")
+//                    Logger.w("${msg}:${writeData}--失败")
                 }
             })
         }
@@ -222,7 +222,7 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                 Constants.ACTION_CHARACTER_CHANGED -> {
                     val receiveValue = intent.getByteArrayExtra(Constants.EXTRA_BYTE_VALUE)
                     receiveValue?.let {
-                        Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
+//                        Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
                             it.size > 7 && it[2].toInt() == 0x01 -> {
                                 //获取随机种子
@@ -321,12 +321,13 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
      */
     private fun connectDevice() {
         mClient?.let {
+            Logger.e("连接MAC=${getMAC()}")
             mClient!!.connect(getMAC(), BluetoothConfig.options) { code, data ->
                 when (code) {
                 //连接成功
                     Constants.REQUEST_SUCCESS -> {
                         mConnected = true
-                        Logger.e("发起连接成功")
+//                        Logger.d("发起连接成功")
                     }
                 //连接失败
                     Constants.REQUEST_FAILED -> {
@@ -383,7 +384,27 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
 
     override fun close() {
         Logger.d("APP主动断开蓝牙")
-        mClient?.disconnect(macAddress)
+//        BluetoothGatt
+//        val bluetoothGatt:Class<BluetoothGatt> = Class.forName("android.bluetooth.BluetoothGatt") as Class<BluetoothGatt>
+        val bluetoothGatt  = BluetoothGatt::class.java
+        Logger.d("bluetoothGatt=$bluetoothGatt")
+        val newInstance = bluetoothGatt?.newInstance() as BluetoothGatt
+        Logger.d("newInstance=$newInstance")
+        val disconnect = bluetoothGatt?.getDeclaredMethod("disconnect")
+        Logger.d("disconnect=$disconnect")
+        disconnect?.isAccessible=true
+        disconnect?.invoke(newInstance)
+//        mClient?.let {
+//            it.disconnect(macAddress)
+//            it.closeBluetooth()
+//        }
+
+    }
+    fun open(){
+        mClient?.let {
+          if (! it.isBluetoothOpened)it.openBluetooth()
+
+        }
     }
 
     override fun deviceIfNeeded() {
@@ -393,9 +414,11 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         return mConnected
     }
 
-    fun setMACAddress(address: String) {
-        this.address = address
+    fun setMACAddress(mac: String) {
+        this.macAddress = mac
     }
-
+    fun clearRequest(){
+        mClient?.clearRequest(macAddress,0)
+    }
 
 }

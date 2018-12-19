@@ -130,7 +130,7 @@ open class BaseActivity : RxAppCompatActivity() {
     }
 
     protected fun dissmissNetDialog() {
-        mNetDialog?.dismiss()
+//        mNetDialog?.dismissAllowingStateLoss()
     }
 
     protected fun getPushId():String{
