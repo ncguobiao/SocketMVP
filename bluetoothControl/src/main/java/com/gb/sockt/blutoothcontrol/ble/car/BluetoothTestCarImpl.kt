@@ -385,19 +385,19 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
     override fun close() {
         Logger.d("APP主动断开蓝牙")
 //        BluetoothGatt
-//        val bluetoothGatt:Class<BluetoothGatt> = Class.forName("android.bluetooth.BluetoothGatt") as Class<BluetoothGatt>
-        val bluetoothGatt  = BluetoothGatt::class.java
-        Logger.d("bluetoothGatt=$bluetoothGatt")
-        val newInstance = bluetoothGatt?.newInstance() as BluetoothGatt
-        Logger.d("newInstance=$newInstance")
-        val disconnect = bluetoothGatt?.getDeclaredMethod("disconnect")
-        Logger.d("disconnect=$disconnect")
-        disconnect?.isAccessible=true
-        disconnect?.invoke(newInstance)
-//        mClient?.let {
-//            it.disconnect(macAddress)
+////        val bluetoothGatt:Class<BluetoothGatt> = Class.forName("android.bluetooth.BluetoothGatt") as Class<BluetoothGatt>
+//        val bluetoothGatt  = BluetoothGatt::class.java
+//        Logger.d("bluetoothGatt=$bluetoothGatt")
+//        val newInstance = bluetoothGatt?.newInstance() as BluetoothGatt
+//        Logger.d("newInstance=$newInstance")
+//        val disconnect = bluetoothGatt?.getDeclaredMethod("disconnect")
+//        Logger.d("disconnect=$disconnect")
+//        disconnect?.isAccessible=true
+//        disconnect?.invoke(newInstance)
+        mClient?.let {
+            it.disconnect(macAddress)
 //            it.closeBluetooth()
-//        }
+        }
 
     }
     fun open(){

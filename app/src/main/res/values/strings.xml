@@ -3,7 +3,8 @@
     <string name="qrcode_error">二维码数据错误!</string>
     <string name="open">打开</string>
     <string name="close">关闭</string>
-    <string name="connect">连接蓝牙</string>
+    <string name="connect">手动连接蓝牙</string>
+    <string name="autoconnect">自动连接蓝牙</string>
     <string name="disconnect">断开连接</string>
     <string name="config_connect_count">0</string>
     <string name="clearCoinCount">清除计数</string>

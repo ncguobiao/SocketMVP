@@ -14,6 +14,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import org.jetbrains.anko.collections.forEachWithIndex
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
 
 /**
@@ -25,6 +26,7 @@ class ScanQRCodeActivity : BaseActivity() {
     private var deviceName: String? = null
     private lateinit var rxPermissions: RxPermissions
     private val QRCODE = 18666
+    private val ACTIVITYCODE = 18888
 
     private val macList = ArrayList<String>()
 
@@ -81,15 +83,34 @@ class ScanQRCodeActivity : BaseActivity() {
                 }
     }
 
+    private var index: Int = 0
+
+    private var configCoinCount: Int=0
+
     override fun doSomethingWithBluetoothOpened() {
-        when(clickType){
-            clickKey->startActivity<BluetoothKeyActivity>()
-            clickCar->{
+        when (clickType) {
+            clickKey -> startActivity<BluetoothKeyActivity>()
+            clickCar -> {
                 if (macList.isEmpty()) {
                     toast("请先扫码获取MAC")
                     return
                 }
-                startActivity<BluetoothCarActivity>("macList" to macList)
+                val connectCount = mEditText.text.toString().trim()
+                if (connectCount.isEmpty()) {
+                    toast("请配置投币次数")
+                    return
+                }
+                //配置的投币次数
+                 configCoinCount = connectCount.toInt()
+                if (configCoinCount < 1) {
+                    toast("请配置投币次数，且须大于1次")
+                    return
+                }
+//                startActivity<BluetoothCarActivity>("macList" to macList)
+                index = 0
+                startActivityForResult<BluetoothCarActivity>(ACTIVITYCODE,
+                        "mac" to macList[index],
+                        "configCoinCount" to configCoinCount)
             }
 
         }
@@ -98,12 +119,13 @@ class ScanQRCodeActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        Logger.d("requestCode =$requestCode ,resultCode=$resultCode ")
         /**
          * 处理二维码扫描结果
          */
         when (requestCode) {
-            QRCODE ->//扫码逻辑
-            {
+            QRCODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val result = data?.getStringExtra("SCAN_RESULT")
                     if (checkQRResult(result)) return
@@ -115,10 +137,18 @@ class ScanQRCodeActivity : BaseActivity() {
                             toast("添加MAC=${macAddress}成功")
                         }
                     }
-
-
                 }
-
+            }
+            ACTIVITYCODE -> {
+                index++
+                if (index < macList.size)
+                    startActivityForResult<BluetoothCarActivity>(ACTIVITYCODE,
+                            "mac" to macList[index],
+                            "configCoinCount" to configCoinCount)
+                else {
+                    toast("已测试完成")
+                    tvMessage.text = "投币测试完成"
+                }
             }
         }
     }
