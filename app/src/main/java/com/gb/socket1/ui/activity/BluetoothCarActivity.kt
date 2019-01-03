@@ -100,9 +100,9 @@ class BluetoothCarActivity : BaseActivity() {
                         doAsync {
                             setResult(1000)
                             runOnUiThread {
-                                toast("设备MAC= $mac 已测试完成")
+                                toast("设备MAC= $mac 已测试完成/r/n")
                             }
-                            SystemClock.sleep(1000)
+                            SystemClock.sleep(8000)
                             runOnUiThread {
                                 finish()
                             }

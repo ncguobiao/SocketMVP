@@ -1,6 +1,7 @@
 package com.example.baselibrary.common;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by dongdong on 2016/5/19.
@@ -57,4 +58,7 @@ public class ConstantSP {
 
 
     public static final String WALLET="wallet";
+    //充电线密码
+    @Nullable
+    public static final String DEVICE_PWD = "device_pwd";
 }

@@ -35,6 +35,7 @@ class ScanQRCodeActivity : BaseActivity() {
         private var clickKey: Int = 0
         private var clickCar: Int = 1
         private var clickTest: Int = 2
+        private var clickCable: Int = 3
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +62,10 @@ class ScanQRCodeActivity : BaseActivity() {
             clickType = clickCar
             checkBLE()
 //            macList.clear()
+        }
+        button5.onClick {
+            clickType = clickCable
+            openCapture()
         }
     }
 
@@ -135,6 +140,9 @@ class ScanQRCodeActivity : BaseActivity() {
                             if (!macAddress.isNullOrEmpty() && !macList.contains(macAddress))
                                 macList.add(macAddress!!)
                             toast("添加MAC=${macAddress}成功")
+                        }
+                        clickCable->{
+                            startActivity<CableActivity>("mac" to macAddress)
                         }
                     }
                 }

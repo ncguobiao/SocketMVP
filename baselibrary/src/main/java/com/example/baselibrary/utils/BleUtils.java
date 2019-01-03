@@ -154,7 +154,18 @@ public class BleUtils {
         sb.append(']');
         return sb.toString();
     }
+    public static String byteToHexString(final byte[] array) {
+        final StringBuilder sb = new StringBuilder();
+        boolean firstEntry = true;
+        sb.append("0x");
+        for (final byte b : array) {
+            sb.append(HEXES.charAt((b & 0xF0) >> 4));
+            sb.append(HEXES.charAt((b & 0x0F)));
+            firstEntry = false;
+        }
 
+        return sb.toString();
+    }
 
     //请求种子
     public static byte[] requestSeed(byte device_type) {
