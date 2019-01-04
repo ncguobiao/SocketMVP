@@ -61,4 +61,8 @@ public class ConstantSP {
     //充电线密码
     @Nullable
     public static final String DEVICE_PWD = "device_pwd";
+    //修改后的充电线mac
+    @Nullable
+    public static final String DEVICE_MAC="devicec";
+    public static final int SET_MAC_SUCCESS=6666;
 }

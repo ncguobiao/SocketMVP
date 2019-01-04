@@ -136,6 +136,14 @@ public class BleUtils {
 //    };
     private static final String HEXES = "0123456789ABCDEF";
 
+    //int转byte
+    public static byte[] int2Bytes(int value, int len) {
+        byte[] b = new byte[len];
+        for (int i = 0; i < len; i++) {
+            b[len - i - 1] = (byte)((value >> 8 * i) & 0xff);
+        }
+        return b;
+    }
 
     public static String byteArrayToHexString(final byte[] array) {
         final StringBuilder sb = new StringBuilder();

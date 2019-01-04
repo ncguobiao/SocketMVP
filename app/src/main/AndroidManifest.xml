@@ -127,7 +127,9 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.activity.CableActivity"
+        <activity android:name=".ui.activity.BleCableActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.BleCableNewMACActivity"
             android:screenOrientation="portrait"/>
         <!-- 微信支付 -->
         <activity

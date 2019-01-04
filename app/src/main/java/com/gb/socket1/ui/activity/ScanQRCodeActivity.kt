@@ -4,15 +4,18 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.BaseApplication
+import com.example.baselibrary.common.ConstantSP
+import com.example.baselibrary.common.ConstantSP.SET_MAC_SUCCESS
 import com.example.baselibrary.onClick
 import com.example.baselibrary.zxing.app.CaptureActivity
 import com.gb.socket1.R
 import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_scan_qr_code.*
-import org.jetbrains.anko.collections.forEachWithIndex
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
@@ -90,7 +93,7 @@ class ScanQRCodeActivity : BaseActivity() {
 
     private var index: Int = 0
 
-    private var configCoinCount: Int=0
+    private var configCoinCount: Int = 0
 
     override fun doSomethingWithBluetoothOpened() {
         when (clickType) {
@@ -106,7 +109,7 @@ class ScanQRCodeActivity : BaseActivity() {
                     return
                 }
                 //配置的投币次数
-                 configCoinCount = connectCount.toInt()
+                configCoinCount = connectCount.toInt()
                 if (configCoinCount < 1) {
                     toast("请配置投币次数，且须大于1次")
                     return
@@ -124,8 +127,6 @@ class ScanQRCodeActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        Logger.d("requestCode =$requestCode ,resultCode=$resultCode ")
         /**
          * 处理二维码扫描结果
          */
@@ -141,8 +142,8 @@ class ScanQRCodeActivity : BaseActivity() {
                                 macList.add(macAddress!!)
                             toast("添加MAC=${macAddress}成功")
                         }
-                        clickCable->{
-                            startActivity<CableActivity>("mac" to macAddress)
+                        clickCable -> {
+                            startActivityForResult<BleCableActivity>(SET_MAC_SUCCESS,"mac" to macAddress)
                         }
                     }
                 }
@@ -156,6 +157,20 @@ class ScanQRCodeActivity : BaseActivity() {
                 else {
                     toast("已测试完成")
                     tvMessage.text = "投币测试完成"
+                }
+            }
+        //修改mac成功
+            ConstantSP.SET_MAC_SUCCESS -> {
+
+                doAsync {
+                    runOnUiThread {
+                        toast("请勿关闭程序，/r/n5秒后自动开启页面进行设备连接")
+                    }
+                    Logger.w("onActivityResult----延时5000")
+                    SystemClock.sleep(5000)
+                    runOnUiThread {
+                        startActivity<BleCableNewMACActivity>()
+                    }
                 }
             }
         }
@@ -212,30 +227,45 @@ class ScanQRCodeActivity : BaseActivity() {
             }
             return false
         } else {
-            toast(R.string.qrcode_error)
+            Logger.e("二维码中没包含 -")
+            toast("二维码错误，未包含 -")
             return true
         }
 
     }
 
     private fun checkMac(macAddress: String?, deviceName: String?): Boolean {
-        if (macAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
-            toast(R.string.qrcode_error)
-            return true
-        }
-        if (!macAddress!!.contains(":")) {
-            toast(R.string.qrcode_error)
-            return true
-        }
-        if (macAddress.length != 17) {
-            toast(R.string.qrcode_error)
-            return true
-        }
-        val split = this.macAddress?.split(":".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
-        if (split?.size != 6) {
-            Logger.e("split:${split?.size}")
-            toast(R.string.qrcode_error)
-            return true
+        macAddress?.let {
+            if (it.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
+                toast(R.string.qrcode_error)
+                return true
+            }
+            if (it.toUpperCase().startsWith("SF")) {
+                val sb = StringBuffer()
+                val substring = it.substring(1, it.length)
+                substring.toCharArray().forEachIndexed { index, value ->
+                    sb.append(value)
+                    if (index % 2 == 1 && index < substring.length - 1) {
+                        sb.append(":")
+                    }
+                    this.macAddress = sb.toString()
+                }
+                return false
+            }
+            if (!it.contains(":")) {
+                toast(R.string.qrcode_error)
+                return true
+            }
+            if (it.length != 17) {
+                toast(R.string.qrcode_error)
+                return true
+            }
+            val split = this.macAddress?.split(":".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
+            if (split?.size != 6) {
+                Logger.e("split:${split?.size}")
+                toast(R.string.qrcode_error)
+                return true
+            }
         }
         return false
     }

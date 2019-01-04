@@ -5,10 +5,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.example.baselibrary.common.ConstantSP
+import com.example.baselibrary.utils.AppUtils
 import com.example.baselibrary.utils.BleUtils
 import com.example.baselibrary.utils.BluetoothClientManager
+import com.example.baselibrary.utils.SpUtils
 import com.gb.sockt.blutoothcontrol.ble.BaseBLEControl
 import com.gb.sockt.blutoothcontrol.ble.BluetoothConfig
+import com.gb.sockt.blutoothcontrol.listener.BleCableListener
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
 import com.gb.sockt.blutoothcontrol.listener.BluetoothTestCarListener
 import com.inuker.bluetooth.library.BluetoothClient
@@ -43,14 +47,12 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     private var mBleConnectListener: BleConnectListener? = null
     private lateinit var msg: String
     private var macAddress: String? = null
-    private var mBluetoothTestCarListener: BluetoothTestCarListener? = null
+    private var password: String? = null
+    private var mBleCableListener: BleCableListener? = null
     private var mConnected: Boolean = false
     private lateinit var mConnectStatusListener: BleConnectStatusListener
     private var filter: IntentFilter? = null
 
-    private val deviceType by lazy {
-        Integer.parseInt("A2", 16).toByte()
-    }
 
     init {
 
@@ -101,37 +103,43 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     第一层加密数据3 xor  密码字节7 = 第二层加密数据3
     第一层加密数据4 xor  密码字节8 = 第二层加密数据4
      */
-    fun setCicle(password: String?) {
+    fun setCircle(password: String?) {
+        if (password.isNullOrEmpty()) {
+            context?.toast("加密MAC错误")
+            return
+        }
         val b1 = Integer.parseInt("AA", 16).toByte()
         val b2 = Integer.parseInt("07", 16).toByte()
         val b3 = Integer.parseInt("00", 16).toByte()
         val b4 = Integer.parseInt("00", 16).toByte()
 
         var sb = StringBuffer()
-        password?.toCharArray()?.forEachIndexed { index, value ->
-            sb.append(value)
-            if (index % 2 == 1 && index < password.length - 1) {
-                sb.append("-")
+        password?.let {
+            it.toCharArray().forEachIndexed { index, value ->
+                sb.append(value)
+                if (index % 2 == 1 && index < password.length - 1) {
+                    sb.append("-")
+                }
             }
+            val list = sb.toString().split("-")
+            val b5 = Integer.parseInt(list[0], 16).toByte()
+            val b6 = Integer.parseInt(list[1], 16).toByte()
+            val b7 = Integer.parseInt(list[2], 16).toByte()
+            val b8 = Integer.parseInt(list[3], 16).toByte()
+
+            val b9 = Integer.parseInt(list[4], 16).toByte()
+            val b10 = Integer.parseInt(list[5], 16).toByte()
+            val b11 = Integer.parseInt(list[6], 16).toByte()
+            val b12 = Integer.parseInt(list[7], 16).toByte()
+            val value1 = b1 xor b5 xor b9
+            val value2 = b2 xor b6 xor b10
+            val value3 = b3 xor b7 xor b11
+            val value4 = b4 xor b8 xor b12
+            val value = byteArrayOf(value1, value2, value3, value4)
+            msg = "充电线心跳数据"
+            write(value)
         }
-        val list = sb.toString().split("-")
-        val b5 = Integer.parseInt(list[0], 16).toByte()
-        val b6 = Integer.parseInt(list[1], 16).toByte()
-        val b7 = Integer.parseInt(list[2], 16).toByte()
-        val b8 = Integer.parseInt(list[3], 16).toByte()
 
-
-        val b9 = Integer.parseInt(list[4], 16).toByte()
-        val b10 = Integer.parseInt(list[5], 16).toByte()
-        val b11 = Integer.parseInt(list[6], 16).toByte()
-        val b12 = Integer.parseInt(list[7], 16).toByte()
-        val value1 = b1 xor b5 xor b9
-        val value2 = b2 xor b6 xor b10
-        val value3 = b3 xor b7 xor b11
-        val value4 = b4 xor b8 xor b12
-        val value = byteArrayOf(value1, value2, value3, value4)
-        msg = "充电线心跳数据"
-        write(value)
     }
 
     /**
@@ -141,6 +149,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     0xMMyyzznnXXYYZZNN: 9C4A816C3B02FF35 新密码
      */
     fun setPWd(password: String?) {
+        this.password = password
         if (password.isNullOrEmpty()) {
             context?.toast("加密MAC错误")
             return
@@ -157,26 +166,29 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         val b8 = Integer.parseInt("AC", 16).toByte()
         val b9 = Integer.parseInt("05", 16).toByte()
 
-        var sb = StringBuffer()
-        password?.toCharArray()?.forEachIndexed { index, value ->
-            sb.append(value)
-            if (index % 2 == 1 && index < password.length - 1) {
-                sb.append("-")
+        password?.let {
+            var sb = StringBuffer()
+            it.toCharArray().forEachIndexed { index, value ->
+                sb.append(value)
+                if (index % 2 == 1 && index < password.length - 1) {
+                    sb.append("-")
+                }
             }
-        }
-        val list = sb.toString().split("-")
+            val list = sb.toString().split("-")
 
-        val b10 = Integer.parseInt(list[0], 16).toByte()
-        val b11 = Integer.parseInt(list[1], 16).toByte()
-        val b12 = Integer.parseInt(list[2], 16).toByte()
-        val b13 = Integer.parseInt(list[3], 16).toByte()
-        val b14 = Integer.parseInt(list[4], 16).toByte()
-        val b15 = Integer.parseInt(list[5], 16).toByte()
-        val b16 = Integer.parseInt(list[6], 16).toByte()
-        val b17 = Integer.parseInt(list[7], 16).toByte()
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17)
-        msg = "充电线修改密码"
-        write(value)
+            val b10 = Integer.parseInt(list[0], 16).toByte()
+            val b11 = Integer.parseInt(list[1], 16).toByte()
+            val b12 = Integer.parseInt(list[2], 16).toByte()
+            val b13 = Integer.parseInt(list[3], 16).toByte()
+            val b14 = Integer.parseInt(list[4], 16).toByte()
+            val b15 = Integer.parseInt(list[5], 16).toByte()
+            val b16 = Integer.parseInt(list[6], 16).toByte()
+            val b17 = Integer.parseInt(list[7], 16).toByte()
+            val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17)
+            msg = "充电线修改密码"
+            write(value)
+        }
+
     }
 
     /**
@@ -194,46 +206,110 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     手机收到0xFF返回值后表示命令错误或者密码不对。
      */
     fun setDeviceMac(password: String?, mac: String?) {
-
-        var sb = StringBuffer()
+        if (password.isNullOrEmpty()) {
+            context?.toast("加密MAC错误")
+            return
+        }
         password?.let {
+            var sb = StringBuffer()
             it.toCharArray().forEachIndexed { index, value ->
                 sb.append(value)
                 if (index % 2 == 1 && index < password.length - 1) {
                     sb.append("-")
                 }
             }
-        }
-        val list = sb.toString().split("-")
+            val list = sb.toString().split("-")
 
-        val b0 = Integer.parseInt(list[0], 16).toByte()
-        val b1 = Integer.parseInt(list[1], 16).toByte()
-        val b2 = Integer.parseInt(list[2], 16).toByte()
-        val b3 = Integer.parseInt(list[3], 16).toByte()
-        val b4 = Integer.parseInt(list[4], 16).toByte()
-        val b5 = Integer.parseInt(list[5], 16).toByte()
-        val b6 = Integer.parseInt(list[6], 16).toByte()
-        val b7 = Integer.parseInt(list[7], 16).toByte()
+            val b0 = Integer.parseInt(list[0], 16).toByte()
+            val b1 = Integer.parseInt(list[1], 16).toByte()
+            val b2 = Integer.parseInt(list[2], 16).toByte()
+            val b3 = Integer.parseInt(list[3], 16).toByte()
+            val b4 = Integer.parseInt(list[4], 16).toByte()
+            val b5 = Integer.parseInt(list[5], 16).toByte()
+            val b6 = Integer.parseInt(list[6], 16).toByte()
+            val b7 = Integer.parseInt(list[7], 16).toByte()
 
-        val b8 = Integer.parseInt("AC", 16).toByte()
-        val b9 = Integer.parseInt("06", 16).toByte()
-        mac?.let {
-            if (mac.contains(":")){
-               var  listMac = mac.split(":")
-                //反转mac
-                listMac = listMac.reversed()
+            val b8 = Integer.parseInt("AC", 16).toByte()
+            val b9 = Integer.parseInt("06", 16).toByte()
+            mac?.let {
+                if (mac.contains(":")) {
+                    var listMac = mac.split(":")
+                    //反转mac
+                    listMac = listMac.reversed()
 
-                val b10 = Integer.parseInt(listMac[0], 16).toByte()
-                val b11 = Integer.parseInt(listMac[1], 16).toByte()
-                val b12 = Integer.parseInt(listMac[2], 16).toByte()
-                val b13 = Integer.parseInt(listMac[3], 16).toByte()
-                val b14 = Integer.parseInt(listMac[4], 16).toByte()
-                val b15 = Integer.parseInt(listMac[5], 16).toByte()
-                val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15)
-                msg = "充电线修改Mac=$mac"
-                write(value)
+                    val b10 = Integer.parseInt(listMac[0], 16).toByte()
+                    val b11 = Integer.parseInt(listMac[1], 16).toByte()
+                    val b12 = Integer.parseInt(listMac[2], 16).toByte()
+                    val b13 = Integer.parseInt(listMac[3], 16).toByte()
+                    val b14 = Integer.parseInt(listMac[4], 16).toByte()
+                    val b15 = Integer.parseInt(listMac[5], 16).toByte()
+                    val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15)
+                    msg = "充电线修改Mac=$mac"
+                    write(value)
+                }
             }
         }
+
+    }
+
+    /**
+     * 开指令
+     */
+    fun openDevice(integerValue: Int) {
+        val b0 = Integer.parseInt("AA", 16).toByte()
+        val b1 = Integer.parseInt("02", 16).toByte()
+        // 时间
+        val b2 = (integerValue shr 8).toByte()
+        val b3 = integerValue.toByte()
+
+        val password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
+        if (password.isNullOrEmpty()) {
+            context?.toast("加密MAC错误")
+            return
+        }
+        password?.let {
+            var sb = StringBuffer()
+            it.toCharArray().forEachIndexed { index, value ->
+                sb.append(value)
+                if (index % 2 == 1 && index < password.length - 1) {
+                    sb.append("-")
+                }
+            }
+            val list = sb.toString().split("-")
+
+            val b10 = Integer.parseInt(list[0], 16).toByte()
+            val b11 = Integer.parseInt(list[1], 16).toByte()
+            val b12 = Integer.parseInt(list[2], 16).toByte()
+            val b13 = Integer.parseInt(list[3], 16).toByte()
+            val b14 = Integer.parseInt(list[4], 16).toByte()
+            val b15 = Integer.parseInt(list[5], 16).toByte()
+            val b16 = Integer.parseInt(list[6], 16).toByte()
+            val b17 = Integer.parseInt(list[7], 16).toByte()
+
+            val value1 = b0 xor b10 xor b14
+            val value2 = b1 xor b11 xor b15
+            val value3 = b2 xor b12 xor b16
+            val value4 = b3 xor b13 xor b17
+            val value = byteArrayOf(value1, value2, value3, value4)
+            msg = "充电线开启=${integerValue}分钟"
+            write(value)
+        }
+    }
+
+    /**
+     * 关闭
+     */
+    fun closeDevice(integerValue: Int) {
+        val b0 = Integer.parseInt("AA", 16).toByte()
+        val b1 = Integer.parseInt("02", 16).toByte()
+
+
+        val b2 = (integerValue shr 8).toByte()// 时间
+        val b3 = integerValue.toByte()//时间
+        val value = byteArrayOf(b0, b1, b2, b3)
+        msg = "充电线关闭"
+        write(value)
+
     }
 
     //蓝牙数据写入方法
@@ -242,10 +318,10 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val writeData = BleUtils.byteArrayToHexString(value)
             mClient?.write(getMAC(), UUID, WRITE_UUID, value, BleWriteResponse { code ->
                 if (code == Constants.REQUEST_SUCCESS) {
-                    mBluetoothTestCarListener?.onWriteSuccess("${msg}=${writeData}==成功")
+                    mBleCableListener?.onWriteSuccess("${msg}=${writeData}==成功")
                     Logger.w("${msg}=${writeData}==成功")
                 } else {
-                    mBluetoothTestCarListener?.onWriteFailure("${msg}:${writeData}==失败")
+                    mBleCableListener?.onWriteFailure("${msg}:${writeData}==失败")
                     Logger.w("${msg}:${writeData}--失败")
                 }
             })
@@ -290,6 +366,15 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                         when {
                             "0xAA050000" == BleUtils.byteToHexString(it) -> {
                                 Logger.d("修改密码成功")
+                                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
+                                mBleCableListener?.setPwdSuccess(password)
+                            }
+                            BleUtils.byteToHexString(it).startsWith("0xAA02")->{
+                                Logger.d("开启成功")
+                                mBleCableListener?.openSuccess()
+                            }
+                            else -> {
+                                mBleCableListener?.onError()
                             }
                         }
 
@@ -403,8 +488,8 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     }
 
 
-    override fun setResponseListener(mBluetoothTestCarListener: BluetoothTestCarListener?) {
-        this.mBluetoothTestCarListener = mBluetoothTestCarListener
+    override fun setResponseListener(mBleCableListener: BleCableListener?) {
+        this.mBleCableListener = mBleCableListener
 
     }
 
@@ -449,5 +534,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     fun clearRequest() {
         mClient?.clearRequest(macAddress, 0)
     }
+
+
 
 }
