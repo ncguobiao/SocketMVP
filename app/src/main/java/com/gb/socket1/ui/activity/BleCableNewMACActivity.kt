@@ -43,15 +43,29 @@ class BleCableNewMACActivity : BaseActivity() {
     }
 
 
+    private var pwd: String?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cable_new_mac)
+        var mac= intent.getStringExtra("mac")
+        mac?.let {
+            if (it.contains(":")) {
+                val mac = it.replace(":", "")
+                //获取新密码
+                pwd = AesEntryDetry.getPassword("sensor668", mac)
+                Logger.d("password:$pwd")
+                 SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD,pwd)
+                //DC, 0E, C1, E9, 36, B9, 5E, 89
+            }
+        }
+        if (mac.isNullOrEmpty()){
+            mac = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_MAC)
+            pwd = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
+        }
 
-        val mac = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_MAC)
-        val pwd = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
         Logger.d("mac= $mac   pwd=$pwd")
         tvMAC.text = "设备MAC=$mac   pwd=$pwd"
-        initView()
 
 
         mPresenter.setMAC(mac, object : BleConnectListener {
@@ -100,32 +114,7 @@ class BleCableNewMACActivity : BaseActivity() {
 
     }
 
-    private fun initView() {
 
-//        mBtnSetPWd.onClick {
-//            //修改密码
-//            mPresenter.setPWd(password)
-//        }
-//        mBtnSetMAC.onClick {
-//            //修改mac
-//            val password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
-//            Logger.e("修改mac=$mac -- password=$password")
-//            SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC, mac)
-//            mPresenter.setDeviceMac(password, mac)
-//            doAsync {
-//                mHandler?.removeCallbacksAndMessages(null)
-//                SystemClock.sleep(2000)
-//                runOnUiThread {
-//                    setResult(ConstantSP.SET_MAC_SUCCESS)
-//                    finish()
-//
-//
-//                }
-//            }
-//
-//        }
-
-    }
 
     override fun onDestroy() {
         super.onDestroy()

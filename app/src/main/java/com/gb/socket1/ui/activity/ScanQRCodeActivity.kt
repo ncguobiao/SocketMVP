@@ -39,6 +39,7 @@ class ScanQRCodeActivity : BaseActivity() {
         private var clickCar: Int = 1
         private var clickTest: Int = 2
         private var clickCable: Int = 3
+        private var openCable: Int = 4
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +69,10 @@ class ScanQRCodeActivity : BaseActivity() {
         }
         button5.onClick {
             clickType = clickCable
+            openCapture()
+        }
+        button6.onClick {
+            clickType = openCable
             openCapture()
         }
     }
@@ -144,6 +149,9 @@ class ScanQRCodeActivity : BaseActivity() {
                         }
                         clickCable -> {
                             startActivityForResult<BleCableActivity>(SET_MAC_SUCCESS,"mac" to macAddress)
+                        }
+                        openCable->{
+                            startActivity<BleCableNewMACActivity>("mac" to macAddress)
                         }
                     }
                 }
