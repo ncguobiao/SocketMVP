@@ -268,7 +268,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
 
         val password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
         if (password.isNullOrEmpty()) {
-            context?.toast("加密MAC错误")
+            context?.toast("开指令密码错误或配置已清除")
             return
         }
         password?.let {

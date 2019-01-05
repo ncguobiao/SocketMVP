@@ -129,9 +129,10 @@ class BleCableNewMACActivity : BaseActivity() {
 
             override fun openSuccess() {
                 tvMsg.visibility = View.VISIBLE
+
                 toast("设备开启成功")
                var mdialog = CircleDialog.Builder()
-                        .setTitle("是否清楚本次配置!")
+                        .setTitle("清除本次配置!")
                        .setCanceledOnTouchOutside(true)
                         .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
                         .setText("清除本次配置后，\n方可进行新设备的配置！")
@@ -156,7 +157,7 @@ class BleCableNewMACActivity : BaseActivity() {
 
         mBtnClear.onClick {
             var mdialog = CircleDialog.Builder()
-                    .setTitle("是否清楚本次配置!")
+                    .setTitle("清除本次配置!")
                     .setCanceledOnTouchOutside(true)
                     .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
                     .setText("清除本次配置后，\n方可进行新设备的配置！")

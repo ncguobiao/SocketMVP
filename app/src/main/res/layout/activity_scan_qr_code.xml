@@ -62,6 +62,14 @@
         android:layout_height="wrap_content" />
 
     <View style="@style/line_style" />
+    <TextView
+        android:text="必须清除上一次配置后才能配置新的设备"
+        android:id="@+id/tvNotify"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"
+        android:textSize="18sp" />
     <Button
         android:id="@+id/button5"
         android:layout_width="match_parent"
