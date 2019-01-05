@@ -148,7 +148,7 @@ class ScanQRCodeActivity : BaseActivity() {
                             toast("添加MAC=${macAddress}成功")
                         }
                         clickCable -> {
-                            startActivityForResult<BleCableActivity>(SET_MAC_SUCCESS,"mac" to macAddress)
+                            startActivity<BleCableActivity>("mac" to macAddress)
                         }
                         openCable->{
                             startActivity<BleCableNewMACActivity>("mac" to macAddress)

@@ -34,7 +34,6 @@ class BleCableActivity : BaseActivity() {
                 //循环发送心跳
                 1 -> {
                     if (mPresenter.getConnectState()) {
-                        val pwd = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
                         tvSend.text=""
                         tvRecive.text = ""
                         mPresenter.setCircle()
@@ -44,8 +43,9 @@ class BleCableActivity : BaseActivity() {
                 2->{
                     if (!mPresenter.getConnectState()){
                         removeCallbacksAndMessages(null)
-                        setResult(ConstantSP.SET_MAC_SUCCESS)
+                        toast("请检验设备是否修改完成")
                         finish()
+
                         Logger.e("蓝牙断开，主动关闭当前页面")
                     }else{
                         tvSend.text=""
@@ -140,9 +140,6 @@ class BleCableActivity : BaseActivity() {
                 tvRecive.text ="接收数据=$byteArrayToHexString"
 
             }
-
-
-
         })
         //开启连接
         mPresenter.connect()
@@ -160,16 +157,16 @@ class BleCableActivity : BaseActivity() {
                     toast("正在设置新的MAC地址=$mac")
                     tvMessage?.text = "通过新密码修改MAC：$mac"
                     Logger.e("修改mac=$mac -- password=$password")
+                    tvSend.text=""
+                    tvRecive.text = ""
+                    mPresenter.setDeviceMac(password, mac)
+                    mHandler.sendEmptyMessageDelayed(2,2000)
+                    SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC,mac)
                 }else{
 //                    password = "FFEECCDDAA998877"
 //                    tvMessage?.text = "通过默认密码修改MAC：$mac"
                     toast("请先修改密码成功后，在修改MAC")
                 }
-                tvSend.text=""
-                tvRecive.text = ""
-                mPresenter.setDeviceMac(password, mac)
-                mHandler.sendEmptyMessageDelayed(2,2000)
-                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC,mac)
             }else{
                 toast("蓝牙版连接失败，无法修改密码")
             }

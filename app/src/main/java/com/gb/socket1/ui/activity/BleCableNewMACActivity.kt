@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.View
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.ConstantSP
+import com.example.baselibrary.onClick
 import com.example.baselibrary.utils.AppUtils
 import com.example.baselibrary.utils.SpUtils
 import com.gb.socket1.R
@@ -130,17 +131,20 @@ class BleCableNewMACActivity : BaseActivity() {
                 tvMsg.visibility = View.VISIBLE
                 toast("设备开启成功")
                var mdialog = CircleDialog.Builder()
-                        .setTitle("提示!")
-                       .setCanceledOnTouchOutside(false)
+                        .setTitle("是否清楚本次配置!")
+                       .setCanceledOnTouchOutside(true)
                         .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
-                        .setText("是否清楚本次配置")
+                        .setText("清除本次配置后，\n方可进行新设备的配置！")
                         .setPositive("确定") {
+
+                            SpUtils.put(AppUtils.getContext(),ConstantSP.DEVICE_PWD,"")
+                            SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,false)
                             SpUtils.remove(ConstantSP.DEVICE_PWD)
                             SpUtils.remove(ConstantSP.ISSETDEFAULTPWDSUCCESS)
                             finish()
                         }
                         .setNegative("取消",null)
-                        .setCancelable(false)
+                        .setCancelable(true)
                         .show(supportFragmentManager)
 
 
@@ -149,6 +153,27 @@ class BleCableNewMACActivity : BaseActivity() {
             }
 
         })
+
+        mBtnClear.onClick {
+            var mdialog = CircleDialog.Builder()
+                    .setTitle("是否清楚本次配置!")
+                    .setCanceledOnTouchOutside(true)
+                    .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                    .setText("清除本次配置后，\n方可进行新设备的配置！")
+                    .setPositive("确定") {
+                        SpUtils.put(AppUtils.getContext(),ConstantSP.DEVICE_PWD,"")
+                        SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,false)
+                        SpUtils.remove(ConstantSP.DEVICE_PWD)
+                        SpUtils.remove(ConstantSP.ISSETDEFAULTPWDSUCCESS)
+                        Logger.d("清除配置-pwd=${SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)} " +
+                                " ISSETDEFAULTPWDSUCCESS=${ SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)}")
+                        finish()
+
+                    }
+                    .setNegative("取消",null)
+                    .setCancelable(true)
+                    .show(supportFragmentManager)
+        }
 
     }
 
