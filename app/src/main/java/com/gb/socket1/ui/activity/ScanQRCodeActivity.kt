@@ -172,7 +172,7 @@ class ScanQRCodeActivity : BaseActivity() {
 
                 doAsync {
                     runOnUiThread {
-                        toast("请勿关闭程序，/r/n5秒后自动开启页面进行设备连接")
+                        toast("请勿关闭程序，\n5秒后自动开启页面进行设备连接")
                     }
                     Logger.w("onActivityResult----延时5000")
                     SystemClock.sleep(5000)

@@ -1,6 +1,5 @@
 package com.gb.sockt.blutoothcontrol.ble.cable
 
-import android.bluetooth.BluetoothGatt
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,7 +13,6 @@ import com.gb.sockt.blutoothcontrol.ble.BaseBLEControl
 import com.gb.sockt.blutoothcontrol.ble.BluetoothConfig
 import com.gb.sockt.blutoothcontrol.listener.BleCableListener
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
-import com.gb.sockt.blutoothcontrol.listener.BluetoothTestCarListener
 import com.inuker.bluetooth.library.BluetoothClient
 import com.inuker.bluetooth.library.Constants
 import com.inuker.bluetooth.library.connect.listener.BleConnectStatusListener
@@ -25,7 +23,6 @@ import com.orhanobut.logger.Logger
 import org.jetbrains.anko.toast
 import java.lang.ref.WeakReference
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.experimental.xor
 
 
@@ -38,6 +35,12 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         val WRITE_UUID: UUID = java.util.UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
         val NOTIFY_UUID: UUID = java.util.UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
         val UUID: UUID = java.util.UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+
+        val TYPE_CIRCLE = 0
+        val TYPE_SETPWD = 1
+        val TYPE_SETMAC = 2
+        val TYPE_OPEN = 3
+        val TYPE_CLOSE = 4
     }
 
     private var mcontext: WeakReference<Context>? = null
@@ -47,7 +50,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     private var mBleConnectListener: BleConnectListener? = null
     private lateinit var msg: String
     private var macAddress: String? = null
-    private var password: String? = null
+    private var password: String? =  "FFEECCDDAA998877"
     private var mBleCableListener: BleCableListener? = null
     private var mConnected: Boolean = false
     private lateinit var mConnectStatusListener: BleConnectStatusListener
@@ -103,21 +106,22 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     第一层加密数据3 xor  密码字节7 = 第二层加密数据3
     第一层加密数据4 xor  密码字节8 = 第二层加密数据4
      */
-    fun setCircle(password: String?) {
-        if (password.isNullOrEmpty()) {
-            context?.toast("加密MAC错误")
-            return
-        }
+    fun setCircle() {
+        val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)
+        Logger.d("发送心跳包=$issetdefaultpwdsuccess")
         val b1 = Integer.parseInt("AA", 16).toByte()
         val b2 = Integer.parseInt("07", 16).toByte()
         val b3 = Integer.parseInt("00", 16).toByte()
         val b4 = Integer.parseInt("00", 16).toByte()
-
         var sb = StringBuffer()
+        if (issetdefaultpwdsuccess){
+            Logger.d("修改密码后发送心跳包")
+            password =SpUtils.getString(AppUtils.getContext(),ConstantSP.DEVICE_PWD)
+        }
         password?.let {
             it.toCharArray().forEachIndexed { index, value ->
                 sb.append(value)
-                if (index % 2 == 1 && index < password.length - 1) {
+                if (index % 2 == 1 && index < it.length - 1) {
                     sb.append("-")
                 }
             }
@@ -137,7 +141,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val value4 = b4 xor b8 xor b12
             val value = byteArrayOf(value1, value2, value3, value4)
             msg = "充电线心跳数据"
-            write(value)
+            write(value,TYPE_CIRCLE)
         }
 
     }
@@ -165,7 +169,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
 
         val b8 = Integer.parseInt("AC", 16).toByte()
         val b9 = Integer.parseInt("05", 16).toByte()
-
+        //新密码
         password?.let {
             var sb = StringBuffer()
             it.toCharArray().forEachIndexed { index, value ->
@@ -186,7 +190,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val b17 = Integer.parseInt(list[7], 16).toByte()
             val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17)
             msg = "充电线修改密码"
-            write(value)
+            write(value, TYPE_SETPWD)
         }
 
     }
@@ -245,7 +249,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                     val b15 = Integer.parseInt(listMac[5], 16).toByte()
                     val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15)
                     msg = "充电线修改Mac=$mac"
-                    write(value)
+                    write(value, TYPE_SETMAC)
                 }
             }
         }
@@ -292,7 +296,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val value4 = b3 xor b13 xor b17
             val value = byteArrayOf(value1, value2, value3, value4)
             msg = "充电线开启=${integerValue}分钟"
-            write(value)
+            write(value,TYPE_OPEN)
         }
     }
 
@@ -308,20 +312,20 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         val b3 = integerValue.toByte()//时间
         val value = byteArrayOf(b0, b1, b2, b3)
         msg = "充电线关闭"
-        write(value)
+        write(value,TYPE_CLOSE)
 
     }
 
     //蓝牙数据写入方法
-    private fun write(value: ByteArray) {
+    private fun write(value: ByteArray,type:Int) {
         if (mClient != null) {
             val writeData = BleUtils.byteArrayToHexString(value)
             mClient?.write(getMAC(), UUID, WRITE_UUID, value, BleWriteResponse { code ->
                 if (code == Constants.REQUEST_SUCCESS) {
-                    mBleCableListener?.onWriteSuccess("${msg}=${writeData}==成功")
+                    mBleCableListener?.onWriteSuccess("${msg}=${writeData}==成功",type)
                     Logger.w("${msg}=${writeData}==成功")
                 } else {
-                    mBleCableListener?.onWriteFailure("${msg}:${writeData}==失败")
+                    mBleCableListener?.onWriteFailure("${msg}:${writeData}==失败",type)
                     Logger.w("${msg}:${writeData}--失败")
                 }
             })
@@ -362,11 +366,12 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                 Constants.ACTION_CHARACTER_CHANGED -> {
                     val receiveValue = intent.getByteArrayExtra(Constants.EXTRA_BYTE_VALUE)
                     receiveValue?.let {
+                        mBleCableListener?.onRecived("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
                             "0xAA050000" == BleUtils.byteToHexString(it) -> {
                                 Logger.d("修改密码成功")
-                                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
+
                                 mBleCableListener?.setPwdSuccess(password)
                             }
                             BleUtils.byteToHexString(it).startsWith("0xAA02")->{
@@ -374,7 +379,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                                 mBleCableListener?.openSuccess()
                             }
                             else -> {
-                                mBleCableListener?.onError()
+                                mBleCableListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
                         }
 

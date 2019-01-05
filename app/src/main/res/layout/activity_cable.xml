@@ -14,9 +14,15 @@
         android:textSize="@dimen/dp_25" />
 
 
-
     <Button
-        android:visibility="invisible"
+        android:id="@+id/mBtnSetPwd"
+        android:layout_marginTop="@dimen/dp_25"
+        android:layout_gravity="center_horizontal"
+        android:text="修改默认密码"
+        android:textSize="@dimen/dp_25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
         android:layout_marginTop="@dimen/dp_25"
         android:layout_gravity="center_horizontal"
         android:id="@+id/mBtnSetMAC"
@@ -31,4 +37,18 @@
         android:layout_height="wrap_content"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/dp_25" />
+    <TextView
+        android:layout_marginTop="@dimen/dp_25"
+        android:id="@+id/tvSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+    <TextView
+        android:layout_marginTop="@dimen/dp_25"
+        android:id="@+id/tvRecive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
 </LinearLayout>

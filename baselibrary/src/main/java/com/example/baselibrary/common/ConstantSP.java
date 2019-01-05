@@ -65,4 +65,6 @@ public class ConstantSP {
     @Nullable
     public static final String DEVICE_MAC="devicec";
     public static final int SET_MAC_SUCCESS=6666;
+
+    public static final String ISSETDEFAULTPWDSUCCESS = "isSetDefaultPwdSuccess";
 }

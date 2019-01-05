@@ -3,12 +3,11 @@ package com.gb.socket1.ui.activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.os.SystemClock
-import android.view.View
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.ConstantSP
 import com.example.baselibrary.onClick
 import com.example.baselibrary.utils.AppUtils
+import com.example.baselibrary.utils.BleUtils
 import com.example.baselibrary.utils.SpUtils
 import com.gb.socket1.R
 import com.gb.socket1.util.AesEntryDetry
@@ -17,7 +16,6 @@ import com.gb.sockt.blutoothcontrol.listener.BleCableListener
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_cable.*
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
 
 /**
@@ -37,21 +35,23 @@ class BleCableActivity : BaseActivity() {
                 1 -> {
                     if (mPresenter.getConnectState()) {
                         val pwd = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
-
-                        mPresenter.setCircle(pwd)
-                        sendEmptyMessageDelayed(1, 1000)
+                        tvSend.text=""
+                        tvRecive.text = ""
+                        mPresenter.setCircle()
+                        sendEmptyMessageDelayed(1, 3000)
                     }
                 }
                 2->{
-                    sendEmptyMessageDelayed(2, 1500)
                     if (!mPresenter.getConnectState()){
                         removeCallbacksAndMessages(null)
-                        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC, mac)
                         setResult(ConstantSP.SET_MAC_SUCCESS)
                         finish()
                         Logger.e("蓝牙断开，主动关闭当前页面")
                     }else{
+                        tvSend.text=""
+                        tvRecive.text = ""
                         mPresenter.setDeviceMac(password, mac)
+                        sendEmptyMessageDelayed(2, 1500)
                     }
                 }
             }
@@ -67,64 +67,81 @@ class BleCableActivity : BaseActivity() {
 
         mac = intent.getStringExtra("mac")
         Logger.d("mac:$mac")
-
-        //加密mac
-        mac?.let {
-            if (it.contains(":")) {
-                val mac = it.replace(":", "")
-                //获取新密码
-                password = AesEntryDetry.getPassword("sensor668", mac)
-                Logger.d("password:$password")
-                //DC, 0E, C1, E9, 36, B9, 5E, 89
-            }
-        }
-
+////        //获取新密码
+//        val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
+//        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
+//        SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,true)
         initView()
-
 
         //password:9C4A816C3B02FF35-(F2:35:0A:00:00:55)
         //F2:35:0A:00:00:00  //F2:35:0A:00:00:55 //55:00:00:0A:35:F2
+        //连接初始设备
         mPresenter.setMAC("F2:35:0A:00:00:00", object : BleConnectListener {
             override fun connectOnSuccess() {
                 tvState.text = resources.getString(R.string.connected)
-                doAsync {
-
-                    SystemClock.sleep(300)
-                    //修改密码
-                    mPresenter.setPWd(password)
                     //心跳数据
-                    mHandler.sendEmptyMessageDelayed(1, 300)
+                    mHandler.sendEmptyMessageDelayed(1, 3000)
+                    toast("三秒后开始发送心跳包")
 
-                }
             }
 
             override fun connectOnFailure() {
+                tvSend.text=""
+                tvRecive.text = ""
                 tvState.text = resources.getString(R.string.failure)
             }
 
             override fun connectOnError() {
+                tvSend.text=""
+                tvRecive.text = ""
                 tvState.text = resources.getString(R.string.onError)
             }
 
         }).registerBroadcastReceiver()
         mPresenter.setResponseListener(object : BleCableListener {
+            override fun onRecived(data: String) {
+                tvRecive.text ="接收数据=$data"
+
+            }
+
+            override fun onWriteSuccess(msg: String?, type: Int) {
+                when(type){
+                    BluetoothTestCableImpl.TYPE_CIRCLE->tvSend.text ="发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
+                    BluetoothTestCableImpl.TYPE_OPEN->tvSend.text ="发送${msg}"
+
+                }
+            }
+
+            override fun onWriteFailure(msg: String?, type: Int) {
+                when(type){
+                    BluetoothTestCableImpl.TYPE_CIRCLE->tvSend.text ="发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
+                    BluetoothTestCableImpl.TYPE_OPEN->tvSend.text ="发送${msg}"
+                }
+            }
+
             override fun openSuccess() {
             }
 
             override fun setPwdSuccess(pwd:String?) {
+                //是否修改成功
+                SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,true)
+                //存储新密码
+                val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
+                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
                 tvMessage?.text = "设置密码成功：$pwd"
-                mBtnSetMAC.visibility = View.VISIBLE
-            }
-
-            override fun onError() {
-            }
-
-            override fun onWriteSuccess(msg: String?) {
-            }
-
-            override fun onWriteFailure(msg: String?) {
 
             }
+
+            override fun onError(byteArrayToHexString: String) {
+                tvRecive.text ="接收数据=$byteArrayToHexString"
+
+            }
+
+
 
         })
         //开启连接
@@ -134,13 +151,57 @@ class BleCableActivity : BaseActivity() {
 
     private fun initView() {
         mBtnSetMAC.onClick {
-            toast("正在设置新的MAC地址=$mac")
-            mBtnSetMAC.visibility = View.INVISIBLE
-            //修改mac
-            val password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
-            Logger.e("修改mac=$mac -- password=$password")
-            mPresenter.setDeviceMac(password, mac)
-            mHandler.sendEmptyMessageDelayed(2,1500)
+            if (mPresenter.getConnectState()){
+                //修改密码成功
+                val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)
+                if (issetdefaultpwdsuccess){
+                    //修改mac
+                     password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
+                    toast("正在设置新的MAC地址=$mac")
+                    tvMessage?.text = "通过新密码修改MAC：$mac"
+                    Logger.e("修改mac=$mac -- password=$password")
+                }else{
+//                    password = "FFEECCDDAA998877"
+//                    tvMessage?.text = "通过默认密码修改MAC：$mac"
+                    toast("请先修改密码成功后，在修改MAC")
+                }
+                tvSend.text=""
+                tvRecive.text = ""
+                mPresenter.setDeviceMac(password, mac)
+                mHandler.sendEmptyMessageDelayed(2,2000)
+                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC,mac)
+            }else{
+                toast("蓝牙版连接失败，无法修改密码")
+            }
+
+        }
+        //修改密码
+        mBtnSetPwd.onClick {
+           if (mPresenter.getConnectState()){
+               val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)
+               if (!issetdefaultpwdsuccess){
+                   tvSend.text=""
+                   tvRecive.text = ""
+                   //加密mac
+                   mac?.let {
+                       if (it.contains(":")) {
+                           val mac = it.replace(":", "")
+                           //获取新密码
+                           val password = AesEntryDetry.getPassword("sensor668", mac)
+                           Logger.d("password:$password")
+                           //DC, 0E, C1, E9, 36, B9, 5E, 89
+                           //修改密码
+                           mPresenter.setPWd(password)
+                       }
+                   }
+
+               }else{
+                   toast("密码已修改成功，无法再次修改")
+               }
+
+           }else{
+               toast("蓝牙版连接失败，无法修改密码")
+           }
         }
 
     }

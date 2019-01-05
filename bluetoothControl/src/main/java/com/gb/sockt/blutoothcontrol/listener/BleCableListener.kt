@@ -7,9 +7,10 @@ interface BleCableListener {
 
     fun setPwdSuccess(pwd:String?)
 
-    fun onError()
-    fun onWriteSuccess(msg:String?)
+    fun onError(byteArrayToHexString: String)
+    fun onWriteSuccess(msg:String?,type:Int)
 
-    fun onWriteFailure(msg:String?)
+    fun onWriteFailure(msg:String?,type:Int)
     fun openSuccess()
+    fun onRecived(s: String)
 }

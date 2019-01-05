@@ -23,11 +23,28 @@
         android:textSize="@dimen/dp_25" />
 
     <TextView
+        android:visibility="invisible"
         android:id="@+id/tvMsg"
+        android:text="设备成功开启一分钟，\n设置设备完成——OK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_25"
         android:textColor="@color/colorAccent"
-        android:textSize="@dimen/dp_25" />
+        android:textSize="24sp" />
+
+    <TextView
+        android:layout_marginTop="@dimen/dp_25"
+        android:id="@+id/tvSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+    <TextView
+        android:layout_marginTop="@dimen/dp_25"
+        android:id="@+id/tvRecive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
 </LinearLayout>
