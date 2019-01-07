@@ -95,6 +95,9 @@ class BleCableNewMACActivity : BaseActivity() {
                 .registerBroadcastReceiver()
                 .connect()
         mPresenter.setResponseListener(object : BleCableListener {
+            override fun onCircle() {
+            }
+
             override fun onRecived(data: String) {
                 tvRecive.text ="接收数据=$data"
             }

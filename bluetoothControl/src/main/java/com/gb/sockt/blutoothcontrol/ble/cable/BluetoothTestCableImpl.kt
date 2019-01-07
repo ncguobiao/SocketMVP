@@ -50,7 +50,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     private var mBleConnectListener: BleConnectListener? = null
     private lateinit var msg: String
     private var macAddress: String? = null
-    private var password: String? =  "FFEECCDDAA998877"
+    private var password: String = "FFEECCDDAA998877"
     private var mBleCableListener: BleCableListener? = null
     private var mConnected: Boolean = false
     private lateinit var mConnectStatusListener: BleConnectStatusListener
@@ -107,16 +107,16 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     第一层加密数据4 xor  密码字节8 = 第二层加密数据4
      */
     fun setCircle() {
-        val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)
+        val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
         Logger.d("发送心跳包=$issetdefaultpwdsuccess")
         val b1 = Integer.parseInt("AA", 16).toByte()
         val b2 = Integer.parseInt("07", 16).toByte()
         val b3 = Integer.parseInt("00", 16).toByte()
         val b4 = Integer.parseInt("00", 16).toByte()
         var sb = StringBuffer()
-        if (issetdefaultpwdsuccess){
+        if (issetdefaultpwdsuccess) {
             Logger.d("修改密码后发送心跳包")
-            password =SpUtils.getString(AppUtils.getContext(),ConstantSP.DEVICE_PWD)
+            password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
         }
         password?.let {
             it.toCharArray().forEachIndexed { index, value ->
@@ -141,59 +141,95 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val value4 = b4 xor b8 xor b12
             val value = byteArrayOf(value1, value2, value3, value4)
             msg = "充电线心跳数据"
-            write(value,TYPE_CIRCLE)
+            write(value, TYPE_CIRCLE)
         }
 
     }
+    fun setCircleData(password:String?) {
+        val b1 = Integer.parseInt("AA", 16).toByte()
+        val b2 = Integer.parseInt("07", 16).toByte()
+        val b3 = Integer.parseInt("00", 16).toByte()
+        val b4 = Integer.parseInt("00", 16).toByte()
+        var sb = StringBuffer()
+        password?.let {
+            it.toCharArray().forEachIndexed { index, value ->
+                sb.append(value)
+                if (index % 2 == 1 && index < it.length - 1) {
+                    sb.append("-")
+                }
+            }
+            val list = sb.toString().split("-")
+            val b5 = Integer.parseInt(list[0], 16).toByte()
+            val b6 = Integer.parseInt(list[1], 16).toByte()
+            val b7 = Integer.parseInt(list[2], 16).toByte()
+            val b8 = Integer.parseInt(list[3], 16).toByte()
 
+            val b9 = Integer.parseInt(list[4], 16).toByte()
+            val b10 = Integer.parseInt(list[5], 16).toByte()
+            val b11 = Integer.parseInt(list[6], 16).toByte()
+            val b12 = Integer.parseInt(list[7], 16).toByte()
+            val value1 = b1 xor b5 xor b9
+            val value2 = b2 xor b6 xor b10
+            val value3 = b3 xor b7 xor b11
+            val value4 = b4 xor b8 xor b12
+            val value = byteArrayOf(value1, value2, value3, value4)
+            msg = "充电线心跳数据"
+            write(value, TYPE_CIRCLE)
+        }
+
+    }
     /**
      *  4.修改密码命令数据格式:0xaabbccddeeffgghh+0xAC05+MMyyzznnXXYYZZNN
     电子开关收到修改密码命令命令后，返回0xAA050000表示修改成功 。
     0xaabbccddeeffgghh：ffeeccddaa998877 旧密码
     0xMMyyzznnXXYYZZNN: 9C4A816C3B02FF35 新密码
      */
-    fun setPWd(password: String?) {
-        this.password = password
-        if (password.isNullOrEmpty()) {
-            context?.toast("加密MAC错误")
-            return
+    fun setPWd(oldpwd: String, password: String) {
+
+        var sbOld = StringBuffer()
+        oldpwd.toCharArray().forEachIndexed { index, value ->
+            sbOld.append(value)
+            if (index % 2 == 1 && index < password.length - 1) {
+                sbOld.append("-")
+            }
         }
-        val b0 = Integer.parseInt("FF", 16).toByte()
-        val b1 = Integer.parseInt("EE", 16).toByte()
-        val b2 = Integer.parseInt("CC", 16).toByte()
-        val b3 = Integer.parseInt("DD", 16).toByte()
-        val b4 = Integer.parseInt("AA", 16).toByte()
-        val b5 = Integer.parseInt("99", 16).toByte()
-        val b6 = Integer.parseInt("88", 16).toByte()
-        val b7 = Integer.parseInt("77", 16).toByte()
+        val oldlist = sbOld.toString().split("-")
+
+        val b0 = Integer.parseInt(oldlist[0], 16).toByte()
+        val b1 = Integer.parseInt(oldlist[1], 16).toByte()
+        val b2 = Integer.parseInt(oldlist[2], 16).toByte()
+        val b3 = Integer.parseInt(oldlist[3], 16).toByte()
+        val b4 = Integer.parseInt(oldlist[4], 16).toByte()
+        val b5 = Integer.parseInt(oldlist[5], 16).toByte()
+        val b6 = Integer.parseInt(oldlist[6], 16).toByte()
+        val b7 = Integer.parseInt(oldlist[7], 16).toByte()
 
         val b8 = Integer.parseInt("AC", 16).toByte()
         val b9 = Integer.parseInt("05", 16).toByte()
         //新密码
-        password?.let {
-            var sb = StringBuffer()
-            it.toCharArray().forEachIndexed { index, value ->
-                sb.append(value)
-                if (index % 2 == 1 && index < password.length - 1) {
-                    sb.append("-")
-                }
+        var sb = StringBuffer()
+        password.toCharArray().forEachIndexed { index, value ->
+            sb.append(value)
+            if (index % 2 == 1 && index < password.length - 1) {
+                sb.append("-")
             }
-            val list = sb.toString().split("-")
-
-            val b10 = Integer.parseInt(list[0], 16).toByte()
-            val b11 = Integer.parseInt(list[1], 16).toByte()
-            val b12 = Integer.parseInt(list[2], 16).toByte()
-            val b13 = Integer.parseInt(list[3], 16).toByte()
-            val b14 = Integer.parseInt(list[4], 16).toByte()
-            val b15 = Integer.parseInt(list[5], 16).toByte()
-            val b16 = Integer.parseInt(list[6], 16).toByte()
-            val b17 = Integer.parseInt(list[7], 16).toByte()
-            val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17)
-            msg = "充电线修改密码"
-            write(value, TYPE_SETPWD)
         }
+        val list = sb.toString().split("-")
+
+        val b10 = Integer.parseInt(list[0], 16).toByte()
+        val b11 = Integer.parseInt(list[1], 16).toByte()
+        val b12 = Integer.parseInt(list[2], 16).toByte()
+        val b13 = Integer.parseInt(list[3], 16).toByte()
+        val b14 = Integer.parseInt(list[4], 16).toByte()
+        val b15 = Integer.parseInt(list[5], 16).toByte()
+        val b16 = Integer.parseInt(list[6], 16).toByte()
+        val b17 = Integer.parseInt(list[7], 16).toByte()
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17)
+        msg = "充电线修改密码"
+        write(value, TYPE_SETPWD)
 
     }
+
 
     /**
      * 修改mac
@@ -296,7 +332,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val value4 = b3 xor b13 xor b17
             val value = byteArrayOf(value1, value2, value3, value4)
             msg = "充电线开启=${integerValue}分钟"
-            write(value,TYPE_OPEN)
+            write(value, TYPE_OPEN)
         }
     }
 
@@ -312,20 +348,20 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         val b3 = integerValue.toByte()//时间
         val value = byteArrayOf(b0, b1, b2, b3)
         msg = "充电线关闭"
-        write(value,TYPE_CLOSE)
+        write(value, TYPE_CLOSE)
 
     }
 
     //蓝牙数据写入方法
-    private fun write(value: ByteArray,type:Int) {
+    private fun write(value: ByteArray, type: Int) {
         if (mClient != null) {
             val writeData = BleUtils.byteArrayToHexString(value)
             mClient?.write(getMAC(), UUID, WRITE_UUID, value, BleWriteResponse { code ->
                 if (code == Constants.REQUEST_SUCCESS) {
-                    mBleCableListener?.onWriteSuccess("${msg}=${writeData}==成功",type)
+                    mBleCableListener?.onWriteSuccess("${msg}=${writeData}==成功", type)
                     Logger.w("${msg}=${writeData}==成功")
                 } else {
-                    mBleCableListener?.onWriteFailure("${msg}:${writeData}==失败",type)
+                    mBleCableListener?.onWriteFailure("${msg}:${writeData}==失败", type)
                     Logger.w("${msg}:${writeData}--失败")
                 }
             })
@@ -371,12 +407,17 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                         when {
                             "0xAA050000" == BleUtils.byteToHexString(it) -> {
                                 Logger.d("修改密码成功")
-
                                 mBleCableListener?.setPwdSuccess(password)
                             }
-                            BleUtils.byteToHexString(it).startsWith("0xAA02")->{
+                            BleUtils.byteToHexString(it).startsWith("0xAA02") -> {
                                 Logger.d("开启成功")
                                 mBleCableListener?.openSuccess()
+                            }
+                            "0xF0" == BleUtils.byteToHexString(it) -> {
+                                mBleCableListener?.onCircle()
+                            }
+                            "0xAA070000" == BleUtils.byteToHexString(it) -> {
+
                             }
                             else -> {
                                 mBleCableListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
@@ -539,7 +580,6 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     fun clearRequest() {
         mClient?.clearRequest(macAddress, 0)
     }
-
 
 
 }

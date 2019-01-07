@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvMAC"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_25"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/dp_25" />
+
+    <TextView
+        android:id="@+id/tvState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_25"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/dp_25" />
+
+    <TextView
+        android:visibility="invisible"
+        android:id="@+id/tvMsg"
+        android:text="设备成功开启一分钟，\n设置设备完成——OK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_25"
+        android:textColor="@color/colorAccent"
+        android:textSize="24sp" />
+
+    <TextView
+        android:layout_marginTop="@dimen/dp_25"
+        android:id="@+id/tvSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+    <TextView
+        android:layout_marginTop="@dimen/dp_25"
+        android:id="@+id/tvRecive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+
+    <View
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <Button
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="恢复默认密码和默认MAC"
+        android:id="@+id/mBtnClearPwd"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+
+    <Button
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="修改成新密码"
+        android:id="@+id/mBtnPwd"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+    <Button
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="使用默认密码手动恢复MAC"
+        android:id="@+id/mBtnSetMAC"
+        android:layout_marginBottom="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="14sp" />
+
+</LinearLayout>

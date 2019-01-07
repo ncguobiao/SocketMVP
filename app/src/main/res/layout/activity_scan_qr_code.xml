@@ -82,4 +82,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:text="充电线单独开启" />
+    <Button
+        android:id="@+id/mBtnSetDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="恢复默认" />
 </LinearLayout>

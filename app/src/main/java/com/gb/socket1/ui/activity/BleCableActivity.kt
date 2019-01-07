@@ -51,7 +51,7 @@ class BleCableActivity : BaseActivity() {
                         tvSend.text=""
                         tvRecive.text = ""
                         mPresenter.setDeviceMac(password, mac)
-                        sendEmptyMessageDelayed(2, 1500)
+                        sendEmptyMessageDelayed(2, 4000)
                     }
                 }
             }
@@ -99,6 +99,9 @@ class BleCableActivity : BaseActivity() {
 
         }).registerBroadcastReceiver()
         mPresenter.setResponseListener(object : BleCableListener {
+            override fun onCircle() {
+            }
+
             override fun onRecived(data: String) {
                 tvRecive.text ="接收数据=$data"
 
@@ -188,7 +191,7 @@ class BleCableActivity : BaseActivity() {
                            Logger.d("password:$password")
                            //DC, 0E, C1, E9, 36, B9, 5E, 89
                            //修改密码
-                           mPresenter.setPWd(password)
+                           mPresenter.setPWd("FFEECCDDAA998877",password)
                        }
                    }
 

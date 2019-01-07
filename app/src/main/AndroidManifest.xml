@@ -131,6 +131,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.BleCableNewMACActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.BleCableSetDefaultMACActivity"
+            android:screenOrientation="portrait"/>
         <!-- 微信支付 -->
         <activity
             android:name=".wxapi.WXPayEntryActivity"

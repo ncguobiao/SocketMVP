@@ -13,4 +13,5 @@ interface BleCableListener {
     fun onWriteFailure(msg:String?,type:Int)
     fun openSuccess()
     fun onRecived(s: String)
+    fun onCircle()
 }

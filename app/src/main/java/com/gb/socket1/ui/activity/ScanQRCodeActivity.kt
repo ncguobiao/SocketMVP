@@ -8,7 +8,6 @@ import android.os.SystemClock
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.BaseApplication
 import com.example.baselibrary.common.ConstantSP
-import com.example.baselibrary.common.ConstantSP.SET_MAC_SUCCESS
 import com.example.baselibrary.onClick
 import com.example.baselibrary.zxing.app.CaptureActivity
 import com.gb.socket1.R
@@ -40,6 +39,7 @@ class ScanQRCodeActivity : BaseActivity() {
         private var clickTest: Int = 2
         private var clickCable: Int = 3
         private var openCable: Int = 4
+        private var setDefault: Int = 5
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +73,11 @@ class ScanQRCodeActivity : BaseActivity() {
         }
         button6.onClick {
             clickType = openCable
+            openCapture()
+        }
+
+        mBtnSetDefault.onClick {
+            clickType = setDefault
             openCapture()
         }
     }
@@ -125,9 +130,7 @@ class ScanQRCodeActivity : BaseActivity() {
                         "mac" to macList[index],
                         "configCoinCount" to configCoinCount)
             }
-
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -150,8 +153,11 @@ class ScanQRCodeActivity : BaseActivity() {
                         clickCable -> {
                             startActivity<BleCableActivity>("mac" to macAddress)
                         }
-                        openCable->{
+                        openCable -> {
                             startActivity<BleCableNewMACActivity>("mac" to macAddress)
+                        }
+                        setDefault -> {
+                            startActivity<BleCableSetDefaultMACActivity>("mac" to macAddress)
                         }
                     }
                 }
@@ -169,7 +175,6 @@ class ScanQRCodeActivity : BaseActivity() {
             }
         //修改mac成功
             ConstantSP.SET_MAC_SUCCESS -> {
-
                 doAsync {
                     runOnUiThread {
                         toast("请勿关闭程序，\n5秒后自动开启页面进行设备连接")
@@ -183,7 +188,6 @@ class ScanQRCodeActivity : BaseActivity() {
             }
         }
     }
-
 
     /**
      * 二维码检查
