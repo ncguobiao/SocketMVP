@@ -85,6 +85,8 @@ class BleCableNewMACActivity : BaseActivity() {
 
             override fun connectOnFailure() {
                 tvState.text = resources.getString(R.string.failure)
+
+                mPresenter.connect()
             }
 
             override fun connectOnError() {

@@ -110,6 +110,7 @@ class BleCableSetDefaultMACActivity : BaseActivity() {
         mPresenter.setResponseListener(object : BleCableListener {
             override fun onCircle() {
                 tvMsg.text = "设备密码错误"
+                tvRecive.text = "设备密码错误，不是新密码"
 //                //获取新密码
 //                SpUtils.put(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS, true)
 //                val pwd = AesEntryDetry.getPassword("sensor668", mac.replace(":", ""))
@@ -143,7 +144,7 @@ class BleCableSetDefaultMACActivity : BaseActivity() {
 
             override fun setPwdSuccess(password: String?) {
                 toast("恢复默认密码成功")
-                tvMsg.text ="恢复默认密码成功，PWD=$password"
+                tvMsg.text = "恢复默认密码成功，PWD=$password"
                 pwd = oldPassword
                 Logger.d("setPwdSuccess:PWd=$password")
                 updateDefaultMac()
@@ -211,9 +212,13 @@ class BleCableSetDefaultMACActivity : BaseActivity() {
     }
 
     private fun updateDefaultMac() {
-        if (mPresenter.getConnectState())
+        if (mPresenter.getConnectState()) {
             mPresenter.setDeviceMac(oldPassword, defaultMAC)
-        else toast("蓝牙未连接无法恢复成默认MAC")
+            toast("5秒后自动退出，请检查设备是否已恢复默认")
+            mHandler.postDelayed({
+                finish()
+            }, 5000)
+        } else toast("蓝牙未连接无法恢复成默认MAC")
     }
 
     override fun onDestroy() {

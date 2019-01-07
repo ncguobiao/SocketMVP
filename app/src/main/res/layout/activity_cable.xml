@@ -14,19 +14,34 @@
         android:textSize="@dimen/dp_25" />
 
 
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <Button
+          android:layout_weight="1"
+          android:id="@+id/mBtnSetPwd"
+          android:layout_marginTop="@dimen/dp_25"
+          android:layout_gravity="center_horizontal"
+          android:text="修改默认密码"
+          android:textSize="@dimen/dp_25"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content" />
+      <Button
+          android:layout_weight="1"
+          android:layout_marginTop="@dimen/dp_25"
+          android:layout_gravity="center_horizontal"
+          android:id="@+id/mBtnSetMAC"
+          android:text="修改MAC"
+          android:textSize="@dimen/dp_25"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content" />
+  </LinearLayout>
+
     <Button
-        android:id="@+id/mBtnSetPwd"
+        android:id="@+id/mBtnSetDefaultPwd"
         android:layout_marginTop="@dimen/dp_25"
         android:layout_gravity="center_horizontal"
-        android:text="修改默认密码"
-        android:textSize="@dimen/dp_25"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:layout_marginTop="@dimen/dp_25"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/mBtnSetMAC"
-        android:text="修改MAC"
+        android:text="恢复默认密码"
         android:textSize="@dimen/dp_25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

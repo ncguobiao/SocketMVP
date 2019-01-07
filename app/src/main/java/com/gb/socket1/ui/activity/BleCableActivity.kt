@@ -23,6 +23,10 @@ import org.jetbrains.anko.toast
  */
 class BleCableActivity : BaseActivity() {
 
+    private val NEW_PWD = 1
+    private val OLD_PWD = 2
+    private var cllickType:Int = NEW_PWD
+
     private val mPresenter by lazy {
         BluetoothTestCableImpl(this)
     }
@@ -130,12 +134,21 @@ class BleCableActivity : BaseActivity() {
             }
 
             override fun setPwdSuccess(pwd:String?) {
-                //是否修改成功
-                SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,true)
-                //存储新密码
-                val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
-                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
-                tvMessage?.text = "设置密码成功：$pwd"
+                when(cllickType){
+                    NEW_PWD->{
+                        //是否修改成功
+                        SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,true)
+                        //存储新密码
+                        val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
+                        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
+                        tvMessage?.text = "设置密码成功：$pwd"
+                    }
+                    OLD_PWD->{
+                        toast("恢复密码成功")
+                        tvMessage.text = "恢复密码成功"
+                    }
+                }
+
 
             }
 
@@ -148,6 +161,8 @@ class BleCableActivity : BaseActivity() {
         mPresenter.connect()
 
     }
+
+
 
     private fun initView() {
         mBtnSetMAC.onClick {
@@ -177,6 +192,7 @@ class BleCableActivity : BaseActivity() {
         }
         //修改密码
         mBtnSetPwd.onClick {
+            cllickType =  NEW_PWD
            if (mPresenter.getConnectState()){
                val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)
                if (!issetdefaultpwdsuccess){
@@ -202,6 +218,16 @@ class BleCableActivity : BaseActivity() {
            }else{
                toast("蓝牙版连接失败，无法修改密码")
            }
+        }
+
+        mBtnSetDefaultPwd.onClick {
+            if (mPresenter.getConnectState()){
+                cllickType =  OLD_PWD
+                val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
+                mPresenter.setPWd(password,"FFEECCDDAA998877")
+            }else{
+                toast("蓝牙未连接")
+            }
         }
 
     }
