@@ -34,7 +34,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_10"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -55,7 +55,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_10"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -77,7 +77,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_10"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -113,29 +113,30 @@
         android:id="@+id/mTvReciver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/mTvMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/red_normal"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
     <TextView
+        android:textColor="@color/blue"
         android:id="@+id/tvCoinCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tvDeviceCoinCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
     <TextView
         android:textColor="@color/blue"
         android:id="@+id/tvTotalCoinCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
 </LinearLayout>

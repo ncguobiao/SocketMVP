@@ -46,15 +46,24 @@ class BluetoothCarActivity : BaseActivity() {
     //配置连接次数
     private var configCoinCount: Int = 0
 
-
     //是否清除计数
     private var clearCoinState: Boolean = false
-//    private var mHandler: Handler = @SuppressLint("HandlerLeak")
-//    object : Handler() {
-//        override fun handleMessage(msg: Message?) {
-//            super.handleMessage(msg)
-//        }
-//    }
+    private val mHandler: Handler = @SuppressLint("HandlerLeak")
+    object : Handler() {
+        override fun handleMessage(msg: Message?) {
+           when(msg?.what){
+               1->{
+                   if (configCoinCount > 0){
+                       presenter.coin()
+                       configCoinCount--
+                       tvTempCoinCount?.text = "剩余投币个数=$configCoinCount"
+                       sendEmptyMessageDelayed(1,2000)
+                   }
+
+               }
+           }
+        }
+    }
 
     private var tempCount: Int = 0
 
@@ -96,18 +105,12 @@ class BluetoothCarActivity : BaseActivity() {
                     } else {
 //                            toast("配置投币次数用完")
                         mTvMessage.text = "配置投币次数用完"
-
-                        doAsync {
+                        mHandler.postDelayed({
                             setResult(1000)
-                            runOnUiThread {
-                                toast("设备MAC= $mac 已测试完成/r/n")
-                            }
-                            SystemClock.sleep(8000)
-                            runOnUiThread {
-                                finish()
-                            }
+                            toast("设备MAC= $mac \n已测试完成")
+                            finish()
+                        },5000)
 
-                        }
                     }
                 }
                 //清除上一次连接的设备地址
@@ -134,16 +137,13 @@ class BluetoothCarActivity : BaseActivity() {
                 deviceState = true
                 if (!clearCoinState) {
                     //自动投币
-                    doAsync {
-                        SystemClock.sleep(300)
+//                    mHandler.sendEmptyMessageDelayed(1,300)
+                    mHandler.postDelayed({
                         presenter.coin()
                         configCoinCount--
-//                        Logger.d("tempConfigCoinCount=$configCoinCount")
-                        runOnUiThread {
-                            tvTempCoinCount?.text = "剩余投币个数=$configCoinCount"
-                        }
+                        tvTempCoinCount?.text = "剩余投币个数=$configCoinCount"
+                    },300)
 
-                    }
                 } else {
                     presenter.clearCount()
                 }
@@ -172,9 +172,7 @@ class BluetoothCarActivity : BaseActivity() {
 
             override fun getDeviceInfoOnSuccess(count: Int, bleCount: Int) {
 //                Logger.d("投币次数=$count , 蓝牙使用次数=$bleCount")
-                tvDeviceCoinCount.text = "投币次数=$count , 蓝牙使用次数=$bleCount"
-                val cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT)
-//                tvTotalCoinCount.text = "投币总数:${count + cacheCount}"
+                tvDeviceCoinCount.text = "手动投币次数=$count , 蓝牙投币次数=$bleCount"
                 tempCount = count
             }
 
@@ -186,22 +184,22 @@ class BluetoothCarActivity : BaseActivity() {
             override fun coinOnSuccess(byteArrayToHexString: String?) {
                 Logger.d("coinOnSuccess Data=$byteArrayToHexString")
                 toast("投币成功")
-                var cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT)
+                var cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT+mac)
 //                Logger.d("cacheCount=$cacheCount")
                 cacheCount += 1
-                SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT, cacheCount)
-                tvCoinCount.text = "手机成功投币次数=$cacheCount"
+                SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT+mac, cacheCount)
+                tvCoinCount.text = "手机成功投币次数=$cacheCount，\n当前设备MAC=$mac"
 //                Logger.d("次数:$cacheCount")
-
-
                 tvTotalCoinCount.text = "投币总数:${tempCount + cacheCount}"
+
 
             }
 
             override fun clearCountOnSuccess(byteArrayToHexString: String?) {
                 clearCoinState = false
                 toast("清除计数成功")
-                SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT, 0L)
+//                SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT+mac, 0L)
+                SpUtils.remove(Constant.COIN_COUNT+mac)
                 tvCoinCount.text = "手机成功投币次数=0"
 
             }
@@ -215,7 +213,7 @@ class BluetoothCarActivity : BaseActivity() {
 
         //连接自动连接蓝牙
         presenter.connect()
-
+        startTime = System.currentTimeMillis()
         //连接
         mbtnConnect.onClick {
             if (!presenter?.getConnectState())
@@ -306,6 +304,7 @@ class BluetoothCarActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        mHandler.removeCallbacksAndMessages(null)
         presenter?.unregisterBroadcastReceiver()
         presenter?.close()
         sb = null

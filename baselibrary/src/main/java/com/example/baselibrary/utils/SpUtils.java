@@ -51,7 +51,6 @@ public class SpUtils {
     }
 
     public static void remove(String key) {
-
         getSP(BaseApplication.Companion.getApplication()).edit().remove(key).apply();
     }
 }
