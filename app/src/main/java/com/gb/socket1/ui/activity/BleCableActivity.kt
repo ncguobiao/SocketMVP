@@ -234,6 +234,8 @@ class BleCableActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+
         mHandler.removeCallbacksAndMessages(null)
         mPresenter.unregisterBroadcastReceiver()
         mPresenter.close()

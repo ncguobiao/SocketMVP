@@ -29,8 +29,6 @@ import java.util.ArrayList
  * Created by guobiao on 2018/11/15.
  * 测试蓝牙连接
  */
-
-
 class BluetoothCarActivity : BaseActivity() {
 
     private var startTime: Long = 0L
@@ -45,7 +43,7 @@ class BluetoothCarActivity : BaseActivity() {
     }
     //配置连接次数
     private var configCoinCount: Int = 0
-
+    private var tempCount: Int = 0
     //是否清除计数
     private var clearCoinState: Boolean = false
     private val mHandler: Handler = @SuppressLint("HandlerLeak")
@@ -64,10 +62,6 @@ class BluetoothCarActivity : BaseActivity() {
            }
         }
     }
-
-    private var tempCount: Int = 0
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -262,7 +256,7 @@ class BluetoothCarActivity : BaseActivity() {
         }
         //  清除手机缓存的投币次数
         mBtnClearCacheCoinCount.onClick {
-            SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT, 0L)
+            SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT+mac, 0L)
             tvCoinCount.text = "手机成功投币次数=0"
             toast("清除手机缓存的投币次数成功")
         }
@@ -296,7 +290,7 @@ class BluetoothCarActivity : BaseActivity() {
                 toast("蓝牙已断开")
             }
         }
-        var cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT)
+        var cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT+mac)
         tvCoinCount.text = "手机成功投币次数=$cacheCount"
 
     }
