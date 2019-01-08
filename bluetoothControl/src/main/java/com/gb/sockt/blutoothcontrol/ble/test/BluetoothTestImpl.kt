@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.example.baselibrary.showToast
 import com.example.baselibrary.utils.BleUtils
 import com.example.baselibrary.utils.BluetoothClientManager
 import com.gb.sockt.blutoothcontrol.ble.BaseBLEControl
@@ -87,6 +88,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      *向设备获取请求码
      */
     fun requestCode() {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("00", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
@@ -105,6 +109,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param  code:操作码  mac：MAC地址
      */
     open fun sendAddMAC_1(code: ByteArray, mac: String) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("01", 0x10).toByte()
         val b2 = Integer.parseInt("0B", 0x10).toByte()
@@ -139,6 +146,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param   code:操作码  key8Byte高8字节
      */
     open fun sendAddMAC_2(code: ByteArray, key8Byte: ByteArray) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("02", 0x10).toByte()
         val b2 = Integer.parseInt("0C", 0x10).toByte()
@@ -171,6 +181,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param   code:操作码  key8Byte后字节
      */
     open fun sendAddMAC_3(code: ByteArray, key8Byte: ByteArray) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("03", 0x10).toByte()
         val b2 = Integer.parseInt("0C", 0x10).toByte()
@@ -202,6 +215,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param  code:操作码  mac：MAC地址
      */
     fun sendDeleteMAC(code: ByteArray, mac: String) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("04", 0x10).toByte()
         val b2 = Integer.parseInt("0A", 0x10).toByte()
@@ -230,9 +246,12 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @time  创建时间 : 上午9:16
      * @author  : guobiao
      * @Description  开关指令
-     * @param   code:操作码  operationData:0-关，1开
+     * @param   code:操作码  operationData:0-关，1-开
      */
     fun openOrClose(code: ByteArray, operationData: Byte) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("05", 0x10).toByte()
         val b2 = Integer.parseInt("05", 0x10).toByte()
@@ -258,6 +277,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param 查询单个MAC
      */
     fun findAllMAC() {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("06", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
@@ -274,6 +296,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param
      */
     fun findSingleMAC(code: ByteArray, mac: String) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("07", 0x10).toByte()
         val b2 = Integer.parseInt("0A", 0x10).toByte()
@@ -304,6 +329,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param
      */
     fun resetDevice(mac: String) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("FF", 0x10).toByte()
         val b2 = Integer.parseInt("08", 0x10).toByte()
@@ -332,6 +360,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @param
      */
     fun setDeviceMAC(mac: String) {
+        if (!getConnectState()){
+            context?.showToast("蓝牙已断开")
+        }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("FE", 0x10).toByte()
         val b2 = Integer.parseInt("08", 0x10).toByte()
@@ -372,6 +403,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
 
     //蓝牙数据写入方法
     private fun write(value: ByteArray) {
+        //操作返回当前时间
+        mBluetoothTestListener?.onOperation()
         if (mClient != null) {
             val writeData = BleUtils.byteArrayToHexString(value)
             mClient?.write(getMAC(), BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID1, value, BleWriteResponse { code ->

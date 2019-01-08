@@ -7,7 +7,7 @@ interface BluetoothTestListener {
 
     fun onGetCodeSuccess(code:ByteArray?)
 
-    fun onAddMAC(data:String)
+    fun onOperation()
 
     fun onDelete(code:ByteArray?,data:String)
 

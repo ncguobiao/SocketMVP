@@ -81,7 +81,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,18 +88,39 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/mAdd"
+            android:id="@+id/mBtnGetCode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="+" />
+            android:text="获取操作码" />
 
         <Button
-            android:id="@+id/mLess"
+            android:id="@+id/mBtnResetDevice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="_" />
+            android:text="恢复出厂设置" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/mBtnAddMAC"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="添加MAC" />
+
+        <Button
+            android:id="@+id/mBtnLess"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="删除MAC" />
 
     </LinearLayout>
 
@@ -111,19 +131,41 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/find"
+            android:id="@+id/mBtnFindAll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="查询MAC" />
+            android:text="查询所有MAC" />
 
         <Button
-            android:id="@+id/open"
+            android:id="@+id/mBtnFindSingleMAC"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="钥匙使能" />
+            android:text="查询单个MAC" />
 
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/mBtnSetMAC"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="修改MAC" />
+
+        <Button
+            android:id="@+id/mBtnOperation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="开启/关闭设备" />
     </LinearLayout>
 
 </LinearLayout>
