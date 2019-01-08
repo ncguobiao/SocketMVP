@@ -20,6 +20,7 @@ import org.jetbrains.anko.toast
 
 /**
  * Created by guobiao on 2019/1/3.
+ * 充电线设置密码和MAC地址
  */
 class BleCableActivity : BaseActivity() {
 

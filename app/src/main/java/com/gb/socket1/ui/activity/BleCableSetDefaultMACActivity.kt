@@ -27,6 +27,7 @@ import org.jetbrains.anko.toast
 
 /**
  * Created by guobiao on 2019/1/3.
+ * 充电线恢复默认配置
  */
 class BleCableSetDefaultMACActivity : BaseActivity() {
 

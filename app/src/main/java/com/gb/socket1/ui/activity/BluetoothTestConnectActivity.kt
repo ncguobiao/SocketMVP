@@ -27,7 +27,7 @@ import org.jetbrains.anko.toast
 
 /**
  * Created by guobiao on 2018/11/15.
- * 测试蓝牙连接
+ * 一键启动
  */
 
 
@@ -110,11 +110,11 @@ class BluetoothTestConnectActivity : BaseActivity() {
                 mTvReciver?.text = "错误数据：$data"
             }
 
-            override fun onAdd(data: String) {
+            override fun onAddMAC(data: String) {
                 mTvReciver?.text = "接收Add数据：$data"
             }
 
-            override fun onLess(data: String) {
+            override fun onDelete(data: String) {
                 mTvReciver?.text = "接收Less数据：$data"
             }
 
@@ -233,7 +233,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
                     if (clickAction == CLICK_ADD) {
                         mBluetoothTestImpl?.sendAdd(macAddress)
                     } else {
-                        mBluetoothTestImpl?.sendLess(macAddress)
+                        mBluetoothTestImpl?.sendDeleteMAC(macAddress)
                     }
 
                 }

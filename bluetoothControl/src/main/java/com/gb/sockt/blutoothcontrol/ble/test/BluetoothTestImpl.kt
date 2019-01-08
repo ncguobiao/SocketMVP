@@ -22,6 +22,7 @@ import java.util.*
 
 /**
  * Created by guobiao on 2018/11/15.
+ * 一键启动
  */
 class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
 
@@ -37,6 +38,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
     private var mConnected: Boolean = false
     private lateinit var mConnectStatusListener: BleConnectStatusListener
     private var filter: IntentFilter? = null
+    private val flag by lazy {
+        Integer.parseInt("72", 0x10).toByte()
+    }
 
     init {
 //        when (deviceTag) {
@@ -79,74 +83,287 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         }
     }
 
-     fun sendAdd(address:String) {
+    /**
+     *向设备获取请求码
+     */
+    fun requestCode() {
         val b0 = Integer.parseInt("27", 0x10).toByte()
-        val b1 = Integer.parseInt("01", 0x10).toByte()
-        val b2 = Integer.parseInt("0C", 0x10).toByte()
-        val b3 = Integer.parseInt("01", 0x10).toByte()
-        val b4 = Integer.parseInt("02", 0x10).toByte()
-        val b5 = Integer.parseInt("03", 0x10).toByte()
-        val b6 = Integer.parseInt("04", 0x10).toByte()
-        val b7 = Integer.parseInt("05", 0x10).toByte()
-        val b8 = Integer.parseInt("06", 0x10).toByte()
-       val macBytes = BleUtils.getByteArrAddress(address)
-        val b9 = macBytes[0]
-        val b10 = macBytes[1]
-        val b11 = macBytes[2]
-        val b12 = macBytes[3]
-        val b13 = macBytes[4]
-        val b14 = macBytes[5]
-        val b15 = Integer.parseInt("72", 0x10).toByte()
-        val b16 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15))
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16)
-        msg = "发送Add"
+        val b1 = Integer.parseInt("00", 0x10).toByte()
+        val b2 = Integer.parseInt("00", 0x10).toByte()
+        //异或校验位
+        val b4 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, flag))
+        val value = byteArrayOf(b0, b1, b2, flag, b4)
+        msg = "发送requestCode"
         write(value)
     }
 
 
-     fun sendLess(address:String) {
+    /**
+     * @time  创建时间 : 上午8:50
+     * @author  : guobiao
+     * @Description  添加MAC指令第一帧
+     * @param  code:操作码  mac：MAC地址
+     */
+    open fun sendAddMAC_1(code: ByteArray, mac: String) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("01", 0x10).toByte()
+        val b2 = Integer.parseInt("0B", 0x10).toByte()
+
+        //操作码
+        val b3 = code[0]
+        val b4 = code[1]
+        val b5 = code[2]
+        val b6 = code[3]
+
+        //mac地址检测位(可配置，0 or 1)
+        val macCheckFlag = 0.toByte()
+        //MAC地址
+        val macBytes = BleUtils.getByteArrAddress(mac)
+        val b8 = macBytes[0]
+        val b9 = macBytes[1]
+        val b10 = macBytes[2]
+        val b11 = macBytes[3]
+        val b12 = macBytes[4]
+        val b13 = macBytes[5]
+
+        val b15 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, macCheckFlag, b8, b9, b10, b11, b12, b13, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, macCheckFlag, b8, b9, b10, b11, b12, b13, flag, b15)
+        msg = "sendAddMAC_1"
+        write(value)
+    }
+
+    /**
+     * @time  创建时间 : 上午8:56
+     * @author  : guobiao
+     * @Description  添加MAC指令第二帧
+     * @param   code:操作码  key8Byte高8字节
+     */
+    open fun sendAddMAC_2(code: ByteArray, key8Byte: ByteArray) {
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("02", 0x10).toByte()
         val b2 = Integer.parseInt("0C", 0x10).toByte()
-        val b3 = Integer.parseInt("01", 0x10).toByte()
-        val b4 = Integer.parseInt("02", 0x10).toByte()
-        val b5 = Integer.parseInt("03", 0x10).toByte()
-        val b6 = Integer.parseInt("04", 0x10).toByte()
-        val b7 = Integer.parseInt("05", 0x10).toByte()
-        val b8 = Integer.parseInt("06", 0x10).toByte()
-       val macBytes = BleUtils.getByteArrAddress(address)
+
+        //操作码
+        val b3 = code[0]
+        val b4 = code[1]
+        val b5 = code[2]
+        val b6 = code[3]
+        //钥匙8字节
+        val b7 = key8Byte[0]
+        val b8 = key8Byte[1]
+        val b9 = key8Byte[2]
+        val b10 = key8Byte[3]
+        val b11 = key8Byte[4]
+        val b12 = key8Byte[5]
+        val b13 = key8Byte[6]
+        val b14 = key8Byte[7]
+
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag, b16)
+        msg = "sendAddMAC_2"
+        write(value)
+    }
+
+    /**
+     * @time  创建时间 : 上午8:56
+     * @author  : guobiao
+     * @Description  添加MAC指令第三帧
+     * @param   code:操作码  key8Byte后字节
+     */
+    open fun sendAddMAC_3(code: ByteArray, key8Byte: ByteArray) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("03", 0x10).toByte()
+        val b2 = Integer.parseInt("0C", 0x10).toByte()
+        //操作码
+        val b3 = code[0]
+        val b4 = code[1]
+        val b5 = code[2]
+        val b6 = code[3]
+        //钥匙8字节
+        val b7 = key8Byte[0]
+        val b8 = key8Byte[1]
+        val b9 = key8Byte[2]
+        val b10 = key8Byte[3]
+        val b11 = key8Byte[4]
+        val b12 = key8Byte[5]
+        val b13 = key8Byte[6]
+        val b14 = key8Byte[7]
+
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag, b16)
+        msg = "sendAddMAC_3"
+        write(value)
+    }
+
+    /**
+     * @time  创建时间 : 上午9:08
+     * @author  : guobiao
+     * @Description  删除MAC指令
+     * @param  code:操作码  mac：MAC地址
+     */
+    fun sendDeleteMAC(code: ByteArray, mac: String) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("04", 0x10).toByte()
+        val b2 = Integer.parseInt("0A", 0x10).toByte()
+        //操作码
+        val b3 = code[0]
+        val b4 = code[1]
+        val b5 = code[2]
+        val b6 = code[3]
+        //MAC地址
+        val macBytes = BleUtils.getByteArrAddress(mac)
         val b9 = macBytes[0]
         val b10 = macBytes[1]
         val b11 = macBytes[2]
         val b12 = macBytes[3]
         val b13 = macBytes[4]
         val b14 = macBytes[5]
-        val b15 = Integer.parseInt("72", 0x10).toByte()
-        val b16 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15))
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16)
-        msg = "发送Less"
+
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, b11, b12, b13, b14, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, b11, b12, b13, b14, flag, b16)
+        msg = "发送删除MAC指令"
         write(value)
 
     }
 
+    /**
+     * @time  创建时间 : 上午9:16
+     * @author  : guobiao
+     * @Description  开关指令
+     * @param   code:操作码  operationData:0-关，1开
+     */
+    fun openOrClose(code: ByteArray, operationData: Byte) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("05", 0x10).toByte()
+        val b2 = Integer.parseInt("05", 0x10).toByte()
+        //操作码
+        val b3 = code[0]
+        val b4 = code[1]
+        val b5 = code[2]
+        val b6 = code[3]
+        //0-关，1开
+        val operationData = operationData
 
+        val b9 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, operationData, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, operationData, flag, b9)
+        msg = "发送开关指令"
+        write(value)
+
+    }
+
+    /**
+     * @time  创建时间 : 上午9:21
+     * @author  : guobiao
+     * @Description
+     * @param 查询单个MAC
+     */
     fun findAllMAC() {
         val b0 = Integer.parseInt("27", 0x10).toByte()
-        val b1 = Integer.parseInt("03", 0x10).toByte()
+        val b1 = Integer.parseInt("06", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
-        val b3 = Integer.parseInt("72", 0x10).toByte()
-        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3))
-        val value = byteArrayOf(b0, b1, b2, b3, b4)
-        msg = "发送查询MAC"
+        val b4 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, flag))
+        val value = byteArrayOf(b0, b1, b2, flag, b4)
+        msg = "发送查询单个MAC"
         write(value)
     }
+
+    /**
+     * @time  创建时间 : 上午9:23
+     * @author  : guobiao
+     * @Description  查询单个MAC
+     * @param
+     */
+    fun findSingleMAC(code: ByteArray, mac: String) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("07", 0x10).toByte()
+        val b2 = Integer.parseInt("0A", 0x10).toByte()
+        //操作码
+        val b3 = code[0]
+        val b4 = code[1]
+        val b5 = code[2]
+        val b6 = code[3]
+        //MAC地址
+        val macBytes = BleUtils.getByteArrAddress(mac)
+        val b9 = macBytes[0]
+        val b10 = macBytes[1]
+        val b11 = macBytes[2]
+        val b12 = macBytes[3]
+        val b13 = macBytes[4]
+        val b14 = macBytes[5]
+
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, b11, b12, b13, b14, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, b11, b12, b13, b14, flag, b16)
+        msg = "发送查询单个MAC"
+        write(value)
+    }
+
+    /**
+     * @time  创建时间 : 上午9:27
+     * @author  : guobiao
+     * @Description  恢复出厂设置
+     * @param
+     */
+    fun resetDevice(mac: String) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("FF", 0x10).toByte()
+        val b2 = Integer.parseInt("08", 0x10).toByte()
+
+        //密码8字节根据MAC计算
+        val macBytes = BleUtils.getByteArrAddress(mac)
+        val b3 = macBytes[0]
+        val b4 = macBytes[1]
+        val b5 = macBytes[2]
+        val b6 = macBytes[3]
+        val b7 = macBytes[4]
+        val b8 = macBytes[5]
+        val b9 = macBytes[6]
+        val b10 = macBytes[7]
+
+        val b12 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, flag, b12)
+        msg = "发送恢复出厂设置"
+        write(value)
+    }
+
+    /**
+     * @time  创建时间 : 上午9:30
+     * @author  : guobiao
+     * @Description 设置设备MAC
+     * @param
+     */
+    fun setDeviceMAC(mac: String) {
+        val b0 = Integer.parseInt("27", 0x10).toByte()
+        val b1 = Integer.parseInt("FE", 0x10).toByte()
+        val b2 = Integer.parseInt("08", 0x10).toByte()
+
+        //MAC地址4字节密文
+        val macBytes = BleUtils.getByteArrAddress(mac)
+        val b3 = macBytes[0]
+        val b4 = macBytes[1]
+        val b5 = macBytes[2]
+        val b6 = macBytes[3]
+
+        //加密结果高2位
+        val b7 = macBytes[4]
+        val b8 = macBytes[5]
+
+        //厂家标记
+        val b9 = macBytes[4]
+        val b10 = macBytes[5]
+
+        val b12 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b9, b10, flag, b12)
+        msg = "发送设置设备MAC"
+        write(value)
+    }
+
 
     fun open() {
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("04", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
         val b3 = Integer.parseInt("72", 0x10).toByte()
-        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3))
+        val b4 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3))
         val value = byteArrayOf(b0, b1, b2, b3, b4)
         msg = "钥匙使能"
         write(value)
@@ -205,84 +422,280 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                     receiveValue?.let {
                         Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
-                            it.size > 2 && it[1].toInt() == 0x01
+
+                            it.size > 6 && it[1].toInt() == 0x00
                             -> {
-                                mBluetoothTestListener?.onAdd(BleUtils.byteArrayToHexString(receiveValue))
+                                Logger.w("获取操作码成功")
+                                val codes = getCodes(it)
+                                mBluetoothTestListener?.onGetCodeSuccess(codes)
+                            }
+                            it.size > 7 && it[1].toInt() == 0x01
+                            -> {
+                                val codes = getCodes(it)
+                                val result = it[7]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第一帧:失败")
+                                        Logger.e("添加MAC地址第一帧:失败")
+                                    }
+                                    1.toByte() -> {
+                                        Logger.d("添加MAC地址第一帧:成功")
+                                        mBluetoothTestListener?.onAddMAC_1(codes)
+                                    }
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第一帧:已存在")
+                                        Logger.w("添加MAC地址第一帧:已存在")
+                                    }
+                                    else -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第一帧:已满")
+                                        Logger.w("添加MAC地址第一帧:已满")
+                                    }
+                                }
+                            }
+                            it.size > 7 && it[1].toInt() == 0x02
+                            -> {
+                                val codes = getCodes(it)
+                                val result = it[7]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第二帧:失败")
+                                        Logger.e("添加MAC地址第二帧:失败")
+                                    }
+                                    1.toByte() -> {
+                                        Logger.d("添加MAC地址第二帧:成功")
+                                        mBluetoothTestListener?.onAddMAC_2(codes)
+                                    }
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第二帧:已存在")
+                                        Logger.w("添加MAC地址第二帧:已存在")
+                                    }
+                                    else -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第二帧:已满")
+                                        Logger.w("添加MAC地址第二帧:已满")
+                                    }
+                                }
+                            }
+                            it.size > 7 && it[1].toInt() == 0x03
+                            -> {
+                                val codes = getCodes(it)
+                                val result = it[7]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第三帧:失败")
+                                        Logger.e("添加MAC地址第三帧:失败")
+                                    }
+                                    1.toByte() -> {
+                                        Logger.d("添加MAC地址第三帧:成功")
+                                        mBluetoothTestListener?.onAddMAC_3(codes)
+                                    }
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第三帧:已存在")
+                                        Logger.w("添加MAC地址第三帧:已存在")
+                                    }
+                                    else -> {
+                                        mBluetoothTestListener?.onError("添加MAC地址第三帧:已满")
+                                        Logger.w("添加MAC地址第三帧:已满")
+                                    }
+                                }
+                            }
+                            it.size > 7 && it[1].toInt() == 0x04
+                            -> {
+                                val codes = getCodes(it)
+                                val result = it[7]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("删除MAC地址:失败")
+                                        Logger.e("删除MAC地址:失败")
+                                    }
+                                    1.toByte() -> {
+                                        Logger.d("删除MAC地址:成功")
+                                        mBluetoothTestListener?.onDelete(codes, "删除MAC地址:成功")
+                                    }
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("删除MAC地址:不存在")
+                                        Logger.w("删除MAC地址:不存在")
+                                    }
+                                    else -> {
+                                        mBluetoothTestListener?.onError("删除MAC地址:已满")
+                                        Logger.w("删除MAC地址:已满")
+                                    }
+                                }
+                            }
+                            it.size > 7 && it[1].toInt() == 0x05
+                            -> {
+                                val codes = getCodes(it)
+                                val result = it[7]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("控制开关:失败")
+                                        Logger.e("控制开关:失败")
+                                    }
+                                    1.toByte() -> {
+                                        Logger.d("控制开关:成功")
+                                        mBluetoothTestListener?.onOpenOrClose(codes)
+                                    }
+                                    else -> {}
+                                }
+                            }
+                            it.size > 4 && it[1].toInt() == 0x06
+                            -> {
+                                //数据长度可变 0x08/0x0E
+                                val dataLength = it[2]
+                                //当前帧
+                                val currentPic = it[3]
+                                //总帧
+                                val totalPic = it[4]
+                                Logger.w("查询MAC成功currentPic=$currentPic totalPic=$totalPic")
+//                                mBluetoothTestListener?.onFindAllMAC(codes)
 
                             }
-                            it.size > 2 && it[1].toInt() == 0x02
+                            it.size > 7 && it[1].toInt() == 0x07
                             -> {
-                                mBluetoothTestListener?.onLess(BleUtils.byteArrayToHexString(receiveValue))
+                                val codes = getCodes(it)
+                                val result = it[7]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("查询单个MAC:失败")
+                                        Logger.e("查询单个MAC:失败")
+                                    }
+                                    1.toByte() -> {
+                                        Logger.d("查询单个MAC:成功")
+                                        mBluetoothTestListener?.onFindSingleMAC(codes, "查询单个MAC:成功")
+                                    }
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("查询单个MAC:不存在")
+                                        Logger.w("查询单个MAC:不存在")
+                                    }
+                                    else -> {}
+                                }
                             }
-                            it.size > 5 && it[1].toInt() == 0x03 -> {
-                                val dataLength = it[2]
-                                val currentCount = it[3]
-                                val totalCount = it[4]
-                                if (currentCount <= totalCount) {
-                                    if (dataLength >= 6) {
-                                        val i = dataLength / 6
-                                        for (j in 0 until i) {
-//                                            Logger.e("j=${j}")
-                                            val dataArr = mutableListOf<Byte>()
-                                            it.forEachIndexed { index, _ ->
-//                                                Logger.e("index${index}")
-                                                if (index < 6) {
-//                                                    Logger.e("index${index} data=${it[index + 6 * j + 5]}")
-                                                    dataArr.add(it[index + 6 * j + 5])
-                                                }
-                                            }
-//                                            Logger.e("j${j} data=${dataArr}")
-                                            mBluetoothTestListener?.onFindAllMAC(j+1,dataArr)
-
-                                        }
-
+                            //TODO
+                        // 此处协议上位0x07
+                            it.size > 3 && it[1].toInt() == 0xFF
+                            -> {
+                                val result=it[3]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("恢复出厂设置:失败")
+                                        Logger.e("恢复出厂设置:失败")
                                     }
-                                    else{
-
+                                    1.toByte() -> {
+                                        Logger.d("恢复出厂设置:成功")
+                                        mBluetoothTestListener?.onResetDevice( "恢复出厂设置:成功")
                                     }
-                                }else{
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("恢复出厂设置:不存在")
+                                        Logger.w("恢复出厂设置:不存在")
+                                    }
+                                    else -> {}
                                 }
-                            }it.size > 5 && it[1].toInt() == 0x04 -> {
-                                val dataLength = it[2]
-                                val currentCount = it[3]
-                                val totalCount = it[4]
-                                if (currentCount <= totalCount) {
-                                    if (dataLength >= 6) {
-                                        val i = dataLength / 6
-                                        for (j in 0 until i) {
-                                            Logger.e("j=${j}")
-                                            val dataArr = mutableListOf<Byte>()
-                                            it.forEachIndexed { index, _ ->
-//                                                Logger.e("index${index}")
-                                                if (index < 6) {
-//                                                    Logger.e("index${index} data=${it[index + 6 * j + 5]}")
-                                                    dataArr.add(it[index + 6 * j + 5])
-                                                }
-                                            }
-                                            Logger.e("j${j} data=${dataArr}")
-                                            mBluetoothTestListener?.onFindAllMAC(j+1,dataArr)
-
-                                        }
-
+                            }
+                            it.size > 3 && it[1].toInt() == 0xFE
+                            -> {
+                                val result=it[3]
+                                when (result) {
+                                    0.toByte() -> {
+                                        mBluetoothTestListener?.onError("设置MAC地址:失败")
+                                        Logger.e("设置MAC地址:失败")
                                     }
-                                    else{
-
+                                    1.toByte() -> {
+                                        Logger.d("设置MAC地址:成功")
+                                        mBluetoothTestListener?.onSetDeciveMAC( "设置MAC地址:成功")
                                     }
-                                }else{
-
+                                    2.toByte() -> {
+                                        mBluetoothTestListener?.onError("设置MAC地址:不存在")
+                                        Logger.w("设置MAC地址:不存在")
+                                    }
+                                    else -> {}
                                 }
-
                             }
                             else -> {
-                                mBluetoothTestListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
                         }
+
+//                        when {
+//                            it.size > 2 && it[1].toInt() == 0x01
+//                            -> {
+//                                mBluetoothTestListener?.onAddMAC(BleUtils.byteArrayToHexString(receiveValue))
+//
+//                            }
+//                            it.size > 2 && it[1].toInt() == 0x02
+//                            -> {
+//                                mBluetoothTestListener?.onDelete(BleUtils.byteArrayToHexString(receiveValue))
+//                            }
+//                            it.size > 5 && it[1].toInt() == 0x03 -> {
+//                                val dataLength = it[2]
+//                                val currentCount = it[3]
+//                                val totalCount = it[4]
+//                                if (currentCount <= totalCount) {
+//                                    if (dataLength >= 6) {
+//                                        val i = dataLength / 6
+//                                        for (j in 0 until i) {
+////                                            Logger.e("j=${j}")
+//                                            val dataArr = mutableListOf<Byte>()
+//                                            it.forEachIndexed { index, _ ->
+//                                                //                                                Logger.e("index${index}")
+//                                                if (index < 6) {
+////                                                    Logger.e("index${index} data=${it[index + 6 * j + 5]}")
+//                                                    dataArr.add(it[index + 6 * j + 5])
+//                                                }
+//                                            }
+////                                            Logger.e("j${j} data=${dataArr}")
+//                                            mBluetoothTestListener?.onFindAllMAC(j + 1, dataArr)
+//
+//                                        }
+//
+//                                    } else {
+//
+//                                    }
+//                                } else {
+//                                }
+//                            }
+//                            it.size > 5 && it[1].toInt() == 0x04 -> {
+//                                val dataLength = it[2]
+//                                val currentCount = it[3]
+//                                val totalCount = it[4]
+//                                if (currentCount <= totalCount) {
+//                                    if (dataLength >= 6) {
+//                                        val i = dataLength / 6
+//                                        for (j in 0 until i) {
+//                                            Logger.e("j=${j}")
+//                                            val dataArr = mutableListOf<Byte>()
+//                                            it.forEachIndexed { index, _ ->
+//                                                //                                                Logger.e("index${index}")
+//                                                if (index < 6) {
+////                                                    Logger.e("index${index} data=${it[index + 6 * j + 5]}")
+//                                                    dataArr.add(it[index + 6 * j + 5])
+//                                                }
+//                                            }
+//                                            Logger.e("j${j} data=${dataArr}")
+//                                            mBluetoothTestListener?.onFindAllMAC(j + 1, dataArr)
+//
+//                                        }
+//
+//                                    } else {
+//
+//                                    }
+//                                } else {
+//
+//                                }
+//
+//                            }
+//                            else -> {
+//                                mBluetoothTestListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
+//                            }
+//                        }
 
                     }
                 }
             }
         }
 
+    }
+
+    //获取操作码
+    private fun getCodes(it: ByteArray): ByteArray? {
+        return BleUtils.seedToKey(byteArrayOf(it[3], it[4], it[5], it[6]), 2)
     }
 
 
@@ -390,8 +803,6 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
     fun setMACAddress(address: String) {
         this.address = address
     }
-
-
 
 
 }

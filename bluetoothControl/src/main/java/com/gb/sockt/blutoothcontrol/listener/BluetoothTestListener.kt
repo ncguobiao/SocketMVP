@@ -5,9 +5,11 @@ package com.gb.sockt.blutoothcontrol.listener
  */
 interface BluetoothTestListener {
 
-    fun onAdd(data:String)
+    fun onGetCodeSuccess(code:ByteArray?)
 
-    fun onLess(data:String)
+    fun onAddMAC(data:String)
+
+    fun onDelete(code:ByteArray?,data:String)
 
     fun onError(data:String)
 
@@ -16,4 +18,16 @@ interface BluetoothTestListener {
     fun onWriteSuccess(msg: String)
 
     fun onFindAllMAC(count: Int, map: MutableList<Byte>)
+
+    fun onAddMAC_1(codes: ByteArray?)
+    fun onAddMAC_2(codes: ByteArray?)
+    fun onAddMAC_3(codes: ByteArray?)
+
+    fun onOpenOrClose(codes: ByteArray?)
+
+    fun onFindSingleMAC(codes: ByteArray?, s: String)
+
+    fun onResetDevice(result: String)
+
+    fun onSetDeciveMAC(result: String)
 }
