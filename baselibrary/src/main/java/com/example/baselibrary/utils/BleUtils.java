@@ -411,7 +411,7 @@ public class BleUtils {
     public static void makePackage(byte[] mac, int flag) {
         int tmp1, tmp2;
         tmp1 = (mac[0] << 24) + (mac[1] << 16) + (mac[2] << 8) + mac[3];
-        tmp2 = (CRYPT_FLAG << 16) + flag;
+//        tmp2 = (CRYPT_FLAG << 16) + flag;
     }
 
 
