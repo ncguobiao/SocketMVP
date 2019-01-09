@@ -63,7 +63,7 @@ class BleCableSetDefaultMACActivity : BaseActivity() {
     }
 
     private val oldPassword = "FFEECCDDAA998877"
-    private val defaultMAC = "F2:35:0A:00:00:00"
+    private val defaultMAC = "F2:35:0A:00:00:01"
     private var pwd: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

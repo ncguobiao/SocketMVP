@@ -81,7 +81,7 @@ class BleCableActivity : BaseActivity() {
         //password:9C4A816C3B02FF35-(F2:35:0A:00:00:55)
         //F2:35:0A:00:00:00  //F2:35:0A:00:00:55 //55:00:00:0A:35:F2
         //连接初始设备
-        mPresenter.setMAC("F2:35:0A:00:00:00", object : BleConnectListener {
+        mPresenter.setMAC("F2:35:0A:00:00:01", object : BleConnectListener {
             override fun connectOnSuccess() {
                 tvState.text = resources.getString(R.string.connected)
                     //心跳数据

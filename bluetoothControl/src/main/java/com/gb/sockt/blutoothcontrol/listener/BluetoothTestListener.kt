@@ -13,6 +13,8 @@ interface BluetoothTestListener {
 
     fun onError(data:String)
 
+    fun onError(codes: ByteArray?,data:String)
+
     fun onWriteFailure(msg: String)
 
     fun onWriteSuccess(msg: String)
@@ -30,4 +32,6 @@ interface BluetoothTestListener {
     fun onResetDevice(result: String)
 
     fun onSetDeciveMAC(result: String)
+
+    fun onFindALLMAC(result: String)
 }

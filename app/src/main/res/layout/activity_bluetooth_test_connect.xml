@@ -107,13 +107,18 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
-
         <Button
-            android:id="@+id/mBtnAddMAC"
+            android:id="@+id/mBtnAddDedicatedMAC"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="添加MAC" />
+            android:text="添加专用MAC" />
+        <Button
+            android:id="@+id/mBtnAddCommonMAC"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="添加通用MAC" />
 
         <Button
             android:id="@+id/mBtnLess"
@@ -161,11 +166,17 @@
             android:text="修改MAC" />
 
         <Button
-            android:id="@+id/mBtnOperation"
+            android:id="@+id/mBtnOpenOperation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="开启/关闭设备" />
+            android:text="开启设备" />
+        <Button
+            android:id="@+id/mBtnCloseOperation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关闭设备" />
     </LinearLayout>
 
 </LinearLayout>

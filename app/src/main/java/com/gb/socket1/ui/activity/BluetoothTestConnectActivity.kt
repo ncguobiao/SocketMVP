@@ -45,6 +45,9 @@ class BluetoothTestConnectActivity : BaseActivity() {
     private var clickAction: Int = 0
     private val CLICK_ADD: Int = 1
     private val CLICK_LESS: Int = 2
+    private val CLICK_ADD_DEDICATED: Int = 3
+    private val CLICK_ADD_COMMON: Int = 4
+    private val FIND_SINGLE_MAC: Int = 5
 
     private var resultLength: Int = 0
 
@@ -66,8 +69,9 @@ class BluetoothTestConnectActivity : BaseActivity() {
                 1 -> {
                     val time = SystemClock.elapsedRealtime() - currentTime
                     //TODO 时间修改
-                    if (time > 30 * 1000.toLong()) {
+                    if (time > 30 *60* 1000.toLong()) {
                         toast("请求码失效，请重新获取")
+                        finish()
                     } else
                         sendEmptyMessageDelayed(1, 2 * 1000)
                 }
@@ -83,6 +87,8 @@ class BluetoothTestConnectActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_test_connect)
         mac = intent.getStringExtra("mac")
+
+        initView()
 
         mBluetoothTestImpl.setMAC(mac, object : BleConnectListener {
             //                    mBluetoothTestImpl.setMAC("00:00:A1:00:00:81", object : BleConnectListener {
@@ -120,6 +126,16 @@ class BluetoothTestConnectActivity : BaseActivity() {
         })
 
         mBluetoothTestImpl.setResponseListener(object : BluetoothTestListener {
+
+            override fun onError(codes: ByteArray?, data: String) {
+                codes?.let {
+                    mCodes = codes
+                    showToast(data)
+                    mTvReciver?.text = data
+                    Logger.d("失败后请求码：mCodes = ${BleUtils.byteArrayToHexString(codes)}")
+                }
+            }
+
             override fun onOperation() {
                 //获取当前时间
                 currentTime = SystemClock.elapsedRealtime()
@@ -128,6 +144,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun onGetCodeSuccess(codes: ByteArray?) {
                 codes?.let {
                     mCodes = codes
+                    Logger.d("获取请求码成功：mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
                 mTvReciver?.text = "获取请求码成功：${BleUtils.byteArrayToHexString(codes)}"
 
@@ -136,6 +153,8 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun onDelete(codes: ByteArray?, data: String) {
                 codes?.let {
                     mCodes = codes
+                    toast("删除MAC+${macAddress}成功")
+                    Logger.d("删除设备成功：mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
                 mTvReciver?.text = "删除设备成功：${BleUtils.byteArrayToHexString(codes)}"
             }
@@ -143,6 +162,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun onAddMAC_1(codes: ByteArray?) {
                 codes?.let {
                     mCodes = codes
+                    Logger.d("添加MAC第一帧成功 ,mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
                 mTvReciver?.text = "添加MAC第一帧成功：${BleUtils.byteArrayToHexString(codes)}"
             }
@@ -150,6 +170,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun onAddMAC_2(codes: ByteArray?) {
                 codes?.let {
                     mCodes = codes
+                    Logger.d("添加MAC第二帧成功 ,mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
                 mTvReciver?.text = "添加MAC第二帧成功：${BleUtils.byteArrayToHexString(codes)}"
             }
@@ -157,23 +178,30 @@ class BluetoothTestConnectActivity : BaseActivity() {
             override fun onAddMAC_3(codes: ByteArray?) {
                 codes?.let {
                     mCodes = codes
+                    Logger.d("添加MAC第三帧成功：mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
-
+                toast("添加MAC = ${macAddress}成功")
                 mTvReciver?.text = "添加MAC第三帧成功：${BleUtils.byteArrayToHexString(codes)}"
             }
 
             override fun onOpenOrClose(codes: ByteArray?) {
                 codes?.let {
                     mCodes = codes
+                    toast("开启关闭设备成功")
+                    Logger.d("开启关闭设备成功 mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
                 mTvReciver?.text = "开启关闭设备成功：${BleUtils.byteArrayToHexString(codes)}"
+            }
+            override fun onFindALLMAC(result: String) {
+
             }
 
             override fun onFindSingleMAC(codes: ByteArray?, s: String) {
                 codes?.let {
                     mCodes = codes
+                    Logger.d("查询单个MAC成功 mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
-                mTvReciver?.text = "查询单个MAC成功：${BleUtils.byteArrayToHexString(codes)}"
+                mTvReciver?.text =s
             }
 
             override fun onResetDevice(result: String) {
@@ -215,6 +243,15 @@ class BluetoothTestConnectActivity : BaseActivity() {
         })
 
         mBluetoothTestImpl.registerBroadcastReceiver()
+
+        mBluetoothTestImpl.connect()
+        currentTime = SystemClock.elapsedRealtime()
+        mTvState.text = "正在连接中..."
+
+
+    }
+
+    private fun initView() {
 
         mbtnConnect.onClick {
             if (!mBluetoothTestImpl.getConnectState())
@@ -268,13 +305,20 @@ class BluetoothTestConnectActivity : BaseActivity() {
             mTvMessage?.text = ""
             mTvReciver?.text = ""
             //operationData:0-关，1-开
-            mBluetoothTestImpl.resetDevice(macAddress)
+            mBluetoothTestImpl.resetDevice(mac)
         }
-        //MAC添加
-        mBtnAddMAC.onClick {
+        //MAC添加专用 0
+        mBtnAddDedicatedMAC.onClick {
             mTvMessage?.text = ""
             mTvReciver?.text = ""
-            clickAction = CLICK_ADD
+            clickAction = CLICK_ADD_DEDICATED
+            if (checkCameraPermission()) return@onClick
+        }
+        //MAC添加通用 1
+        mBtnAddCommonMAC.onClick {
+            mTvMessage?.text = ""
+            mTvReciver?.text = ""
+            clickAction = CLICK_ADD_COMMON
             if (checkCameraPermission()) return@onClick
         }
         //删除MAC
@@ -294,7 +338,8 @@ class BluetoothTestConnectActivity : BaseActivity() {
         mBtnFindSingleMAC.onClick {
             mTvMessage?.text = ""
             mTvReciver?.text = ""
-            mBluetoothTestImpl.findSingleMAC(mCodes,macAddress)
+            clickAction = FIND_SINGLE_MAC
+            if (checkCameraPermission()) return@onClick
         }
         //修改单个MAC
         mBtnSetMAC.onClick {
@@ -302,15 +347,20 @@ class BluetoothTestConnectActivity : BaseActivity() {
             mTvReciver?.text = ""
             mBluetoothTestImpl.setDeviceMAC(macAddress)
         }
-        //开/关设备
-        mBtnOperation.onClick {
+        //开设备
+        mBtnOpenOperation.onClick {
             mTvMessage?.text = ""
             mTvReciver?.text = ""
             //operationData:0-关，1-开
             mBluetoothTestImpl.openOrClose(mCodes,1)
         }
-
-
+        //关设备
+        mBtnCloseOperation.onClick {
+            mTvMessage?.text = ""
+            mTvReciver?.text = ""
+            //operationData:0-关，1-开
+            mBluetoothTestImpl.openOrClose(mCodes,0)
+        }
 
         mEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -342,10 +392,21 @@ class BluetoothTestConnectActivity : BaseActivity() {
                         toast("蓝牙未连接")
                         return
                     }
-                    if (clickAction == CLICK_ADD) {
-                        mBluetoothTestImpl?.sendAddMAC_1(mCodes,macAddress)
-                    } else
-                        mBluetoothTestImpl?.sendDeleteMAC(mCodes,macAddress)
+                    when(clickAction){
+                        CLICK_ADD_COMMON->{ //1
+                            mBluetoothTestImpl?.sendAddMAC_1(mCodes,macAddress,1)
+                        }
+                        CLICK_ADD_DEDICATED->{//0
+                            mBluetoothTestImpl?.sendAddMAC_1(mCodes,macAddress,0)
+                        }
+                        FIND_SINGLE_MAC->{
+                            mBluetoothTestImpl.findSingleMAC(mCodes,macAddress)
+                        }
+                        else->{
+                            mBluetoothTestImpl?.sendDeleteMAC(mCodes,macAddress)
+                        }
+                    }
+
                 }
             }
         }
