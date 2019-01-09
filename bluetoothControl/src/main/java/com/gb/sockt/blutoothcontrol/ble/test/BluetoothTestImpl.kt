@@ -124,6 +124,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
 
         //mac地址检测位(可配置，0 or 1)
         val macCheckFlag = 0.toByte()
+
         //MAC地址
         val macBytes = BleUtils.getByteArrAddress(mac)
         val b8 = macBytes[0]
@@ -139,13 +140,34 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         write(value)
     }
 
+
+    /**
+     * int main()
+        {
+        //定义一个负数
+        short a = -50;
+        //定义两个数组
+        unsigned char buf[2] = { 0 };
+        //将a左移8个单位在和0xff与，取a的前8位
+        buf[0] = (a >> 8) & 0XFF;
+        //将a和0xff与，取a的后8位
+        buf[1] = a & 0XFF;
+        printf("%x\n", buf[0]);
+        printf("%x\n", buf[1]);
+        //将得到的数组合并成原始数
+        a = buf[0] << 8 | buf[1];
+        printf("%x\n", a);
+        printf("%d\n", a);
+        return 0;
+        }
+     */
     /**
      * @time  创建时间 : 上午8:56
      * @author  : guobiao
      * @Description  添加MAC指令第二帧
      * @param   code:操作码  key8Byte高8字节
      */
-    open fun sendAddMAC_2(code: ByteArray, key8Byte: ByteArray) {
+    open fun sendAddMAC_2(code: ByteArray, keyHigt8b: ByteArray) {
         if (!getConnectState()){
             context?.showToast("蓝牙已断开")
         }
@@ -159,14 +181,14 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b5 = code[2]
         val b6 = code[3]
         //钥匙8字节
-        val b7 = key8Byte[0]
-        val b8 = key8Byte[1]
-        val b9 = key8Byte[2]
-        val b10 = key8Byte[3]
-        val b11 = key8Byte[4]
-        val b12 = key8Byte[5]
-        val b13 = key8Byte[6]
-        val b14 = key8Byte[7]
+        val b7 = keyHigt8b[0]
+        val b8 = keyHigt8b[1]
+        val b9 = keyHigt8b[2]
+        val b10 = keyHigt8b[3]
+        val b11 = keyHigt8b[4]
+        val b12 = keyHigt8b[5]
+        val b13 = keyHigt8b[6]
+        val b14 = keyHigt8b[7]
 
         val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag))
         val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag, b16)
@@ -180,7 +202,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
      * @Description  添加MAC指令第三帧
      * @param   code:操作码  key8Byte后字节
      */
-    open fun sendAddMAC_3(code: ByteArray, key8Byte: ByteArray) {
+    open fun sendAddMAC_3(code: ByteArray, keyLow8b: ByteArray) {
         if (!getConnectState()){
             context?.showToast("蓝牙已断开")
         }
@@ -193,14 +215,14 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b5 = code[2]
         val b6 = code[3]
         //钥匙8字节
-        val b7 = key8Byte[0]
-        val b8 = key8Byte[1]
-        val b9 = key8Byte[2]
-        val b10 = key8Byte[3]
-        val b11 = key8Byte[4]
-        val b12 = key8Byte[5]
-        val b13 = key8Byte[6]
-        val b14 = key8Byte[7]
+        val b7 = keyLow8b[0]
+        val b8 = keyLow8b[1]
+        val b9 = keyLow8b[2]
+        val b10 = keyLow8b[3]
+        val b11 = keyLow8b[4]
+        val b12 = keyLow8b[5]
+        val b13 = keyLow8b[6]
+        val b14 = keyLow8b[7]
 
         val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag))
         val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, flag, b16)

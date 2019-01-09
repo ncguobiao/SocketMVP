@@ -134,6 +134,7 @@ public class BleUtils {
 //            }
 //        }
 //    };
+
     private static final String HEXES = "0123456789ABCDEF";
 
     //int转byte
@@ -145,6 +146,7 @@ public class BleUtils {
         return b;
     }
 
+    //[FB,01,02,03,AB]
     public static String byteArrayToHexString(final byte[] array) {
         final StringBuilder sb = new StringBuilder();
         boolean firstEntry = true;
@@ -162,6 +164,8 @@ public class BleUtils {
         sb.append(']');
         return sb.toString();
     }
+
+    //0XFB010203AB
     public static String byteToHexString(final byte[] array) {
         final StringBuilder sb = new StringBuilder();
         boolean firstEntry = true;
@@ -175,29 +179,29 @@ public class BleUtils {
         return sb.toString();
     }
 
-    //请求种子
-    public static byte[] requestSeed(byte device_type) {
-        byte b0 = (byte) Integer.parseInt("27", 16);
-        byte b1 = (byte) Integer.parseInt("01", 16);
-        byte b3 = (byte) Integer.parseInt("00", 16);
-        byte b4 = BleUtils.getCheckCode(new byte[]{b0, b1, device_type, b3});
-        byte[] value = new byte[]{b0, b1, device_type, b3, b4};
-        return value;
-    }
-
-    //校验密码
-    public static byte[] sendAndCheckSeed(byte[] keys,byte device_type) {
-        byte b0 = (byte) Integer.parseInt("27", 16);
-        byte b1 = (byte) Integer.parseInt("02", 16);
-        byte b3 = (byte) Integer.parseInt("04", 16);
-        byte b4 = keys[0];
-        byte b5 = keys[1];
-        byte b6 = keys[2];
-        byte b7 = keys[3];
-        byte b8 = BleUtils.getCheckCode(new byte[]{b0, b1, device_type, b3, b4, b5, b6, b7});
-        byte[] value = new byte[]{b0, b1, device_type, b3, b4, b5, b6, b7, b8};
-        return value;
-    }
+//    //请求种子
+//    public static byte[] requestSeed(byte device_type) {
+//        byte b0 = (byte) Integer.parseInt("27", 16);
+//        byte b1 = (byte) Integer.parseInt("01", 16);
+//        byte b3 = (byte) Integer.parseInt("00", 16);
+//        byte b4 = BleUtils.getCheckCode(new byte[]{b0, b1, device_type, b3});
+//        byte[] value = new byte[]{b0, b1, device_type, b3, b4};
+//        return value;
+//    }
+//
+//    //校验密码
+//    public static byte[] sendAndCheckSeed(byte[] keys,byte device_type) {
+//        byte b0 = (byte) Integer.parseInt("27", 16);
+//        byte b1 = (byte) Integer.parseInt("02", 16);
+//        byte b3 = (byte) Integer.parseInt("04", 16);
+//        byte b4 = keys[0];
+//        byte b5 = keys[1];
+//        byte b6 = keys[2];
+//        byte b7 = keys[3];
+//        byte b8 = BleUtils.getCheckCode(new byte[]{b0, b1, device_type, b3, b4, b5, b6, b7});
+//        byte[] value = new byte[]{b0, b1, device_type, b3, b4, b5, b6, b7, b8};
+//        return value;
+//    }
 
     /**
      * CE查询设备时间
@@ -215,7 +219,6 @@ public class BleUtils {
         return value;
     }
 
-
     /**
      * CE打开或者关闭设备
      * @param way
@@ -223,7 +226,6 @@ public class BleUtils {
      * @return
      */
     public static byte[] openCEAndCLoseDevice(String way, ACTION action,byte device_type) {
-
         try {
             byte b0 = (byte) Integer.parseInt("27", 16);
             byte b1 = (byte) Integer.parseInt("21", 16);
@@ -253,7 +255,6 @@ public class BleUtils {
             return null;
         }
     }
-
 
     /**
      * CE打开操作
@@ -296,9 +297,6 @@ public class BleUtils {
         }
     }
 
-
-
-
     /**
      * 计算两个直接数据
      * @param one
@@ -319,6 +317,40 @@ public class BleUtils {
     }
 
     /**
+     * 将两个byte数据转化为有符号int
+     * @param high : 高八位
+     * @param low : 低八位
+     * @return
+     */
+    public static int twoByteToSignedInt(byte high,byte low){
+        return (high << 8) | low;
+    }
+
+    /**
+     * 将两个byte数据转化为无符号int
+     * @param high : 高八位
+     * @param low : 低八位
+     * @return
+     */
+    public static int twoByteToUnsignedInt(byte high,byte low){
+        return ((high << 8) & 0xffff) | (low & 0x00ff);
+    }
+    /**
+     * 将int转换为两个byte
+     * @param numInt : 实际只取其中的低16位二进制数
+     * @return 长度为2的byte数组 ，byte[0]为高8位，byte[1]为低八位
+     */
+    public static byte[] intToTwoByte(int numInt){
+        byte[] rest = new byte[2];
+        if(numInt < -32768 || numInt > 32767){
+            return null;
+        }
+        rest[0] = (byte)(numInt >> 8);//高8位
+        rest[1] = (byte)(numInt & 0x00ff);//低8位
+        return rest;
+    }
+
+    /**
      * 操作设备动作
      */
     public enum ACTION {
@@ -330,7 +362,4 @@ public class BleUtils {
         CE,
         CD
     }
-
-
-
 }
