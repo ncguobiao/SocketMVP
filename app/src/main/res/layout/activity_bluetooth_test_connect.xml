@@ -57,6 +57,7 @@
 
 
     <EditText
+        android:visibility="gone"
         android:id="@+id/mEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,6 +65,7 @@
         android:hint="请输入MAC地址,例如0000CE123456" />
 
     <Spinner
+        android:visibility="gone"
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -178,5 +180,25 @@
             android:layout_weight="1"
             android:text="关闭设备" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/mBtnReset"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="复位" />
+
+        <Button
+            android:id="@+id/mBtnCLoseDevice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关闭设备蓝牙" />
+
+    </LinearLayout>
 </LinearLayout>

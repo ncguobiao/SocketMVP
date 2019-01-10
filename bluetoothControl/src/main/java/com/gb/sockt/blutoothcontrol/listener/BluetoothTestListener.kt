@@ -27,11 +27,13 @@ interface BluetoothTestListener {
 
     fun onOpenOrClose(codes: ByteArray?)
 
-    fun onFindSingleMAC(codes: ByteArray?, s: String)
+    fun onFindSingleMAC(codes: ByteArray?, result: String)
 
     fun onResetDevice(result: String)
 
     fun onSetDeciveMAC(result: String)
 
     fun onFindALLMAC(result: String)
+    fun onResetDeviceSuccess(codes: ByteArray?, result: String)
+    fun onCloseDeviceBleSuccess(result: String)
 }
