@@ -195,7 +195,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
                     mCodes = codes
                     Logger.d("查询单个MAC成功 mCodes = ${BleUtils.byteArrayToHexString(codes)}")
                 }
-                mTvReciver?.text =result
+                mTvReciver?.text ="${result}=${macAddress}"
             }
 
             override fun onResetDevice(result: String) {
@@ -207,8 +207,8 @@ class BluetoothTestConnectActivity : BaseActivity() {
             }
 
             override fun onFindAllMAC(count: Int, map: MutableList<Byte>) {
-                sb?.append("  \r\n第${count}帧，MAC=${BleUtils.byteArrayToHexString(map.toByteArray())}\r\n")
-                mTvReciver?.text = "查询MAC数据：${sb.toString()}"
+//                sb?.append("  \r\n第${count}帧，MAC=${BleUtils.byteArrayToHexString(map.toByteArray())}\r\n")
+                mTvReciver?.text = "查询MAC数据：${BleUtils.byteArrayToHexString(map.toByteArray())}"
             }
 
             override fun onResetDeviceSuccess(codes: ByteArray?, result: String) {

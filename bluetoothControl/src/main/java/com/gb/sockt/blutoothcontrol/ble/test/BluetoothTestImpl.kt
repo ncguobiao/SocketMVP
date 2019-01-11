@@ -469,6 +469,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         msg = "发送复位指令"
         write(value)
     }
+
     //关闭设备蓝牙
     fun cLoseDeviceBle() {
         if (!getConnectState()) {
@@ -478,10 +479,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("09", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
-        val b3 = Integer.parseInt("00", 0x10).toByte()
 
-        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, flag))
-        val value = byteArrayOf(b0, b1, b2, b3, flag,b16)
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2,  flag))
+        val value = byteArrayOf(b0, b1, b2, flag,b16)
         msg = "发送复位指令"
         write(value)
     }
