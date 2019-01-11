@@ -42,7 +42,7 @@ class BleCableActivity : BaseActivity() {
                         tvSend.text=""
                         tvRecive.text = ""
                         mPresenter.setCircle()
-                        sendEmptyMessageDelayed(1, 3000)
+                        sendEmptyMessageDelayed(1, 2000)
                     }
                 }
                 2->{
@@ -50,7 +50,6 @@ class BleCableActivity : BaseActivity() {
                         removeCallbacksAndMessages(null)
                         toast("请检验设备是否修改完成")
                         finish()
-
                         Logger.e("蓝牙断开，主动关闭当前页面")
                     }else{
                         tvSend.text=""
@@ -85,8 +84,8 @@ class BleCableActivity : BaseActivity() {
             override fun connectOnSuccess() {
                 tvState.text = resources.getString(R.string.connected)
                     //心跳数据
-                    mHandler.sendEmptyMessageDelayed(1, 3000)
-                    toast("三秒后开始发送心跳包")
+                    mHandler.sendEmptyMessageDelayed(1, 1000)
+                    toast("一秒后开始发送心跳包")
 
             }
 
@@ -229,6 +228,14 @@ class BleCableActivity : BaseActivity() {
             }else{
                 toast("蓝牙未连接")
             }
+        }
+
+        mBtnClearCache.onClick {
+            SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,false)
+            SpUtils.remove(ConstantSP.DEVICE_PWD)
+            SpUtils.remove(ConstantSP.ISSETDEFAULTPWDSUCCESS)
+            toast("清除成功，可进行下一个设备的配置")
+            finish()
         }
 
     }
