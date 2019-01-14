@@ -33,7 +33,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
     private var mClient: BluetoothClient? = null
     //存MAC
     private val dataArr by lazy {
-         mutableListOf<Byte>()
+        mutableListOf<Byte>()
     }
     private var mBleConnectListener: BleConnectListener? = null
     private lateinit var msg: String
@@ -119,7 +119,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         }
         val b0 = Integer.parseInt("27", 0x10).toByte()
         val b1 = Integer.parseInt("01", 0x10).toByte()
-        val b2 = Integer.parseInt("0B", 0x10).toByte()
+        val b2 = Integer.parseInt("0C", 0x10).toByte()
 
         //操作码
         val b3 = code[0]
@@ -130,6 +130,12 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         //mac地址检测位(可配置，0 or 1)
         val macCheckFlag = macCheckFlag.toByte()
 
+        var time = 10.toByte()
+        when (macCheckFlag) {
+            0.toByte() -> time = 10.toByte()
+            1.toByte() -> time = 30.toByte()
+        }
+
         //MAC地址
         val macBytes = BleUtils.getByteArrAddress(mac)
         val b8 = macBytes[0]
@@ -139,8 +145,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b12 = macBytes[4]
         val b13 = macBytes[5]
 
-        val b15 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, macCheckFlag, b8, b9, b10, b11, b12, b13, flag))
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, macCheckFlag, b8, b9, b10, b11, b12, b13, flag, b15)
+        val b15 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, macCheckFlag,time, b8, b9, b10, b11, b12, b13, flag))
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, macCheckFlag,time, b8, b9, b10, b11, b12, b13, flag, b15)
         msg = "sendAddMAC_1"
         write(value)
     }
@@ -422,7 +428,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b4 = macBytes[2]
         val b5 = macBytes[1]
         val b6 = macBytes[0]
-        val byteArray= byteArrayOf(b3,b4,b5,b6)
+        val byteArray = byteArrayOf(b3, b4, b5, b6)
 
         val arr = BleUtils.makePackage(byteArray, 0x1001)
         val tmp1 = arr[0]
@@ -442,8 +448,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b14 = tmp2.toByte()
 
 
-        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b7,b8, b9, b10, b11, b12, b13, b14, flag))
-        val value = byteArrayOf(b0, b1, b2,  b7,b8, b9, b10, b11, b12, b13, b14, flag,b16)
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b7, b8, b9, b10, b11, b12, b13, b14, flag))
+        val value = byteArrayOf(b0, b1, b2, b7, b8, b9, b10, b11, b12, b13, b14, flag, b16)
         msg = "发送设置设备MAC"
         write(value)
     }
@@ -465,7 +471,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b6 = code[3]
 
         val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, flag))
-        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, flag,b16)
+        val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, flag, b16)
         msg = "发送复位指令"
         write(value)
     }
@@ -480,8 +486,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b1 = Integer.parseInt("09", 0x10).toByte()
         val b2 = Integer.parseInt("00", 0x10).toByte()
 
-        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2,  flag))
-        val value = byteArrayOf(b0, b1, b2, flag,b16)
+        val b16 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, flag))
+        val value = byteArrayOf(b0, b1, b2, flag, b16)
         msg = "发送复位指令"
         write(value)
     }
@@ -666,7 +672,7 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                             it.size > 4 && it[1].toInt() == 0x06
                             -> {
                                 //数据长度可变 0x08/0x0E
-                                val dataLength = it[2]-2//减去帧的两个字节，剩下MAC
+                                val dataLength = it[2] - 2//减去帧的两个字节，剩下MAC
                                 //当前帧
                                 val currentPic = it[3]
                                 //总帧
@@ -692,9 +698,10 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                     } else {
                                         if (totalPic.toInt() == 0x00) {
                                             mBluetoothTestListener?.onError("查询结果为空")
-                                        }else{}
+                                        } else {
+                                        }
                                     }
-                                }else{
+                                } else {
                                     Logger.w("查询MAC失败currentPic > totalPic")
                                 }
 //                                mBluetoothTestListener?.onFindAllMAC(codes)
@@ -716,7 +723,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                         mBluetoothTestListener?.onError(codes, "查询单个MAC:不存在")
                                         Logger.w("查询单个MAC:不存在")
                                     }
-                                    else -> {}
+                                    else -> {
+                                    }
                                 }
                             }
                             it.size > 7 && it[1].toInt() == 0x08
@@ -732,7 +740,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                         Logger.d("设备复位:成功")
                                         mBluetoothTestListener?.onResetDeviceSuccess(codes, "设备复位成功")
                                     }
-                                    else -> {}
+                                    else -> {
+                                    }
                                 }
                             }
                             it.size > 3 && it[1].toInt() == 0x09
@@ -740,14 +749,15 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                 val result = it[3]
                                 when (result) {
                                     0.toByte() -> {
-                                        mBluetoothTestListener?.onError( "关闭设备蓝牙:失败")
+                                        mBluetoothTestListener?.onError("关闭设备蓝牙:失败")
                                         Logger.e("关闭设备蓝牙:失败")
                                     }
                                     1.toByte() -> {
                                         Logger.d("关闭设备蓝牙:成功")
                                         mBluetoothTestListener?.onCloseDeviceBleSuccess("关闭设备蓝牙成功")
                                     }
-                                    else -> {}
+                                    else -> {
+                                    }
                                 }
                             }
                             it.size > 6 && it[1] == 0xFF.toByte()
@@ -768,7 +778,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                         mBluetoothTestListener?.onError(codes, "恢复出厂设置:不存在")
                                         Logger.w("恢复出厂设置:不存在")
                                     }
-                                    else -> {}
+                                    else -> {
+                                    }
                                 }
                             }
                             it.size > 7 && it[1] == 0xFE.toByte()
@@ -784,10 +795,12 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                         Logger.d("设置MAC地址:成功")
                                         mBluetoothTestListener?.onSetDeciveMAC("设置MAC地址:成功")
                                     }
-                                    else -> {}
+                                    else -> {
+                                    }
                                 }
                             }
-                            else -> {}
+                            else -> {
+                            }
                         }
 
 //                        when {
