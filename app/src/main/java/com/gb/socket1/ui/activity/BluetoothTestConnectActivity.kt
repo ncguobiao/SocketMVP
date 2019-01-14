@@ -204,6 +204,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
 
             override fun onSetDeciveMAC(result: String) {
                 mTvReciver?.text = result
+
             }
 
             override fun onFindAllMAC(count: Int, map: MutableList<Byte>) {

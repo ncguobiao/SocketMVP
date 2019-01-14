@@ -303,8 +303,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
     /**
      * @time  创建时间 : 上午9:21
      * @author  : guobiao
-     * @Description
-     * @param 查询单个MAC
+     * @Description 查询所有MAC
+     * @param
      */
     fun findAllMAC() {
         if (!getConnectState()) {
@@ -418,11 +418,11 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
 
         //MAC地址4字节密文
         val macBytes = BleUtils.getByteArrAddress(mac)
-        val b3 = macBytes[5]
-        val b4 = macBytes[4]
-        val b5 = macBytes[3]
-        val b6 = macBytes[2]
-       val byteArray= byteArrayOf(b3,b4,b5,b6)
+        val b3 = macBytes[3]
+        val b4 = macBytes[2]
+        val b5 = macBytes[1]
+        val b6 = macBytes[0]
+        val byteArray= byteArrayOf(b3,b4,b5,b6)
 
         val arr = BleUtils.makePackage(byteArray, 0x1001)
         val tmp1 = arr[0]
@@ -494,11 +494,11 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
             val writeData = BleUtils.byteArrayToHexString(value)
             mClient?.write(getMAC(), BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID1, value, BleWriteResponse { code ->
                 if (code == Constants.REQUEST_SUCCESS) {
-                    mBluetoothTestListener?.onWriteSuccess("${msg}:${writeData}==成功")
-                    Logger.w("${msg}:${writeData}==成功")
+                    mBluetoothTestListener?.onWriteSuccess("${msg}:$writeData==成功")
+                    Logger.w("$msg:$writeData==成功")
                 } else {
-                    mBluetoothTestListener?.onWriteFailure("${msg}:${writeData}==失败")
-                    Logger.w("${msg}:${writeData}--失败")
+                    mBluetoothTestListener?.onWriteFailure("${msg}:$writeData==失败")
+                    Logger.w("$msg:$writeData--失败")
                 }
             })
         }
@@ -750,9 +750,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                     else -> {}
                                 }
                             }
-                            it.size > 3 && it[1].toInt() == 0xFF
+                            it.size > 6 && it[1] == 0xFF.toByte()
                             -> {
-                                val result = it[3]
+                                val result = it[7]
                                 //TODO 修改
                                 val codes = getCodes(it)
                                 when (result) {
@@ -771,10 +771,9 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                     else -> {}
                                 }
                             }
-                            it.size > 3 && it[1].toInt() == 0xFE
+                            it.size > 7 && it[1] == 0xFE.toByte()
                             -> {
-                                val result = it[3]
-                                //TODO 修改-
+                                val result = it[7]
                                 val codes = getCodes(it)
                                 when (result) {
                                     0.toByte() -> {
@@ -784,10 +783,6 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
                                     1.toByte() -> {
                                         Logger.d("设置MAC地址:成功")
                                         mBluetoothTestListener?.onSetDeciveMAC("设置MAC地址:成功")
-                                    }
-                                    2.toByte() -> {
-                                        mBluetoothTestListener?.onError(codes, "设置MAC地址:不存在")
-                                        Logger.w("设置MAC地址:不存在")
                                     }
                                     else -> {}
                                 }
