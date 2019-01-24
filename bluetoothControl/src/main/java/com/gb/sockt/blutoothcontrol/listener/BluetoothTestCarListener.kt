@@ -22,6 +22,7 @@ interface BluetoothTestCarListener {
     fun clearConfigOnSuccess(byteArrayToHexString: String?)
     fun getDeviceInfoOnError(error: String)
     fun getDeviceInfoOnIdle()
+    fun coinOnRetry(result: Byte)
 
 
 }

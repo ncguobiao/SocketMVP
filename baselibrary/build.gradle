@@ -32,7 +32,13 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            minifyEnabled true
+//            signingConfig signingConfigs.release
+            //Zipalign优化
+            zipAlignEnabled true
+            //去除无用的资源
+//            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

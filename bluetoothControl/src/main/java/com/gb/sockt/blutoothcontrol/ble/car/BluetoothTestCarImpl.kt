@@ -18,6 +18,7 @@ import com.inuker.bluetooth.library.connect.response.BleNotifyResponse
 import com.inuker.bluetooth.library.connect.response.BleUnnotifyResponse
 import com.inuker.bluetooth.library.connect.response.BleWriteResponse
 import com.orhanobut.logger.Logger
+import org.jetbrains.anko.toast
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -127,14 +128,28 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
     fun coin() {
         val b0 = Integer.parseInt("27", 16).toByte()
         val b1 = Integer.parseInt("10", 16).toByte()
-        val b2 = Integer.parseInt("00", 16).toByte()
-        val b3 = Integer.parseInt("95", 16).toByte()
+        val b2 = Integer.parseInt("01", 16).toByte()
+        val b3 = Integer.parseInt("05", 16).toByte()
+        val b4 = Integer.parseInt("91", 16).toByte()
 //        val b3 = BleUtils.getCheckCode(byteArrayOf(b0, deviceType, b1, b2))
-        val value = byteArrayOf(b0, deviceType, b1, b2, b3)
+        val value = byteArrayOf(b0, deviceType, b1, b2, b3, b4)
         msg = "摇摇车投币"
         write(value)
     }
 
+    fun coin(count:Byte) {
+        if (count<=0){
+            context?.toast("投币次数小于零")
+            return
+        }
+        val b0 = Integer.parseInt("27", 16).toByte()
+        val b1 = Integer.parseInt("10", 16).toByte()
+        val b2 = Integer.parseInt("01", 16).toByte()
+        val b4 = BleUtils.checkSeekCode(byteArrayOf(b0, deviceType, b1, b2,count))
+        val value = byteArrayOf(b0, deviceType, b1, b2, count, b4)
+        msg = "摇摇车投币"
+        write(value)
+    }
     /**
      * 清楚计数
      */
@@ -160,6 +175,18 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         msg = "摇摇车清除配置"
         write(value)
     }
+
+    fun closeDevice() {
+        val b0 = Integer.parseInt("27", 16).toByte()
+        val b1 = Integer.parseInt("04", 16).toByte()
+        val b2 = Integer.parseInt("00", 16).toByte()
+        val b3 = Integer.parseInt("81", 16).toByte()
+//        val b3 = BleUtils.getCheckCode(byteArrayOf(b0, deviceType, b1, b2))
+        val value = byteArrayOf(b0, deviceType, b1, b2, b3)
+        msg = "摇摇车断开配置"
+        write(value)
+    }
+
 //    fun open() {
 //        val b0 = Integer.parseInt("27", 0x10).toByte()
 //        val b1 = Integer.parseInt("04", 0x10).toByte()
@@ -222,7 +249,7 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                 Constants.ACTION_CHARACTER_CHANGED -> {
                     val receiveValue = intent.getByteArrayExtra(Constants.EXTRA_BYTE_VALUE)
                     receiveValue?.let {
-//                        Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
+                        //                        Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
                             it.size > 7 && it[2].toInt() == 0x01 -> {
                                 //获取随机种子
@@ -249,11 +276,20 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                                 val coinCount = getMathCount(it[5], it[6])
                                 //蓝牙使用次数
                                 val bleCount = getMathCount(it[7], it[8])
-                                mBluetoothTestCarListener?.getDeviceInfoOnSuccess(coinCount,bleCount)
+                                mBluetoothTestCarListener?.getDeviceInfoOnSuccess(coinCount, bleCount)
 
                             }
-                            it.size > 2 && it[2].toInt() == 0x10 -> {
-                                mBluetoothTestCarListener?.coinOnSuccess(BleUtils.byteArrayToHexString(receiveValue))
+                            it.size > 4 && it[2].toInt() == 0x10 -> {
+
+                                val result = it[4]
+                                if (result.toInt() == 0x00) {
+                                    mBluetoothTestCarListener?.coinOnSuccess(BleUtils.byteArrayToHexString(receiveValue))
+                                }else{
+                                    coin(result)
+                                    mBluetoothTestCarListener?.coinOnRetry(result)
+                                }
+
+
                             }
                             it.size > 2 && it[2].toInt() == 0x20 -> {
                                 mBluetoothTestCarListener?.clearCountOnSuccess(BleUtils.byteArrayToHexString(receiveValue))
@@ -400,9 +436,10 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         }
 
     }
-    fun open(){
+
+    fun open() {
         mClient?.let {
-          if (! it.isBluetoothOpened)it.openBluetooth()
+            if (!it.isBluetoothOpened) it.openBluetooth()
 
         }
     }
@@ -417,8 +454,9 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
     fun setMACAddress(mac: String) {
         this.macAddress = mac
     }
-    fun clearRequest(){
-        mClient?.clearRequest(macAddress,0)
+
+    fun clearRequest() {
+        mClient?.clearRequest(macAddress, 0)
     }
 
 }

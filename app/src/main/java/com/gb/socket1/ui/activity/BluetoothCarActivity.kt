@@ -126,6 +126,11 @@ class BluetoothCarActivity : BaseActivity() {
         })
         //蓝牙响应监听
         presenter.setResponseListener(object : BluetoothTestCarListener {
+            override fun coinOnRetry(result: Byte) {
+                toast("投币失败:${result}个,继续投币中...")
+
+            }
+
             //设备状态正常
             override fun getDeviceInfoOnIdle() {
                 deviceState = true
