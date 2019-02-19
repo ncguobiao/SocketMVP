@@ -187,17 +187,7 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         write(value)
     }
 
-//    fun open() {
-//        val b0 = Integer.parseInt("27", 0x10).toByte()
-//        val b1 = Integer.parseInt("04", 0x10).toByte()
-//        val b2 = Integer.parseInt("00", 0x10).toByte()
-//        val b3 = Integer.parseInt("72", 0x10).toByte()
-//        val b4 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3))
-//        val value = byteArrayOf(b0, b1, b2, b3, b4)
-//        msg = "钥匙使能"
-//        write(value)
-//
-//    }
+
 
     //蓝牙数据写入方法
     private fun write(value: ByteArray) {
@@ -318,9 +308,6 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         if (electricity2.length == 1) {
             electricity2 = "0$electricity2"
         }
-
-//        return Integer.parseInt(
-//                electricity1 + electricity2, 16)
         return (electricity1 + electricity2).toInt(16)
 
     }
@@ -414,7 +401,6 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
 
     override fun setResponseListener(mBluetoothTestCarListener: BluetoothTestCarListener?) {
         this.mBluetoothTestCarListener = mBluetoothTestCarListener
-
     }
 
 
@@ -430,17 +416,13 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
 //        Logger.d("disconnect=$disconnect")
 //        disconnect?.isAccessible=true
 //        disconnect?.invoke(newInstance)
-        mClient?.let {
-            it.disconnect(macAddress)
-//            it.closeBluetooth()
-        }
+        mClient?.disconnect(macAddress)
 
     }
 
     fun open() {
-        mClient?.let {
-            if (!it.isBluetoothOpened) it.openBluetooth()
-
+        mClient?.run {
+            if (!isBluetoothOpened) openBluetooth()
         }
     }
 

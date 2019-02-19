@@ -15,7 +15,7 @@ import retrofit2.http.POST
  */
 interface UserCenterApi {
 
-    /**
+    /**api
      * 获取用户使用记录
      */
 //    @POST("DeviceService/rest/executeAll")
