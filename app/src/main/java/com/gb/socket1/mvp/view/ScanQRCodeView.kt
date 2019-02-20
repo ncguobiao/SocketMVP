@@ -7,6 +7,6 @@ import com.example.baselibrary.base.IBaseView
  */
 interface ScanQRCodeView: IBaseView{
 
-    fun getCheckedDevice(b:Boolean)
+    fun  getCheckedDevice(b:Boolean)
     fun getCheckedDeviceError(msg:String?)
 }

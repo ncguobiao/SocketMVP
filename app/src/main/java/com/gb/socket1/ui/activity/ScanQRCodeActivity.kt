@@ -5,12 +5,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
+import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.base.BaseMvpActivity
 import com.example.baselibrary.common.BaseApplication
+import com.example.baselibrary.common.Constant
 import com.example.baselibrary.common.ConstantSP
 import com.example.baselibrary.onClick
 import com.example.baselibrary.zxing.app.CaptureActivity
 import com.gb.socket1.R
+import com.gb.socket1.R.id.button6
+import com.gb.socket1.R.id.mBtnSetDefault
 import com.gb.socket1.injection.module.MainModule
 import com.gb.socket1.mvp.presenter.impl.ScanQRCodePresenterImpl
 import com.gb.socket1.mvp.service.MainService
@@ -28,110 +32,22 @@ import javax.inject.Inject
 /**
  * Created by guobiao on 2018/12/3.
  */
-//class ScanQRCodeActivity : BaseActivity() {
-class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeView {
+class ScanQRCodeActivity : BaseActivity() {
+//class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeView {
     private var checkedDeviceState: Boolean = false
-    override fun getCheckedDeviceError(msg: String?) {
-        msg?.let {
-            toast(it)
-        }
-    }
 
-    @Inject
-    lateinit var service: MainService
 
-    override fun onError(error: String) {
-    }
 
-    override fun getCheckedDevice(b: Boolean) {
-        if (b)
-            startActivity<BleCableActivity>("mac" to macAddress)
-        else {
-            toast("无法配置，设备可能重复")
-        }
-    }
 
-    override fun onDataIsNull() {
-    }
 
-    override fun layoutId(): Int = R.layout.activity_scan_qr_code
 
-    override fun initData() {
-    }
-
-    override fun initView(savedInstanceState: Bundle?) {
-
-        rxPermissions = RxPermissions(this)
-        /*
-        * 打开默认二维码扫描界面
-        */
-        mScan.onClick {
-            clickType = clickTest
-            openCapture()
-        }
-
-        button1.onClick {
-            checkBLE()
-        }
-        button3.onClick {
-            clickType = clickCar
-            openCapture()
-        }
-        button4.onClick {
-            clickType = clickCar
-            checkBLE()
-//            macList.clear()
-        }
-        button5.onClick {
-            clickType = clickCable
-            openCapture()
-        }
-        button6.onClick {
-            clickType = openCable
-            openCapture()
-        }
-
-        mBtnSetDefault.onClick {
-            clickType = setDefault
-            openCapture()
-        }
-    }
-
-    override fun initComponent() {
-        DaggerMainComponent.builder()
-                .activityComponent(activityComponent)
-                .mainModule(MainModule(this))
-                .build()
-                .inject(this)
-        mPresenter.attachView(this)
-        Logger.d("service=$service")
-    }
-
-    override fun start() {
-    }
-
-    private var resultLength: Int = 0
-    private var macAddress: String? = null
-    private var deviceName: String? = null
-    private lateinit var rxPermissions: RxPermissions
-    private val QRCODE = 18666
-    private val ACTIVITYCODE = 18888
-
-    private val macList = ArrayList<String>()
-
-    companion object {
-        private var clickType: Int = 0
-        private var clickKey: Int = 0
-        private var clickCar: Int = 1
-        private var clickTest: Int = 2
-        private var clickCable: Int = 3
-        private var openCable: Int = 4
-        private var setDefault: Int = 5
-    }
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_scan_qr_code)
+//
+//    override fun layoutId(): Int = R.layout.activity_scan_qr_code
+//
+//    override fun initData() {
+//    }
+//
+//    override fun initView(savedInstanceState: Bundle?) {
 //
 //        rxPermissions = RxPermissions(this)
 //        /*
@@ -168,6 +84,77 @@ class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRC
 //            openCapture()
 //        }
 //    }
+//
+//    override fun initComponent() {
+//        DaggerMainComponent.builder()
+//                .activityComponent(activityComponent)
+//                .mainModule(MainModule(this))
+//                .build()
+//                .inject(this)
+//        mPresenter.attachView(this)
+//    }
+//
+//    override fun start() {
+//    }
+
+    private var resultLength: Int = 0
+    private var macAddress: String? = null
+    private var deviceName: String? = null
+    private lateinit var rxPermissions: RxPermissions
+    private val QRCODE = 18666
+    private val ACTIVITYCODE = 18888
+
+    private val macList = ArrayList<String>()
+
+    companion object {
+        private var clickType: Int = 0
+        private var clickKey: Int = 0
+        private var clickCar: Int = 1
+        private var clickTest: Int = 2
+        private var clickCable: Int = 3
+        private var openCable: Int = 4
+        private var setDefault: Int = 5
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_scan_qr_code)
+
+        rxPermissions = RxPermissions(this)
+        /*
+        * 打开默认二维码扫描界面
+        */
+        mScan.onClick {
+            clickType = clickTest
+            openCapture()
+        }
+
+        button1.onClick {
+            checkBLE()
+        }
+        button3.onClick {
+            clickType = clickCar
+            openCapture()
+        }
+        button4.onClick {
+            clickType = clickCar
+            checkBLE()
+//            macList.clear()
+        }
+        button5.onClick {
+            clickType = clickCable
+            openCapture()
+        }
+        button6.onClick {
+            clickType = openCable
+            openCapture()
+        }
+
+        mBtnSetDefault.onClick {
+            clickType = setDefault
+            openCapture()
+        }
+    }
 
     private fun openCapture() {
         rxPermissions
@@ -240,7 +227,8 @@ class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRC
                         }
                         clickCable -> {
                             if (!macAddress.isNullOrEmpty() && !deviceName.isNullOrEmpty()) {
-                                checkedDevice(macAddress!!, deviceName!!)
+//                                checkedDevice(macAddress!!, deviceName!!)
+                                startActivity<BleCableActivity>(Constant.DEVICE_MAC to macAddress,Constant.DEVICE_NAME to deviceName)
                             } else {
                                 toast("二维码错误")
                             }
@@ -282,10 +270,10 @@ class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRC
         }
     }
 
-    private fun checkedDevice(macAddress: String, deviceName: String) {
-        Logger.d("clickCable=$mPresenter")
-        mPresenter.checkedDevice(macAddress.replace(":", ""), "S" + deviceName)
-    }
+//    private fun checkedDevice(macAddress: String, deviceName: String) {
+//        Logger.d("clickCable=$mPresenter")
+//        mPresenter.checkedDevice(macAddress.replace(":", ""), "S" + deviceName)
+//    }
 
     /**
      * 二维码检查
@@ -404,6 +392,6 @@ class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRC
 
     override fun onDestroy() {
         super.onDestroy()
-        mPresenter.detachView()
+//        mPresenter.detachView()
     }
 }

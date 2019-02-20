@@ -3,10 +3,7 @@ package com.gb.sockt.center.injection.component
 import com.example.baselibrary.injection.component.ActivityComponent
 import com.example.baselibrary.injection.scope.PerComponentScope
 import com.gb.socket1.injection.module.MainModule
-import com.gb.socket1.ui.activity.BluetoothCarActivity
-import com.gb.socket1.ui.activity.BluetoothKeyActivity
-import com.gb.socket1.ui.activity.MainActivity
-import com.gb.socket1.ui.activity.ScanQRCodeActivity
+import com.gb.socket1.ui.activity.*
 import dagger.Component
 
 /**
@@ -24,5 +21,7 @@ interface MainComponent {
     fun inject(activity: BluetoothCarActivity)
 
     fun inject(activity: ScanQRCodeActivity)
+
+    fun inject(activity: BleCableActivity)
 
 }

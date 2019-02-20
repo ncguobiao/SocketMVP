@@ -37,28 +37,36 @@ open class BasePresenter<T : IBaseView> : IPresenter<T> {
     private var compositeDisposable = CompositeDisposable()
 
     override fun attachView(mRootView: T) {
-        weakReference = WeakReference(mRootView)
+//        weakReference = WeakReference(mRootView)
+        this.mRootView = mRootView
     }
 
     override fun detachView() {
-        weakReference?.clear()
-        weakReference = null
+//        weakReference?.clear()
+//        weakReference = null
         //保证activity结束时取消所有正在执行的订阅
         if (!compositeDisposable.isDisposed) {
             compositeDisposable.clear()
         }
+        mRootView = null
+
     }
 
     open fun getView(): T? {
-        mRootView = weakReference?.get()
+//        mRootView = weakReference?.get()
         return mRootView
     }
 
-    private val isViewAttached: Boolean
-        get() = getView() != null
+    private fun isViewAttached(): Boolean {
+        if (mRootView == null) {
+            return false
+        } else {
+            return true
+        }
+    }
 
     fun checkViewAttached() {
-        if (!isViewAttached) throw MvpViewNotAttachedException()
+        if (!isViewAttached()) throw MvpViewNotAttachedException()
     }
 
     fun addSubscription(disposable: Disposable) {
@@ -71,8 +79,8 @@ open class BasePresenter<T : IBaseView> : IPresenter<T> {
     /*
         检查网络是否可用
      */
-    fun checkNetWork():Boolean{
-        if(!NetworkUtil.isNetworkAvailable(BaseApplication.getApplication())){
+    fun checkNetWork(): Boolean {
+        if (!NetworkUtil.isNetworkAvailable(BaseApplication.getApplication())) {
             getView()?.let {
                 getView()!!.onError("网络不可用,请检查网络")
                 getView()!!.showNetDialog()
