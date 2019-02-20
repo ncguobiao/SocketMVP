@@ -1,6 +1,7 @@
 package com.gb.socket1.mvp.service.impl
 
 import com.example.baselibrary.common.BaseResp
+import com.example.baselibrary.common.Constant
 import com.gb.socket1.data.repository.MainRepository
 import com.gb.socket1.mvp.service.MainService
 import io.reactivex.Observable
@@ -12,9 +13,13 @@ import javax.inject.Inject
 class MainServiceImpl @Inject constructor() : MainService {
 
 
-    @Inject
-    lateinit var repository: MainRepository
+//    @Inject
+//    lateinit var repository: MainRepository
 
+
+    private val repository by lazy {
+        MainRepository()
+    }
     /**
      * 获取主页banner
      */
@@ -49,6 +54,12 @@ class MainServiceImpl @Inject constructor() : MainService {
 
     override fun get2GRecords(userId: String): Observable<BaseResp> {
         return repository.get2GRecords(userId)
+    }
+
+
+    override fun checkedDevice(mac: String, deviceName: String): Observable<BaseResp> {
+
+        return repository.checkedDevice(mac,deviceName)
     }
 
 }

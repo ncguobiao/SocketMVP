@@ -6,6 +6,7 @@ import com.gb.socket1.injection.module.MainModule
 import com.gb.socket1.ui.activity.BluetoothCarActivity
 import com.gb.socket1.ui.activity.BluetoothKeyActivity
 import com.gb.socket1.ui.activity.MainActivity
+import com.gb.socket1.ui.activity.ScanQRCodeActivity
 import dagger.Component
 
 /**
@@ -21,4 +22,7 @@ interface MainComponent {
 
     fun inject(activity: BluetoothKeyActivity)
     fun inject(activity: BluetoothCarActivity)
+
+    fun inject(activity: ScanQRCodeActivity)
+
 }

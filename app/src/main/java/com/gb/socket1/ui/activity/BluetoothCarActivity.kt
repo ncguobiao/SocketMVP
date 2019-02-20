@@ -35,10 +35,13 @@ class BluetoothCarActivity : BaseActivity() {
     private var sb: StringBuffer? = null
     private var mac: String? = null
     private var deviceState: Boolean = false
-    private var presenter: BluetoothTestCarImpl? = null
+    private val presenter: BluetoothTestCarImpl by lazy {
+        BluetoothTestCarImpl(this)
+    }
     private val rxPermissions by lazy {
         RxPermissions(this)
     }
+    private var connectCount: Int = 0
     //配置连接次数
     private var configCoinCount: Int = 0
     private var tempCount: Int = 0
@@ -55,17 +58,28 @@ class BluetoothCarActivity : BaseActivity() {
                         tvTempCoinCount?.text = "剩余投币个数=$configCoinCount"
                         sendEmptyMessageDelayed(1, 2000)
                     }
-
+                }
+                2 -> {
+                    //断开蓝牙
+                    presenter.close()
+                }
+                3 -> {
+                    presenter?.connect()
+                    mProgressBar.visibility = View.VISIBLE
+                    mTvState.text = "正在连接中..."
+                    startTime = System.currentTimeMillis()
                 }
             }
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter = BluetoothTestCarImpl(this)
+//        presenter = BluetoothTestCarImpl(this)
         setContentView(R.layout.activity_bluetooth_car_connect)
         mac = intent.getStringExtra("mac")
+        connectCount = intent.getIntExtra("connectCount", 0)
         configCoinCount = intent.getIntExtra("configCoinCount", 0)
         Logger.d("mac=$mac")
         tvMac.text = "连接设备:mac=$mac"
@@ -86,24 +100,27 @@ class BluetoothCarActivity : BaseActivity() {
                     toast("正在清除手机计数")
                 } else {
                     //配置的连接次数可用，需要继续连接
-                    if (configCoinCount > 0) {
+//                    if (configCoinCount > 0) {
+                    if (connectCount > 0) {
                         //继续连接
                         tvMac.text = mac
-                        doAsync {
-                            SystemClock.sleep(500)
-                            presenter?.connect()
-                            startTime = System.currentTimeMillis()
-                        }
-
+//                        doAsync {
+//                            SystemClock.sleep(500)
+//                            presenter?.connect()
+//                            startTime = System.currentTimeMillis()
+//                        }
+                        val message = Message.obtain()
+                        message.what = 3
+                        mHandler.sendMessageDelayed(message, 1000)
                     } else {
 //                            toast("配置投币次数用完")
-                        mTvMessage.text = "配置投币次数用完"
+//                        mTvMessage.text = "配置投币次数用完"
+                        mTvMessage.text = "连接次数用完"
                         mHandler.postDelayed({
                             setResult(1000)
                             toast("设备MAC= $mac \n已测试完成")
                             finish()
                         }, 5000)
-
                     }
                 }
                 //清除上一次连接的设备地址
@@ -115,11 +132,14 @@ class BluetoothCarActivity : BaseActivity() {
                 mConsumTime.text = "连接耗时：${consumTime}ms"
                 mTvState.text = "连接成功"
                 mTvState.setTextColor(Color.GREEN)
-                doAsync {
-                    SystemClock.sleep(300)
-                    presenter?.requestSeed()
-                }
-
+//                doAsync {
+//                    SystemClock.sleep(300)
+//                    presenter?.requestSeed()
+//            }
+                connectCount--
+                val message = Message.obtain()
+                message.what = 2
+                mHandler.sendMessageDelayed(message, 3000)
             }
 
         })
@@ -132,18 +152,18 @@ class BluetoothCarActivity : BaseActivity() {
             //设备状态正常
             override fun getDeviceInfoOnIdle() {
                 deviceState = true
-                if (!clearCoinState) {
-                    //自动投币
-//                    mHandler.sendEmptyMessageDelayed(1,300)
-                    mHandler.postDelayed({
-                        presenter?.coin()
-                        configCoinCount--
-                        tvTempCoinCount?.text = "剩余投币个数=$configCoinCount"
-                    }, 300)
-
-                } else {
-                    presenter?.clearCount()
-                }
+//                if (!clearCoinState) {
+//                    //自动投币
+////                    mHandler.sendEmptyMessageDelayed(1,300)
+//                    mHandler.postDelayed({
+//                        presenter?.coin()
+//                        configCoinCount--
+//                        tvTempCoinCount?.text = "剩余投币个数=$configCoinCount"
+//                    }, 300)
+//
+//                } else {
+//                    presenter?.clearCount()
+//                }
 
             }
 
@@ -208,6 +228,8 @@ class BluetoothCarActivity : BaseActivity() {
 
         //连接自动连接蓝牙
         presenter?.connect()
+        mProgressBar.visibility = View.VISIBLE
+        mTvState.text = "正在连接中..."
         startTime = System.currentTimeMillis()
         //连接
         mbtnConnect.onClick {
@@ -217,6 +239,7 @@ class BluetoothCarActivity : BaseActivity() {
                     mTvReciver?.text = ""
                     mProgressBar.visibility = View.VISIBLE
                     it.connect()
+                    mTvState.text = "正在连接中..."
                     startTime = System.currentTimeMillis()
                 }
 
@@ -317,7 +340,6 @@ class BluetoothCarActivity : BaseActivity() {
         mHandler.removeCallbacksAndMessages(null)
         presenter?.unregisterBroadcastReceiver()
         presenter?.close()
-        presenter = null
         sb = null
     }
 

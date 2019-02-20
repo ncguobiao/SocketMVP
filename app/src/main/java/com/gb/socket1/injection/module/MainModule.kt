@@ -3,6 +3,7 @@ package com.gb.socket1.injection.module
 import android.app.Activity
 import com.example.baselibrary.lbs.GaodeLbsLayerImpl
 import com.example.baselibrary.lbs.ILbsLayer
+import com.gb.socket1.mvp.presenter.impl.ScanQRCodePresenterImpl
 import com.gb.socket1.mvp.service.MainService
 import com.gb.socket1.mvp.service.impl.MainServiceImpl
 import com.gb.sockt.blutoothcontrol.ble.car.BluetoothTestCarImpl
@@ -42,5 +43,10 @@ class MainModule constructor(private val context: Activity){
     @Provides
     fun providerBluetoothCarImpl(): BluetoothTestCarImpl {
         return BluetoothTestCarImpl(context)
+    }
+
+    @Provides
+    fun providerScanQRCodePresenter(): ScanQRCodePresenterImpl {
+        return ScanQRCodePresenterImpl()
     }
 }

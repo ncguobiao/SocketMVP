@@ -25,4 +25,6 @@ interface MainService {
 
     fun get2GRecords(userId: String): Observable<BaseResp>
 
+    fun checkedDevice(mac: String, deviceName: String): Observable<BaseResp>
+
 }

@@ -2,11 +2,13 @@ package com.gb.socket1.api
 
 import com.example.baselibrary.api.UriConstant
 import com.example.baselibrary.common.BaseResp
+import com.gb.socket1.data.CheckedDeviceReq
 import com.gb.socket1.data.domain.BannerReq
 import com.gb.socket1.data.domain.DeviceInfoReq
 import com.gb.socket1.data.domain.RecordReq
 import com.gb.socket1.data.domain.UploadLocationReq
 import io.reactivex.Observable
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -55,5 +57,12 @@ interface MainApi {
     @POST("DeviceService/Device/collectionAddress")
     fun uploadLocation(@Body req: UploadLocationReq): Observable<BaseResp>
 
+
+    @POST("http://test04.sensor668.com:6080/DeviceCDXService/rest/executeAll")
+    fun checkedDevice(@Body checkedDeviceReq: CheckedDeviceReq): Observable<BaseResp>
+
+
+    @POST("http://test04.sensor668.com:6080/DeviceCDXService/rest/executeAll")
+    fun checkedDevice2(@Body body: RequestBody): Observable<BaseResp>
 
 }
