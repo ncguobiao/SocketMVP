@@ -32,7 +32,6 @@ import javax.inject.Inject
 class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeView {
     private var checkedDeviceState: Boolean = false
     override fun getCheckedDeviceError(msg: String?) {
-
         msg?.let {
             toast(it)
         }
@@ -45,11 +44,11 @@ class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRC
     }
 
     override fun getCheckedDevice(b: Boolean) {
-       if (b)
-           startActivity<BleCableActivity>("mac" to macAddress)
-       else{
-           toast("无法配置，设备可能重复")
-       }
+        if (b)
+            startActivity<BleCableActivity>("mac" to macAddress)
+        else {
+            toast("无法配置，设备可能重复")
+        }
     }
 
     override fun onDataIsNull() {
@@ -245,11 +244,9 @@ class ScanQRCodeActivity() : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRC
                             } else {
                                 toast("二维码错误")
                             }
-
 //                            startActivity<BleCableActivity>("mac" to macAddress)
                         }
                         openCable -> {
-
                             startActivity<BleCableNewMACActivity>("mac" to macAddress)
                         }
                         setDefault -> {
