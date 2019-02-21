@@ -109,6 +109,9 @@ class BleCableSetDefaultMACActivity : BaseActivity() {
                 .registerBroadcastReceiver()
                 .connect()
         mPresenter.setResponseListener(object : BleCableListener {
+            override fun onCheckedDevice() {
+            }
+
             override fun onCircle() {
                 tvMsg.text = "设备密码错误"
                 tvRecive.text = "设备密码错误，不是新密码"

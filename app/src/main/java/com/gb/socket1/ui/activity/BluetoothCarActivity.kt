@@ -60,6 +60,7 @@ class BluetoothCarActivity : BaseActivity() {
                     }
                 }
                 2 -> {
+                    tvTempCoinCount?.text = "剩余连接次数=$connectCount"
                     //断开蓝牙
                     presenter.close()
                 }
@@ -74,12 +75,15 @@ class BluetoothCarActivity : BaseActivity() {
     }
 
 
+    private var flag: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        presenter = BluetoothTestCarImpl(this)
         setContentView(R.layout.activity_bluetooth_car_connect)
         mac = intent.getStringExtra("mac")
         connectCount = intent.getIntExtra("connectCount", 0)
+        tvTempCoinCount?.text = "剩余连接次数=$connectCount"
         configCoinCount = intent.getIntExtra("configCoinCount", 0)
         Logger.d("mac=$mac")
         tvMac.text = "连接设备:mac=$mac"
@@ -115,12 +119,16 @@ class BluetoothCarActivity : BaseActivity() {
                     } else {
 //                            toast("配置投币次数用完")
 //                        mTvMessage.text = "配置投币次数用完"
-                        mTvMessage.text = "连接次数用完"
-                        mHandler.postDelayed({
-                            setResult(1000)
-                            toast("设备MAC= $mac \n已测试完成")
-                            finish()
-                        }, 5000)
+                        if (!flag){
+                            mTvMessage.text = "连接次数用完"
+                            mHandler.postDelayed({
+                                setResult(1000)
+                                toast("设备MAC= $mac \n已测试完成")
+                                finish()
+                            }, 5000)
+                            flag = true
+                        }
+
                     }
                 }
                 //清除上一次连接的设备地址
@@ -137,6 +145,7 @@ class BluetoothCarActivity : BaseActivity() {
 //                    presenter?.requestSeed()
 //            }
                 connectCount--
+
                 val message = Message.obtain()
                 message.what = 2
                 mHandler.sendMessageDelayed(message, 3000)

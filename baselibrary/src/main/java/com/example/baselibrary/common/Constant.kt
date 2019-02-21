@@ -11,7 +11,7 @@ object Constant {
     const val IS_LOGIN: String = "is_login"
     //用户id
     const val USERID: String = "userID"
-    const val USER_ID: Int = 4
+    const val USER_ID: Int = 101
     const val POWER_LEVEL: String = ":powerLevel"
     //设备信息
     const val DEVICE_NAME: String = "device_name"

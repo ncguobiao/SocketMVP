@@ -6,18 +6,35 @@
 
     <ProgressBar
         android:id="@+id/mProgressBar"
-        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tvState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_25"
+        android:layout_margin="@dimen/dp_20"
         android:textColor="@color/colorAccent"
-        android:textSize="@dimen/dp_25" />
-
+        android:textSize="20sp" />
+    <TextView
+        android:id="@+id/tvMSg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/dp_5"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp" />
+    <Button
+        android:id="@+id/btCheckedDevice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/dp_15"
+        android:text="1.检测设备是否重复并连接"
+        android:textSize="@dimen/sp_16" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,20 +45,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_25"
             android:layout_weight="1"
-            android:text="1.修改默认密码"
-            android:textSize="@dimen/dp_25" />
+            android:text="2.修改默认密码"
+            android:textSize="@dimen/sp_18" />
 
         <Button
             android:id="@+id/mBtnSetMAC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_25"
             android:layout_weight="1"
-            android:text="2.修改MAC"
-            android:textSize="@dimen/dp_25" />
+            android:text="3.修改MAC"
+            android:textSize="@dimen/sp_18" />
     </LinearLayout>
 
     <Button
@@ -49,8 +64,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_25"
-        android:text="3.清除缓存开始下一个设备的配置"
+        android:layout_marginTop="@dimen/dp_15"
+        android:text="4.清除缓存开始下一个设备的配置"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/mBtnDisconnectAndConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_15"
+        android:text="断开并重连"
         android:textSize="18sp" />
 
     <Button
@@ -58,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
         android:text="恢复默认密码"
         android:textSize="@dimen/dp_25" />
 
@@ -66,7 +90,7 @@
         android:id="@+id/tvMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/dp_25" />
 
@@ -74,7 +98,7 @@
         android:id="@+id/tvSend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
         android:textColor="@color/blue"
         android:textSize="14sp" />
 
@@ -82,7 +106,7 @@
         android:id="@+id/tvRecive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
         android:textColor="@color/blue"
         android:textSize="14sp" />
 </LinearLayout>

@@ -98,6 +98,11 @@ class BleCableNewMACActivity : BaseActivity() {
                 .registerBroadcastReceiver()
                 .connect()
         mPresenter.setResponseListener(object : BleCableListener {
+            override fun onCheckedDevice() {
+
+
+            }
+
             override fun onCircle() {
             }
 

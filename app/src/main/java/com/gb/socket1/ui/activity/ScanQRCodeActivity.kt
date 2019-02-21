@@ -200,12 +200,16 @@ class ScanQRCodeActivity : BaseActivity() {
                 }
 //                startActivity<BluetoothCarActivity>("macList" to macList)
                 index = 0
-                startActivityForResult<BluetoothCarActivity>(ACTIVITYCODE,
-                        "mac" to macList[index],
-                        "connectCount" to configCoinCount,
-                        "configCoinCount" to configCoinCount)
+                navgationTOBleCarActivity()
             }
         }
+    }
+
+    private fun navgationTOBleCarActivity() {
+        startActivityForResult<BluetoothCarActivity>(ACTIVITYCODE,
+                "mac" to macList[index],
+                "connectCount" to configCoinCount,
+                "configCoinCount" to configCoinCount)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -246,9 +250,7 @@ class ScanQRCodeActivity : BaseActivity() {
             ACTIVITYCODE -> {
                 index++
                 if (index < macList.size)
-                    startActivityForResult<BluetoothCarActivity>(ACTIVITYCODE,
-                            "mac" to macList[index],
-                            "configCoinCount" to configCoinCount)
+                   navgationTOBleCarActivity()
                 else {
                     toast("已测试完成")
                     tvMessage.text = "投币测试完成"

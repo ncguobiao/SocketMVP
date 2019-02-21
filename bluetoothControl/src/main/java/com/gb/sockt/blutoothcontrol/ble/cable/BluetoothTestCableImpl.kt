@@ -145,7 +145,8 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         }
 
     }
-    fun setCircleData(password:String?) {
+
+    fun setCircleData(password: String?) {
         val b1 = Integer.parseInt("AA", 16).toByte()
         val b2 = Integer.parseInt("07", 16).toByte()
         val b3 = Integer.parseInt("00", 16).toByte()
@@ -173,11 +174,12 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val value3 = b3 xor b7 xor b11
             val value4 = b4 xor b8 xor b12
             val value = byteArrayOf(value1, value2, value3, value4)
-            msg = "充电线心跳数据"
+            msg = "发送充电线心跳数据"
             write(value, TYPE_CIRCLE)
         }
 
     }
+
     /**
      *  4.修改密码命令数据格式:0xaabbccddeeffgghh+0xAC05+MMyyzznnXXYYZZNN
     电子开关收到修改密码命令命令后，返回0xAA050000表示修改成功 。
@@ -225,7 +227,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         val b16 = Integer.parseInt(list[6], 16).toByte()
         val b17 = Integer.parseInt(list[7], 16).toByte()
         val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17)
-        msg = "充电线修改密码"
+        msg = "发送充电线修改密码"
         write(value, TYPE_SETPWD)
 
     }
@@ -284,7 +286,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                     val b14 = Integer.parseInt(listMac[4], 16).toByte()
                     val b15 = Integer.parseInt(listMac[5], 16).toByte()
                     val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15)
-                    msg = "充电线修改Mac=$mac"
+                    msg = "发送充电线修改Mac=$mac"
                     write(value, TYPE_SETMAC)
                 }
             }
@@ -331,7 +333,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             val value3 = b2 xor b12 xor b16
             val value4 = b3 xor b13 xor b17
             val value = byteArrayOf(value1, value2, value3, value4)
-            msg = "充电线开启=${integerValue}分钟"
+            msg = "发送充电线开启=${integerValue}分钟"
             write(value, TYPE_OPEN)
         }
     }
@@ -347,7 +349,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
         val b2 = (integerValue shr 8).toByte()// 时间
         val b3 = integerValue.toByte()//时间
         val value = byteArrayOf(b0, b1, b2, b3)
-        msg = "充电线关闭"
+        msg = "发送充电线关闭"
         write(value, TYPE_CLOSE)
 
     }
@@ -396,6 +398,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
             Logger.e("关闭通知成功！")
         }
     }
+    private var flag: Boolean = false
     private val mReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context?, intent: Intent) {
             when (intent.action) {
@@ -404,6 +407,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                     receiveValue?.let {
                         mBleCableListener?.onRecived("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
+                        Logger.w("接收蓝牙数据=${BleUtils.byteToHexString(it)}")
                         when {
                             "0xAA050000" == BleUtils.byteToHexString(it) -> {
                                 Logger.d("修改密码成功")
@@ -417,8 +421,9 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
                                 mBleCableListener?.onCircle()
                             }
                             "0xAA070000" == BleUtils.byteToHexString(it) -> {
-
+                                mBleCableListener?.onCheckedDevice()
                             }
+                        //FF7044AA
                             else -> {
                                 mBleCableListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }

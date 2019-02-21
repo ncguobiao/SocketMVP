@@ -30,29 +30,79 @@ import org.jetbrains.anko.toast
  * 充电线设置密码和MAC地址
  */
 class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeView {
+
+    private val presenter by lazy {
+        BluetoothTestCableImpl(this)
+    }
+
+    private var mHandler = object : Handler() {
+        override fun handleMessage(msg: Message?) {
+            super.handleMessage(msg)
+            when (msg?.what) {
+            //循环发送心跳
+                1 -> {
+                    if (presenter.getConnectState()) {
+                        tvSend.text = ""
+                        tvRecive.text = ""
+                        presenter.setCircle()
+                        sendEmptyMessageDelayed(1, 2000)
+                    }
+                }
+                2 -> {
+                    if (!presenter.getConnectState()) {
+                        removeCallbacksAndMessages(null)
+                        toast("请检验设备是否修改完成")
+                        finish()
+                        Logger.e("蓝牙断开，主动关闭当前页面")
+                    } else {
+                        tvSend.text = ""
+                        tvRecive.text = ""
+                        presenter.setDeviceMac(password, mac)
+                        sendEmptyMessageDelayed(2, 4000)
+                    }
+                }
+                4 -> {
+                    if (!presenter.getConnectState()) {
+                        presenter.connect()
+                        mProgressBar.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+    }
+
+    private var mac: String? = null
+    private var password: String? = null
     override fun onError(error: String) {
     }
 
-    private var checkedState: Boolean = false
 
     override fun getCheckedDevice(b: Boolean) {
-        checkedState = b
+        if (b) {
+            tvMSg.text = "设备正常"
+        } else {
+            tvMSg.text = "重复入库，请联系管理员"
+        }
+
+        //开启连接
+        presenter.connect()
+        mProgressBar.visibility = View.VISIBLE
 //        if (!b){
 //            toast("b=$b")
 ////          mHandler.postDelayed({finish()},1000)
 //        }
-        if (!b) {
-            mBtnSetMAC.visibility = View.GONE
-            mBtnSetPwd.visibility = View.GONE
-            mBtnClearCache.visibility = View.GONE
-            mBtnSetDefaultPwd.visibility = View.GONE
-            mHandler.postDelayed({ finish() }, 3000)
-        } else {
-            mBtnSetMAC.visibility = View.VISIBLE
-            mBtnSetPwd.visibility = View.VISIBLE
-            mBtnClearCache.visibility = View.VISIBLE
-            mBtnSetDefaultPwd.visibility = View.VISIBLE
-        }
+//        if (!b) {
+//            mBtnSetMAC.visibility = View.GONE
+//            mBtnSetPwd.visibility = View.GONE
+//            mBtnClearCache.visibility = View.GONE
+//            mBtnSetDefaultPwd.visibility = View.GONE
+//            mHandler.postDelayed({ finish() }, 3000)
+//        } else {
+//            mBtnSetMAC.visibility = View.VISIBLE
+//            mBtnSetPwd.visibility = View.VISIBLE
+//            mBtnClearCache.visibility = View.VISIBLE
+//            mBtnSetDefaultPwd.visibility = View.VISIBLE
+//        }
 
 
     }
@@ -61,6 +111,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         msg?.let {
             toast(it)
             Logger.d(msg)
+            tvMSg.text = it
         }
     }
 
@@ -74,11 +125,13 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
     private var flag: Boolean = false
 
+    private var deviceName: String? = null
+
     override fun initView(savedInstanceState: Bundle?) {
 
 
         mac = intent.getStringExtra(Constant.DEVICE_MAC)
-        val deviceName = intent.getStringExtra(Constant.DEVICE_NAME)
+        deviceName = intent.getStringExtra(Constant.DEVICE_NAME)
         Logger.d("mac:$mac")
 ////        //获取新密码
 //        val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
@@ -90,11 +143,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                 override fun connectOnSuccess() {
                     mProgressBar.visibility = View.GONE
 //                    Logger.e("mPresenter.getView()=${mPresenter.getView()}")
-                    if (!flag) {
-                        //连接上检测设备重复
-                        checkedDevice(it, deviceName)
-                        flag = true
-                    }
+
                     tvState.text = resources.getString(R.string.connected)
                     //心跳数据
                     mHandler.sendEmptyMessageDelayed(1, 1000)
@@ -118,6 +167,15 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
             }).registerBroadcastReceiver()
             presenter.setResponseListener(object : BleCableListener {
+                override fun onCheckedDevice() {
+//                    if (!flag) {
+//                        //连接上检测设备重复
+//                        checkedDevice(it, deviceName)
+//                        flag = true
+//                    }
+
+                }
+
                 override fun onCircle() {
                 }
 
@@ -172,9 +230,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
                 }
             })
-            //开启连接
-            presenter.connect()
-            mProgressBar.visibility = View.VISIBLE
+
         }
         //password:9C4A816C3B02FF35-(F2:35:0A:00:00:55)
         //F2:35:0A:00:00:00  //F2:35:0A:00:00:55 //55:00:00:0A:35:F2
@@ -210,42 +266,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     private val OLD_PWD = 2
     private var cllickType: Int = NEW_PWD
 
-    private val presenter by lazy {
-        BluetoothTestCableImpl(this)
-    }
-
-    private var mHandler = object : Handler() {
-        override fun handleMessage(msg: Message?) {
-            super.handleMessage(msg)
-            when (msg?.what) {
-            //循环发送心跳
-                1 -> {
-                    if (presenter.getConnectState()) {
-                        tvSend.text = ""
-                        tvRecive.text = ""
-                        presenter.setCircle()
-                        sendEmptyMessageDelayed(1, 2000)
-                    }
-                }
-                2 -> {
-                    if (!presenter.getConnectState()) {
-                        removeCallbacksAndMessages(null)
-                        toast("请检验设备是否修改完成")
-                        finish()
-                        Logger.e("蓝牙断开，主动关闭当前页面")
-                    } else {
-                        tvSend.text = ""
-                        tvRecive.text = ""
-                        presenter.setDeviceMac(password, mac)
-                        sendEmptyMessageDelayed(2, 4000)
-                    }
-                }
-            }
-        }
-    }
-
-    private var mac: String? = null
-    private var password: String? = null
 
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
@@ -346,7 +366,29 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
 
     private fun bindView() {
+        btCheckedDevice.onClick {
+            if (!mac.isNullOrEmpty() && !deviceName.isNullOrEmpty()) {
+                //连接上检测设备重复
+                checkedDevice(mac!!, deviceName!!)
+            } else {
+                toast("设备二维码获取错误")
+            }
+
+        }
+        mBtnDisconnectAndConnect.onClick {
+            if (presenter.getConnectState()) {
+                presenter.close()
+                mProgressBar.visibility = View.GONE
+                val m = Message.obtain()
+                m.what = 4
+                mHandler.sendMessageDelayed(m, 2000)
+            } else {
+                presenter.connect()
+                mProgressBar.visibility = View.VISIBLE
+            }
+        }
         mBtnSetMAC.onClick {
+
             if (presenter.getConnectState()) {
                 //修改密码成功
                 val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)

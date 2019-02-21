@@ -14,4 +14,5 @@ interface BleCableListener {
     fun openSuccess()
     fun onRecived(s: String)
     fun onCircle()
+    fun onCheckedDevice()
 }
