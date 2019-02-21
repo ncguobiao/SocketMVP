@@ -99,7 +99,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         mBtnSetPwd.visibility = View.VISIBLE
         mBtnClearCache.visibility = View.VISIBLE
         mBtnSetDefaultPwd.visibility = View.VISIBLE
-//        mBtnDisconnectAndConnect.visibility = View.VISIBLE
+        mBtnDisconnectAndConnect.visibility = View.VISIBLE
     }
 
     override fun getCheckedDeviceError(msg: String?) {
