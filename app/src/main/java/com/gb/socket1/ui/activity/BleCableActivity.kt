@@ -60,6 +60,8 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                             Logger.d("newPassword=$newPassword")
                             presenter.setCircle(newPassword)
                             sendEmptyMessageDelayed(1, 2000)
+                        }else{
+
                         }
                     }
 
@@ -101,18 +103,24 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     }
 
     override fun getCheckedDevice(b: Boolean) {
-        presenter.connect()
-        tvState.text = resources.getString(R.string.onBLeConnect)
-        mProgressBar.visibility = View.VISIBLE
+
         checkedDeviceState = b
         Logger.e("b=$b")
         if (checkedDeviceState) {
+            Logger.d("设备正常")
             mBtnSetPwd.visibility = View.GONE
 //            mBtnClearCache.visibility = View.VISIBLE
-
+            doAsync {
+                SystemClock.sleep(400)
+                setDevicePwd()
+                runOnUiThread {
+                    toast("修改密码中...")
+                }
+            }
 //            mBtnDisconnectAndConnect.visibility = View.VISIBLE
             tvMSg.text = "设备状态：正常"
         } else {
+            Logger.d("设备重复")
             mBtnSetPwd.visibility = View.VISIBLE
 //            mBtnClearCache.visibility = View.VISIBLE
 //            mBtnSetDefaultPwd.visibility = View.VISIBLE
@@ -153,16 +161,8 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         mac = intent.getStringExtra(Constant.DEVICE_MAC)
         deviceName = intent.getStringExtra(Constant.DEVICE_NAME)
 
-        if (!mac.isNullOrEmpty() && !deviceName.isNullOrEmpty()) {
-            //连接上检测设备重复
-            checkedDevice(mac!!, deviceName!!)
-        } else {
-            toast("设备二维码获取错误")
-        }
-
-        Logger.d("mac:$mac")
 ////        //获取新密码
-//        val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
+        newPassword = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
 //        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
 //        SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,true)
         bindView()
@@ -173,19 +173,16 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                     tvState.text = resources.getString(R.string.connected)
                     //心跳数据
                     mHandler.sendEmptyMessageDelayed(1, 1000)
+//                    presenter.setCircle(newPassword)
                     toast("一秒后开始发送心跳包")
-                    //自动开始修改密码
-                    if (checkedDeviceState) {
-                        doAsync {
-                            SystemClock.sleep(400)
-                            setDevicePwd()
-                            runOnUiThread {
-                                toast("修改密码中...")
-                            }
-                        }
+                    Logger.d("开始发送默认心跳包")
 
-                    }else{
-                        toast("设备重复")
+                    if (!mac.isNullOrEmpty() && !deviceName.isNullOrEmpty()) {
+                        //连接上检测设备重复
+                        checkedDevice(mac!!, deviceName!!)
+                        Logger.d("checkedDevice查重")
+                    } else {
+                        toast("设备二维码获取错误")
                     }
                 }
 
@@ -278,10 +275,12 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         //password:9C4A816C3B02FF35-(F2:35:0A:00:00:55)
         //F2:35:0A:00:00:00  //F2:35:0A:00:00:55 //55:00:00:0A:35:F2
         //连接初始设备
-
+        presenter.connect()
+        tvState.text = resources.getString(R.string.onBLeConnect)
+        mProgressBar.visibility = View.VISIBLE
     }
 
-    private fun setDeviceMAC(newPassword:String?) {
+    private fun setDeviceMAC(newPassword: String?) {
         cllickType = NEW_PWD
         tvMessage?.text = "设置密码成功：$newPassword"
         toast("正在设置新的MAC地址=$mac")
@@ -554,10 +553,9 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
             //加密mac
             mac?.let {
                 if (it.contains(":")) {
-                    val mac = it.replace(":", "")
+//                    val mac = it.replace(":", "")
                     //获取新密码
-                    newPassword = AesEntryDetry.getPassword("sensor668", mac)
-                    Logger.d("password:$newPassword")
+                    Logger.d("setDevicePwd:$newPassword")
                     //DC, 0E, C1, E9, 36, B9, 5E, 89
                     //修改密码
                     if (!newPassword.isNullOrEmpty())
