@@ -106,18 +106,18 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     第一层加密数据3 xor  密码字节7 = 第二层加密数据3
     第一层加密数据4 xor  密码字节8 = 第二层加密数据4
      */
-    fun setCircle() {
-        val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
-        Logger.d("发送心跳包=$issetdefaultpwdsuccess")
+    fun setCircle(password:String?) {
+//        val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
+//        Logger.d("发送心跳包=$issetdefaultpwdsuccess")
         val b1 = Integer.parseInt("AA", 16).toByte()
         val b2 = Integer.parseInt("07", 16).toByte()
         val b3 = Integer.parseInt("00", 16).toByte()
         val b4 = Integer.parseInt("00", 16).toByte()
         var sb = StringBuffer()
-        if (issetdefaultpwdsuccess) {
-            Logger.d("修改密码后发送心跳包")
-            password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
-        }
+//        if (issetdefaultpwdsuccess) {
+//            Logger.d("修改密码后发送心跳包")
+//            password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
+//        }
         password?.let {
             it.toCharArray().forEachIndexed { index, value ->
                 sb.append(value)

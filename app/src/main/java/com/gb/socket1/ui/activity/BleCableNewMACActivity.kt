@@ -33,9 +33,9 @@ class BleCableNewMACActivity : BaseActivity() {
 
     private var mHandler = object : Handler() {
         override fun handleMessage(msg: Message?) {
-            when(msg?.what){
-                1->{
-                    tvSend.text=""
+            when (msg?.what) {
+                1 -> {
+                    tvSend.text = ""
                     tvRecive.text = ""
                     mPresenter.closeDevice(0)
                 }
@@ -47,24 +47,25 @@ class BleCableNewMACActivity : BaseActivity() {
         BluetoothTestCableImpl(this)
     }
 
+    private var pwd: String? = null
 
-    private var pwd: String?=null
+    private var connectSuccess: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cable_new_mac)
-        var mac= intent.getStringExtra("mac")
+        var mac = intent.getStringExtra("mac")
         mac?.let {
             if (it.contains(":")) {
                 val mac = it.replace(":", "")
                 //获取新密码
                 pwd = AesEntryDetry.getPassword("sensor668", mac)
                 Logger.d("password:$pwd")
-                 SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD,pwd)
+                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, pwd)
                 //DC, 0E, C1, E9, 36, B9, 5E, 89
             }
         }
-        if (mac.isNullOrEmpty()){
+        if (mac.isNullOrEmpty()) {
             mac = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_MAC)
             pwd = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
         }
@@ -74,32 +75,43 @@ class BleCableNewMACActivity : BaseActivity() {
 
         mPresenter.setMAC(mac, object : BleConnectListener {
             override fun connectOnSuccess() {
+                mProgressBar.visibility = View.GONE
                 tvState.text = resources.getString(R.string.connected)
-                doAsync {
 
-                    SystemClock.sleep(200)
-                    tvSend.text=""
+                doAsync {
+                    SystemClock.sleep(400)
+                    tvSend.text = ""
                     tvRecive.text = ""
-                    mPresenter.openDevice(1)
+                    if (!connectSuccess) {
+                        connectSuccess = true
+                        mPresenter.openDevice(1)
+                        runOnUiThread {
+                            toast("发送开启设备指令")
+                        }
+                    }
+//
                 }
             }
 
             override fun connectOnFailure() {
                 tvState.text = resources.getString(R.string.failure)
-
+                mProgressBar.visibility = View.GONE
                 mPresenter.connect()
+                mHandler.postDelayed({
+                    tvState.text = resources.getString(R.string.onBLeConnect)
+                }, 1500)
             }
 
             override fun connectOnError() {
+                mProgressBar.visibility = View.GONE
                 tvState.text = resources.getString(R.string.onError)
             }
 
         })
                 .registerBroadcastReceiver()
-                .connect()
+
         mPresenter.setResponseListener(object : BleCableListener {
             override fun onCheckedDevice() {
-
 
             }
 
@@ -107,25 +119,25 @@ class BleCableNewMACActivity : BaseActivity() {
             }
 
             override fun onRecived(data: String) {
-                tvRecive.text ="接收数据=$data"
+                tvRecive.text = "接收数据=$data"
             }
 
             override fun onWriteSuccess(msg: String?, type: Int) {
-                when(type){
-                    BluetoothTestCableImpl.TYPE_CIRCLE->tvSend.text ="发送${msg}"
-                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
-                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
-                    BluetoothTestCableImpl.TYPE_OPEN->tvSend.text ="发送${msg}"
+                when (type) {
+                    BluetoothTestCableImpl.TYPE_CIRCLE -> tvSend.text = "发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
+                    BluetoothTestCableImpl.TYPE_OPEN -> tvSend.text = "发送${msg}"
 
                 }
             }
 
             override fun onWriteFailure(msg: String?, type: Int) {
-                when(type){
-                    BluetoothTestCableImpl.TYPE_CIRCLE->tvSend.text ="发送${msg}"
-                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
-                    BluetoothTestCableImpl.TYPE_SETPWD->tvSend.text ="发送${msg}"
-                    BluetoothTestCableImpl.TYPE_OPEN->tvSend.text ="发送${msg}"
+                when (type) {
+                    BluetoothTestCableImpl.TYPE_CIRCLE -> tvSend.text = "发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
+                    BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
+                    BluetoothTestCableImpl.TYPE_OPEN -> tvSend.text = "发送${msg}"
 
                 }
             }
@@ -134,38 +146,32 @@ class BleCableNewMACActivity : BaseActivity() {
             }
 
             override fun onError(byteArrayToHexString: String) {
-                tvRecive.text ="接收数据=$byteArrayToHexString"
+                tvRecive.text = "接收数据=$byteArrayToHexString"
             }
-
 
             override fun openSuccess() {
                 tvMsg.visibility = View.VISIBLE
 
                 toast("设备开启成功")
-               var mdialog = CircleDialog.Builder()
+                var mdialog = CircleDialog.Builder()
                         .setTitle("清除本次配置!")
-                       .setCanceledOnTouchOutside(true)
+                        .setCanceledOnTouchOutside(true)
                         .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
                         .setText("清除本次配置后，\n方可进行新设备的配置！")
                         .setPositive("确定") {
-
-                            SpUtils.put(AppUtils.getContext(),ConstantSP.DEVICE_PWD,"")
-                            SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,false)
-                            SpUtils.remove(ConstantSP.DEVICE_PWD)
-                            SpUtils.remove(ConstantSP.ISSETDEFAULTPWDSUCCESS)
-                            finish()
+                            clearCacah()
                         }
-                        .setNegative("取消",null)
+                        .setNegative("取消", null)
                         .setCancelable(true)
                         .show(supportFragmentManager)
-
-
 //                mHandler?.sendEmptyMessageDelayed(1,2000)
-
             }
 
         })
 
+        mPresenter.connect()
+        tvState.text = resources.getString(R.string.onBLeConnect)
+        mProgressBar.visibility = View.VISIBLE
         mBtnClear.onClick {
             var mdialog = CircleDialog.Builder()
                     .setTitle("清除本次配置!")
@@ -173,28 +179,41 @@ class BleCableNewMACActivity : BaseActivity() {
                     .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
                     .setText("清除本次配置后，\n方可进行新设备的配置！")
                     .setPositive("确定") {
-                        SpUtils.put(AppUtils.getContext(),ConstantSP.DEVICE_PWD,"")
-                        SpUtils.put(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS,false)
+                        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, "")
+                        SpUtils.put(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS, false)
                         SpUtils.remove(ConstantSP.DEVICE_PWD)
                         SpUtils.remove(ConstantSP.ISSETDEFAULTPWDSUCCESS)
                         Logger.d("清除配置-pwd=${SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)} " +
-                                " ISSETDEFAULTPWDSUCCESS=${ SpUtils.getBoolean(AppUtils.getContext(),ConstantSP.ISSETDEFAULTPWDSUCCESS)}")
+                                " ISSETDEFAULTPWDSUCCESS=${SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)}")
                         finish()
 
                     }
-                    .setNegative("取消",null)
+                    .setNegative("取消", null)
                     .setCancelable(true)
                     .show(supportFragmentManager)
         }
 
     }
 
+    private fun clearCacah() {
+        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, "")
+        SpUtils.put(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS, false)
+        SpUtils.remove(ConstantSP.DEVICE_PWD)
+        SpUtils.remove(ConstantSP.ISSETDEFAULTPWDSUCCESS)
+        finish()
+    }
 
 
     override fun onDestroy() {
         super.onDestroy()
+
         mHandler.removeCallbacksAndMessages(null)
         mPresenter.unregisterBroadcastReceiver()
         mPresenter.close()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        clearCacah()
     }
 }
