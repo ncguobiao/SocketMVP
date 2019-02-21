@@ -27,48 +27,45 @@
         android:layout_margin="@dimen/dp_5"
         android:textColor="@color/colorAccent"
         android:textSize="20sp" />
-    <Button
-        android:id="@+id/btCheckedDevice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/dp_15"
-        android:text="1.检测设备是否重复并连接"
-        android:textSize="@dimen/sp_16" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
+            android:visibility="gone"
             android:id="@+id/mBtnSetPwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="2.修改默认密码"
+            android:text="1.修改默认密码和MAC"
             android:textSize="@dimen/sp_18" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/mBtnSetMAC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="3.修改MAC"
+            android:text="2.修改MAC"
             android:textSize="@dimen/sp_18" />
     </LinearLayout>
 
     <Button
+        android:visibility="gone"
         android:id="@+id/mBtnClearCache"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_15"
-        android:text="4.清除缓存开始下一个设备的配置"
+        android:text="2.清除缓存开始下一个设备的配置"
         android:textSize="18sp" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/mBtnDisconnectAndConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,6 +75,7 @@
         android:textSize="18sp" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/mBtnSetDefaultPwd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -22,7 +22,6 @@ class ScanQRCodePresenterImpl @Inject constructor() : ScanQRCodePresenter, BaseP
     }
 
     override fun checkedDevice(mac: String, deviceName: String) {
-        Logger.e("mPresenter.getView()=${getView()}")
         if (!preparReq(getView(), this)) return
         Logger.d("ScanQRCodePresenterImpl_service+$service")
         service.checkedDevice(mac, deviceName)

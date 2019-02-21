@@ -3,6 +3,7 @@ package com.gb.socket1.ui.activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.os.SystemClock
 import android.view.View
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.base.BaseMvpActivity
@@ -21,8 +22,10 @@ import com.gb.sockt.blutoothcontrol.ble.cable.BluetoothTestCableImpl
 import com.gb.sockt.blutoothcontrol.listener.BleCableListener
 import com.gb.sockt.blutoothcontrol.listener.BleConnectListener
 import com.gb.sockt.center.injection.component.DaggerMainComponent
+import com.mylhyl.circledialog.CircleDialog
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_cable.*
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
 
 /**
@@ -34,7 +37,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     private val presenter by lazy {
         BluetoothTestCableImpl(this)
     }
-
+    private var checkedDeviceState: Boolean =false
     private var mHandler = object : Handler() {
         override fun handleMessage(msg: Message?) {
             super.handleMessage(msg)
@@ -53,17 +56,22 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                         removeCallbacksAndMessages(null)
                         toast("请检验设备是否修改完成")
                         finish()
-                        Logger.e("蓝牙断开，主动关闭当前页面")
                     } else {
                         tvSend.text = ""
                         tvRecive.text = ""
-                        presenter.setDeviceMac(password, mac)
-                        sendEmptyMessageDelayed(2, 4000)
+                        val password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
+                        if (!password.isNullOrEmpty()){
+                            presenter.setDeviceMac(password, mac)
+                            sendEmptyMessageDelayed(2, 4000)
+                        }else{
+                            toast("新密码为空")
+                        }
                     }
                 }
                 4 -> {
                     if (!presenter.getConnectState()) {
                         presenter.connect()
+                        tvState.text = resources.getString(R.string.onBLeConnect)
                         mProgressBar.visibility = View.VISIBLE
                     }
                 }
@@ -76,35 +84,22 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     override fun onError(error: String) {
     }
 
-
     override fun getCheckedDevice(b: Boolean) {
+        checkedDeviceState = b
         if (b) {
-            tvMSg.text = "设备正常"
+
+            tvMSg.text = "设备状态：正常"
         } else {
-            tvMSg.text = "重复入库，请联系管理员"
+            tvMSg.text = "设备状态：重复入库，请联系管理员"
         }
-
-        //开启连接
         presenter.connect()
+        tvState.text = resources.getString(R.string.onBLeConnect)
         mProgressBar.visibility = View.VISIBLE
-//        if (!b){
-//            toast("b=$b")
-////          mHandler.postDelayed({finish()},1000)
-//        }
-//        if (!b) {
-//            mBtnSetMAC.visibility = View.GONE
-//            mBtnSetPwd.visibility = View.GONE
-//            mBtnClearCache.visibility = View.GONE
-//            mBtnSetDefaultPwd.visibility = View.GONE
-//            mHandler.postDelayed({ finish() }, 3000)
-//        } else {
-//            mBtnSetMAC.visibility = View.VISIBLE
-//            mBtnSetPwd.visibility = View.VISIBLE
-//            mBtnClearCache.visibility = View.VISIBLE
-//            mBtnSetDefaultPwd.visibility = View.VISIBLE
-//        }
-
-
+//        mBtnSetMAC.visibility = View.VISIBLE
+        mBtnSetPwd.visibility = View.VISIBLE
+        mBtnClearCache.visibility = View.VISIBLE
+        mBtnSetDefaultPwd.visibility = View.VISIBLE
+//        mBtnDisconnectAndConnect.visibility = View.VISIBLE
     }
 
     override fun getCheckedDeviceError(msg: String?) {
@@ -132,6 +127,14 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
         mac = intent.getStringExtra(Constant.DEVICE_MAC)
         deviceName = intent.getStringExtra(Constant.DEVICE_NAME)
+
+        if (!mac.isNullOrEmpty() && !deviceName.isNullOrEmpty()) {
+            //连接上检测设备重复
+            checkedDevice(mac!!, deviceName!!)
+        } else {
+            toast("设备二维码获取错误")
+        }
+
         Logger.d("mac:$mac")
 ////        //获取新密码
 //        val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
@@ -142,13 +145,10 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
             presenter.setMAC("F2:35:0A:00:00:01", object : BleConnectListener {
                 override fun connectOnSuccess() {
                     mProgressBar.visibility = View.GONE
-//                    Logger.e("mPresenter.getView()=${mPresenter.getView()}")
-
                     tvState.text = resources.getString(R.string.connected)
                     //心跳数据
                     mHandler.sendEmptyMessageDelayed(1, 1000)
                     toast("一秒后开始发送心跳包")
-
                 }
 
                 override fun connectOnFailure() {
@@ -215,6 +215,16 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                             val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
                             SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
                             tvMessage?.text = "设置密码成功：$pwd"
+                            toast("正在设置新的MAC地址=$mac")
+//                            tvMessage?.text = "通过新密码修改MAC：$mac"
+                            Logger.e("修改mac=$mac -- password=$password")
+                            tvSend.text = ""
+                            tvRecive.text = ""
+                            doAsync {
+                                SystemClock.sleep(300)
+                                presenter.setDeviceMac(password, mac)
+                                mHandler.sendEmptyMessageDelayed(2, 2000)
+                            }
                         }
                         OLD_PWD -> {
                             toast("恢复密码成功")
@@ -242,7 +252,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         if (mPresenter.getView() == null) {
             mPresenter.attachView(this)
         }
-        Logger.e("mPresenter.getView() = ${mPresenter.getView()}")
         mPresenter.checkedDevice(macAddress.replace(":", ""), "S" + deviceName)
     }
 
@@ -366,15 +375,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
 
     private fun bindView() {
-        btCheckedDevice.onClick {
-            if (!mac.isNullOrEmpty() && !deviceName.isNullOrEmpty()) {
-                //连接上检测设备重复
-                checkedDevice(mac!!, deviceName!!)
-            } else {
-                toast("设备二维码获取错误")
-            }
-
-        }
         mBtnDisconnectAndConnect.onClick {
             if (presenter.getConnectState()) {
                 presenter.close()
@@ -385,72 +385,68 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
             } else {
                 presenter.connect()
                 mProgressBar.visibility = View.VISIBLE
+                tvState.text = resources.getString(R.string.onBLeConnect)
             }
         }
         mBtnSetMAC.onClick {
-
-            if (presenter.getConnectState()) {
-                //修改密码成功
-                val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
-                if (issetdefaultpwdsuccess) {
-                    //修改mac
-                    password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
-                    toast("正在设置新的MAC地址=$mac")
-                    tvMessage?.text = "通过新密码修改MAC：$mac"
-                    Logger.e("修改mac=$mac -- password=$password")
-                    tvSend.text = ""
-                    tvRecive.text = ""
-                    presenter.setDeviceMac(password, mac)
-                    mHandler.sendEmptyMessageDelayed(2, 2000)
-                    SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC, mac)
-                } else {
-//                    password = "FFEECCDDAA998877"
-//                    tvMessage?.text = "通过默认密码修改MAC：$mac"
-                    toast("请先修改密码成功后，在修改MAC")
-                }
-            } else {
-                toast("蓝牙版连接失败，无法修改密码")
+            if (!checkedDeviceState){
+                CircleDialog.Builder()
+                .setTitle("设备已重复!")
+                        .setCanceledOnTouchOutside(true)
+                        .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                        .setText("确认是否需要继续配置？")
+                        .setPositive("确定") {
+                            setDeviceMAC()
+                        }
+                        .setNegative("取消",null)
+                        .setCancelable(true)
+                        .show(supportFragmentManager)
+            }else{
+                setDeviceMAC()
             }
+
 
         }
         //修改密码
         mBtnSetPwd.onClick {
-            cllickType = NEW_PWD
-            if (presenter.getConnectState()) {
-                val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
-                if (!issetdefaultpwdsuccess) {
-                    tvSend.text = ""
-                    tvRecive.text = ""
-                    //加密mac
-                    mac?.let {
-                        if (it.contains(":")) {
-                            val mac = it.replace(":", "")
-                            //获取新密码
-                            val password = AesEntryDetry.getPassword("sensor668", mac)
-                            Logger.d("password:$password")
-                            //DC, 0E, C1, E9, 36, B9, 5E, 89
-                            //修改密码
-                            presenter.setPWd("FFEECCDDAA998877", password)
+            if (!checkedDeviceState){
+                CircleDialog.Builder()
+                        .setTitle("设备已重复!")
+                        .setCanceledOnTouchOutside(true)
+                        .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                        .setText("确认是否需要继续配置密码？")
+                        .setPositive("确定") {
+                            setDevicePwd()
                         }
-                    }
-
-                } else {
-                    toast("密码已修改成功，无法再次修改")
-                }
-
-            } else {
-                toast("蓝牙版连接失败，无法修改密码")
+                        .setNegative("取消",null)
+                        .setCancelable(true)
+                        .show(supportFragmentManager)
+            }else{
+                setDevicePwd()
             }
+
         }
 
         mBtnSetDefaultPwd.onClick {
-            if (presenter.getConnectState()) {
-                cllickType = OLD_PWD
-                val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
-                presenter.setPWd(password, "FFEECCDDAA998877")
-            } else {
-                toast("蓝牙未连接")
-            }
+
+            CircleDialog.Builder()
+                    .setTitle("恢复默认密码!")
+                    .setCanceledOnTouchOutside(true)
+                    .setTextColor(resources.getColor(com.example.baselibrary.R.color.red_normal))
+                    .setText("确认是否需要恢复默认密码？")
+                    .setPositive("确定") {
+                        if (presenter.getConnectState()) {
+                            cllickType = OLD_PWD
+                            val password = AesEntryDetry.getPassword("sensor668", mac?.replace(":", ""))
+                            presenter.setPWd(password, "FFEECCDDAA998877")
+                        } else {
+                            toast("蓝牙未连接")
+                        }
+                    }
+                    .setNegative("取消",null)
+                    .setCancelable(true)
+                    .show(supportFragmentManager)
+
         }
 
         mBtnClearCache.onClick {
@@ -461,6 +457,60 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
             finish()
         }
 
+    }
+
+    private fun setDevicePwd() {
+        cllickType = NEW_PWD
+        if (presenter.getConnectState()) {
+            val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
+            if (!issetdefaultpwdsuccess) {
+                tvSend.text = ""
+                tvRecive.text = ""
+                //加密mac
+                mac?.let {
+                    if (it.contains(":")) {
+                        val mac = it.replace(":", "")
+                        //获取新密码
+                        val password = AesEntryDetry.getPassword("sensor668", mac)
+                        Logger.d("password:$password")
+                        //DC, 0E, C1, E9, 36, B9, 5E, 89
+                        //修改密码
+                        presenter.setPWd("FFEECCDDAA998877", password)
+                    }
+                }
+
+            } else {
+                toast("密码已修改成功，无法再次修改")
+            }
+
+        } else {
+            toast("蓝牙版连接失败，无法修改密码")
+        }
+    }
+
+    private fun setDeviceMAC() {
+        if (presenter.getConnectState()) {
+            //修改密码成功
+            val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
+            if (issetdefaultpwdsuccess) {
+                //修改mac
+                password = SpUtils.getString(AppUtils.getContext(), ConstantSP.DEVICE_PWD)
+                toast("正在设置新的MAC地址=$mac")
+                tvMessage?.text = "通过新密码修改MAC：$mac"
+                Logger.e("修改mac=$mac -- password=$password")
+                tvSend.text = ""
+                tvRecive.text = ""
+                presenter.setDeviceMac(password, mac)
+                mHandler.sendEmptyMessageDelayed(2, 2000)
+                SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_MAC, mac)
+            } else {
+    //                    password = "FFEECCDDAA998877"
+    //                    tvMessage?.text = "通过默认密码修改MAC：$mac"
+                toast("请先修改密码成功后，在修改MAC")
+            }
+        } else {
+            toast("蓝牙版连接失败，无法修改密码")
+        }
     }
 
     override fun onPause() {

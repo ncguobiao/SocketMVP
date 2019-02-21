@@ -46,9 +46,9 @@ abstract class BaseMvpActivity<T : BasePresenter<*>> : BaseActivity(), IBaseView
         initActivityInjection()
         initComponent()
         initData()
-
-        initView(savedInstanceState)
         initDialog()
+        initView(savedInstanceState)
+
         start()
         initListener()
     }
