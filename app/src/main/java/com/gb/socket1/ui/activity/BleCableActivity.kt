@@ -50,12 +50,14 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                             tvSend.text = ""
                             tvRecive.text = ""
                             presenter.setCircle(defaultPWd)
+                            Logger.d("defaultPWd=$defaultPWd")
                             sendEmptyMessageDelayed(1, 2000)
                         }
                     } else {
                         if (presenter.getConnectState()) {
                             tvSend.text = ""
                             tvRecive.text = ""
+                            Logger.d("newPassword=$newPassword")
                             presenter.setCircle(newPassword)
                             sendEmptyMessageDelayed(1, 2000)
                         }
@@ -107,7 +109,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         if (checkedDeviceState) {
             mBtnSetPwd.visibility = View.GONE
 //            mBtnClearCache.visibility = View.VISIBLE
-//            mBtnSetDefaultPwd.visibility = View.VISIBLE
+
 //            mBtnDisconnectAndConnect.visibility = View.VISIBLE
             tvMSg.text = "设备状态：正常"
         } else {
@@ -117,7 +119,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
             mBtnDisconnectAndConnect.visibility = View.VISIBLE
             tvMSg.text = "设备状态：重复入库，请联系管理员"
         }
-
+        mBtnSetDefaultPwd.visibility = View.VISIBLE
 
 //        mBtnSetMAC.visibility = View.VISIBLE
 
@@ -247,6 +249,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                     if (checkedDeviceState) {
 //                        SpUtils.put(AppUtils.getContext(), ConstantSP.DEVICE_PWD, password)
                         setDeviceMAC(newPassword)
+                        Logger.d("setPwdSuccess =$newPassword")
                     } else {
                         when (cllickType) {
                             NEW_PWD -> {
@@ -279,6 +282,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     }
 
     private fun setDeviceMAC(newPassword:String?) {
+        cllickType = NEW_PWD
         tvMessage?.text = "设置密码成功：$newPassword"
         toast("正在设置新的MAC地址=$mac")
         Logger.e("修改mac=$mac -- password=$newPassword")
