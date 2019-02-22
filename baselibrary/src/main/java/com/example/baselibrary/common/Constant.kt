@@ -11,7 +11,7 @@ object Constant {
     const val IS_LOGIN: String = "is_login"
     //用户id
     const val USERID: String = "userID"
-    const val USER_ID: Int = 105
+    const val USER_ID: Int = 107
     const val POWER_LEVEL: String = ":powerLevel"
     //设备信息
     const val DEVICE_NAME: String = "device_name"
@@ -30,7 +30,6 @@ object Constant {
     //是否打印日志
     const val DEBUG: Boolean = true
 
-
     //fragment类型
     const val FRAGMENT_TAG: String = "fragment_tag"
     const val FRAGMENT_INCOME: Int = 0
@@ -39,14 +38,12 @@ object Constant {
     const val FRAGMENT_TWITHDRAWALS_RECORD: Int = 3
     const val FRAGMENT_USER_INFO: Int = 4
     const val FRAGMENT_DEVICE_RECORDS: Int = 5
-//    const val FRAGMENT_INCOME:Int = 0
-
+//  const val FRAGMENT_INCOME:Int = 0
 
     //测试服
     const val USER_URL: String = "http://test01.sensor668.com:5080/"
     const val USER_DEVICE_URL: String = "http://test01.sensor668.com:9080/"
     const val USER_COMMON_URL: String = "http://test01.sensor668.com:8080/"
-
 
     //蓝牙信息
     val SERVICEUUID: UUID? = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb")
@@ -54,6 +51,6 @@ object Constant {
     val CHARACTERISTICUUID1: UUID? = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb")
 
     const val QRCODE = 18888
-    val COIN_COUNT: String?="coin_count"
+    val COIN_COUNT: String? = "coin_count"
 
 }

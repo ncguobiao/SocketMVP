@@ -58,7 +58,6 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
 
 
     init {
-
         //获取蓝牙对象
         mClient = BluetoothClientManager.getClient()
         //连接状态变化监听
@@ -106,7 +105,7 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     第一层加密数据3 xor  密码字节7 = 第二层加密数据3
     第一层加密数据4 xor  密码字节8 = 第二层加密数据4
      */
-    fun setCircle(password:String?) {
+    fun setCircle(password: String?) {
 //        val issetdefaultpwdsuccess = SpUtils.getBoolean(AppUtils.getContext(), ConstantSP.ISSETDEFAULTPWDSUCCESS)
 //        Logger.d("发送心跳包=$issetdefaultpwdsuccess")
         val b1 = Integer.parseInt("AA", 16).toByte()

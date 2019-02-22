@@ -222,7 +222,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                     when (type) {
                         BluetoothTestCableImpl.TYPE_CIRCLE -> tvSend.text = "发送${msg}"
                         BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
-                        BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
+                        BluetoothTestCableImpl.TYPE_SETMAC -> tvSend.text = "发送${msg}"
                         BluetoothTestCableImpl.TYPE_OPEN -> tvSend.text = "发送${msg}"
                     }
                 }
@@ -231,7 +231,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                     when (type) {
                         BluetoothTestCableImpl.TYPE_CIRCLE -> tvSend.text = "发送${msg}"
                         BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
-                        BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
+                        BluetoothTestCableImpl.TYPE_SETMAC -> tvSend.text = "发送${msg}"
                         BluetoothTestCableImpl.TYPE_OPEN -> tvSend.text = "发送${msg}"
                     }
                 }
