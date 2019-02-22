@@ -187,7 +187,6 @@ class BluetoothTestCableImpl constructor(val context: Context?) : BluetoothTestC
     0xMMyyzznnXXYYZZNN: 9C4A816C3B02FF35 新密码
      */
     fun setPWd(oldpwd: String, password: String) {
-
         var sbOld = StringBuffer()
         oldpwd.toCharArray().forEachIndexed { index, value ->
             sbOld.append(value)

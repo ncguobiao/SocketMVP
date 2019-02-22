@@ -208,7 +208,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 //                        checkedDevice(it, deviceName)
 //                        flag = true
 //                    }
-
                 }
 
                 override fun onCircle() {
@@ -225,7 +224,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
                         BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
                         BluetoothTestCableImpl.TYPE_SETPWD -> tvSend.text = "发送${msg}"
                         BluetoothTestCableImpl.TYPE_OPEN -> tvSend.text = "发送${msg}"
-
                     }
                 }
 
@@ -456,8 +454,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
             } else {
                 setDeviceMAC()
             }
-
-
         }
         //修改密码
         mBtnSetPwd.onClick {
