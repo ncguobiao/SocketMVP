@@ -34,9 +34,6 @@ import org.jetbrains.anko.toast
  */
 class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeView {
 
-    private val presenter by lazy {
-        BluetoothTestCableImpl(this)
-    }
 
     private var mac: String? = null
     override fun onError(error: String) {
@@ -81,8 +78,9 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     override fun initView(savedInstanceState: Bundle?) {
         mac = intent.getStringExtra(Constant.DEVICE_MAC)
         deviceName = intent.getStringExtra(Constant.DEVICE_NAME)
-
+        Logger.d("设备名：S$deviceName,MAC：$mac")
         checkedDevice(mac!!, deviceName!!)
+        tvState.text = "设备名：S$deviceName\r\nMAC：$mac"
     }
 
 
@@ -90,7 +88,7 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
         if (mPresenter.getView() == null) {
             mPresenter.attachView(this)
         }
-        mPresenter.checkedDevice(macAddress.replace(":", ""), "S" + deviceName)
+        mPresenter.checkedDevice(macAddress.replace(":", ""), "S$deviceName")
     }
 
     override fun initComponent() {
@@ -128,12 +126,8 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
     override fun onDestroy() {
         super.onDestroy()
         if (mPresenter.getView() != null) {
-            mPresenter.detachView()
+          mPresenter.detachView()
         }
-
-        Logger.e("onDestroy")
-        presenter.unregisterBroadcastReceiver()
-        presenter.close()
 
     }
 
