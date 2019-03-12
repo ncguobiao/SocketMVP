@@ -27,7 +27,6 @@ import java.util.*
  */
 class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar {
 
-
     private var mcontext: WeakReference<Context>? = null
 
     private var mClient: BluetoothClient? = null
@@ -37,11 +36,41 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
     private var macAddress: String? = null
     private var mBluetoothTestCarListener: BluetoothTestCarListener? = null
     private var mConnected: Boolean = false
-    private lateinit var mConnectStatusListener: BleConnectStatusListener
+//    private lateinit var mConnectStatusListener: BleConnectStatusListener
     private var filter: IntentFilter? = null
 
     private val deviceType by lazy {
         Integer.parseInt("A2", 16).toByte()
+    }
+
+   private val mConnectStatusListener = object : BleConnectStatusListener() {
+        override fun onConnectStatusChanged(mac: String?, status: Int) {
+            when (status) {
+                Constants.STATUS_CONNECTED -> {
+                    Logger.d("STATUS_CONNECTED")
+                    mConnected = true
+                    mClient?.let {
+                        it.notify(mac, BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID2, bleNotifyResponse)
+                    }
+                    mBleConnectListener?.let {
+                        it.connectOnSuccess()
+                    }
+
+                }
+                Constants.STATUS_DISCONNECTED -> {
+                    Logger.d("STATUS_DISCONNECTED")
+                    mConnected = false
+                    mClient?.let {
+                        it.unnotify(mac, BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID2, bleUnNotifyResponse)
+                    }
+                    mBleConnectListener?.let {
+                        it.connectOnFailure()
+                    }
+                }
+            }
+
+        }
+
     }
 
     init {
@@ -56,33 +85,7 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         //获取蓝牙对象
         mClient = BluetoothClientManager.getClient()
         //连接状态变化监听
-        mConnectStatusListener = object : BleConnectStatusListener() {
-            override fun onConnectStatusChanged(mac: String?, status: Int) {
-                when (status) {
-                    Constants.STATUS_CONNECTED -> {
-                        mConnected = true
-                        mClient?.let {
-                            it.notify(mac, BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID2, bleNotifyResponse)
-                        }
-                        mBleConnectListener?.let {
-                            it.connectOnSuccess()
-                        }
 
-                    }
-                    Constants.STATUS_DISCONNECTED -> {
-                        mConnected = false
-                        mClient?.let {
-                            it.unnotify(mac, BluetoothConfig.serviceUUID, BluetoothConfig.characteristicUUID2, bleUnNotifyResponse)
-                        }
-                        mBleConnectListener?.let {
-                            it.connectOnFailure()
-                        }
-                    }
-                }
-
-            }
-
-        }
     }
 
     /**
@@ -226,13 +229,13 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         }
     }
 
-
     //关闭通知回调
     private val bleUnNotifyResponse = BleUnnotifyResponse { code ->
         if (code == Constants.REQUEST_SUCCESS) {
             Logger.e("关闭通知成功！")
         }
     }
+
     private val mReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context?, intent: Intent) {
             when (intent.action) {
@@ -251,7 +254,6 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                                 mBluetoothTestCarListener?.checkSeekOnSuccess(BleUtils.byteArrayToHexString(receiveValue))
                             }
                             it.size > 8 && it[2].toInt() == 0x03 -> {
-
                                 when (it[4].toInt()) {
                                     0 -> {
 //                                        // 开始投币
@@ -267,7 +269,6 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                                 //蓝牙使用次数
                                 val bleCount = getMathCount(it[7], it[8])
                                 mBluetoothTestCarListener?.getDeviceInfoOnSuccess(coinCount, bleCount)
-
                             }
                             it.size > 4 && it[2].toInt() == 0x10 -> {
 
@@ -278,8 +279,6 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                                     coin(result)
                                     mBluetoothTestCarListener?.coinOnRetry(result)
                                 }
-
-
                             }
                             it.size > 2 && it[2].toInt() == 0x20 -> {
                                 mBluetoothTestCarListener?.clearCountOnSuccess(BleUtils.byteArrayToHexString(receiveValue))
@@ -291,12 +290,10 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
                                 mBluetoothTestCarListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
                         }
-
                     }
                 }
             }
         }
-
     }
 
     protected fun getMathCount(b3: Byte, b4: Byte): Int {
@@ -320,7 +317,7 @@ class BluetoothTestCarImpl constructor(val context: Context?) : BluetoothTestCar
         val macBytes = BleUtils.getByteArrAddress(macAddress)
         this.mBleConnectListener = bleConnectListener
         if (mClient != null) {
-            mClient?.registerConnectStatusListener(macAddress, mConnectStatusListener)
+            mClient?.registerConnectStatusListener(macAddress, this.mConnectStatusListener)
         } else {
             mBleConnectListener?.connectOnError()
         }

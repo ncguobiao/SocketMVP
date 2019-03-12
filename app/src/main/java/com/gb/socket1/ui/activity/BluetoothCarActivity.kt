@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.os.SystemClock
 import android.view.View
 import com.example.baselibrary.base.BaseActivity
 import com.example.baselibrary.common.Constant
@@ -20,9 +19,7 @@ import com.gb.sockt.blutoothcontrol.listener.BluetoothTestCarListener
 import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_bluetooth_car_connect.*
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
-import java.util.ArrayList
 
 
 /**
@@ -41,6 +38,9 @@ class BluetoothCarActivity : BaseActivity() {
     private val rxPermissions by lazy {
         RxPermissions(this)
     }
+
+    private var connectFaiureCount =0
+    private var connectSuccessCount =0
     private var connectCount: Int = 0
     //配置连接次数
     private var configCoinCount: Int = 0
@@ -89,6 +89,7 @@ class BluetoothCarActivity : BaseActivity() {
         tvMac.text = "连接设备:mac=$mac"
         presenter?.setMAC(mac, object : BleConnectListener {
             override fun connectOnError() {
+                Logger.d("connectOnError")
                 showToast("该设备不支持蓝牙")
                 mTvState.text = "连接错误"
                 mProgressBar.visibility = View.GONE
@@ -96,6 +97,9 @@ class BluetoothCarActivity : BaseActivity() {
             }
 
             override fun connectOnFailure() {
+                Logger.d("connectOnFailure")
+                connectFaiureCount++
+                tvTotalCoinCount.text ="蓝牙连接断开次数：$connectFaiureCount"
                 mTvState.text = "连接失败"
                 mTvState.setTextColor(Color.RED)
                 mProgressBar.visibility = View.GONE
@@ -135,6 +139,9 @@ class BluetoothCarActivity : BaseActivity() {
             }
 
             override fun connectOnSuccess() {
+                Logger.d("connectOnSuccess")
+                connectSuccessCount++
+                tvDeviceCoinCount.text ="蓝牙连接成功次数：$connectSuccessCount"
                 mProgressBar.visibility = View.GONE
                 val consumTime = System.currentTimeMillis() - startTime
                 mConsumTime.text = "连接耗时：${consumTime}ms"
@@ -145,7 +152,6 @@ class BluetoothCarActivity : BaseActivity() {
 //                    presenter?.requestSeed()
 //            }
                 connectCount--
-
                 val message = Message.obtain()
                 message.what = 2
                 mHandler.sendMessageDelayed(message, 3000)
@@ -214,7 +220,7 @@ class BluetoothCarActivity : BaseActivity() {
 //                Logger.d("cacheCount=$cacheCount")
                 cacheCount += 1
                 SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT + mac, cacheCount)
-                tvCoinCount.text = "手机成功投币次数=$cacheCount，\n当前设备MAC=$mac"
+//                tvCoinCount.text = "手机成功投币次数=$cacheCount，\n当前设备MAC=$mac"
 //                Logger.d("次数:$cacheCount")
                 tvTotalCoinCount.text = "投币总数:${tempCount + cacheCount}"
             }
@@ -224,7 +230,7 @@ class BluetoothCarActivity : BaseActivity() {
                 toast("清除计数成功")
 //                SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT+mac, 0L)
                 SpUtils.remove(Constant.COIN_COUNT + mac)
-                tvCoinCount.text = "手机成功投币次数=0"
+//                tvCoinCount.text = "手机成功投币次数=0"
 
             }
 
@@ -298,7 +304,7 @@ class BluetoothCarActivity : BaseActivity() {
         //  清除手机缓存的投币次数
         mBtnClearCacheCoinCount.onClick {
             SpUtils.put(AppUtils.getContext(), Constant.COIN_COUNT + mac, 0L)
-            tvCoinCount.text = "手机成功投币次数=0"
+//            tvCoinCount.text = "手机成功投币次数=0"
             toast("清除手机缓存的投币次数成功")
         }
         //清除计数
@@ -339,7 +345,7 @@ class BluetoothCarActivity : BaseActivity() {
 
         }
         var cacheCount = SpUtils.getLong(AppUtils.getContext(), Constant.COIN_COUNT + mac)
-        tvCoinCount.text = "手机成功投币次数=$cacheCount"
+//        tvCoinCount.text = "手机成功投币次数=$cacheCount"
 
     }
 
@@ -349,6 +355,8 @@ class BluetoothCarActivity : BaseActivity() {
         mHandler.removeCallbacksAndMessages(null)
         presenter?.unregisterBroadcastReceiver()
         presenter?.close()
+        connectSuccessCount =0
+        connectFaiureCount =0
         sb = null
     }
 

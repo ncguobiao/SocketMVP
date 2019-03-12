@@ -75,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
-        android:text="充电线设置密码和MAC" />
+        android:text="查询设备是否重复" />
     <Button
         android:id="@+id/button6"
         android:layout_width="match_parent"

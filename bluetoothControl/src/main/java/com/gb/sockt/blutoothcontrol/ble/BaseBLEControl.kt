@@ -16,6 +16,7 @@ interface BaseBLEControl {
 
 
 
+
     fun connect()
 
     fun registerBroadcastReceiver(): BaseBLEControl
