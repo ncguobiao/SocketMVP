@@ -37,23 +37,21 @@ open class BasePresenter<T : IBaseView> : IPresenter<T> {
     private var compositeDisposable = CompositeDisposable()
 
     override fun attachView(mRootView: T) {
-//        weakReference = WeakReference(mRootView)
-        this.mRootView = mRootView
+        weakReference = WeakReference(mRootView)
     }
 
     override fun detachView() {
-//        weakReference?.clear()
-//        weakReference = null
+        weakReference?.clear()
+        weakReference = null
         //保证activity结束时取消所有正在执行的订阅
         if (!compositeDisposable.isDisposed) {
             compositeDisposable.clear()
         }
-        mRootView = null
 
     }
 
     open fun getView(): T? {
-//        mRootView = weakReference?.get()
+        mRootView = weakReference?.get()
         return mRootView
     }
 

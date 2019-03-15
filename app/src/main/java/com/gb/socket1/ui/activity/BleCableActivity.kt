@@ -113,16 +113,6 @@ class BleCableActivity : BaseMvpActivity<ScanQRCodePresenterImpl>(), ScanQRCodeV
 
 
 
-    override fun onPause() {
-        super.onPause()
-        Logger.d("onPause")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Logger.d("onStop")
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         if (mPresenter.getView() != null) {
