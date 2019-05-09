@@ -70,10 +70,14 @@ class BluetoothKeyActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_key)
-
+        val mac = intent.getStringExtra("mac")
+        if (mac.isNullOrEmpty()){
+            toast("Mac错误")
+            return
+        }
         initComponent()
 
-        initBluetooth("00:00:EF:FF:FF:FF")
+        initBluetooth(mac)
 
         mbtnConnect.onClick {
             if (!mBluetoothTestKeyImpl?.getConnectState())

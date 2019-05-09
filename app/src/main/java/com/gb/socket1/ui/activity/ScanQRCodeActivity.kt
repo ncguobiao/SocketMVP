@@ -130,7 +130,9 @@ class ScanQRCodeActivity : BaseActivity() {
         }
 
         button1.onClick {
-            checkBLE()
+            clickType = clickKey
+//            checkBLE()
+            openCapture()
         }
         button3.onClick {
             clickType = clickCar
@@ -223,6 +225,9 @@ class ScanQRCodeActivity : BaseActivity() {
                     val result = data?.getStringExtra("SCAN_RESULT")
                     if (checkQRResult(result)) return
                     when (clickType) {
+                        clickKey->{
+                            startActivity<BluetoothKeyActivity>("mac" to macAddress)
+                        }
                         clickTest -> startActivity<BluetoothTestConnectActivity>("mac" to macAddress)
                         clickCar -> {
                             if (!macAddress.isNullOrEmpty() && !macList.contains(macAddress))
