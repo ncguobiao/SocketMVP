@@ -177,7 +177,7 @@ class BluetoothKeyActivity : BaseActivity() {
         toCharArray.forEachIndexed { index, c ->
             sb.append(c)
             if (index % 2 == 1) {
-                array.add(sb.toString().toByte())
+                array.add(Integer.parseInt(sb.toString(), 0x10).toByte())
                 sb = StringBuffer()
             }
         }
