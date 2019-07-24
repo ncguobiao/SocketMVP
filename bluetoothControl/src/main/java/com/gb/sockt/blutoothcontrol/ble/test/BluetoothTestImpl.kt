@@ -392,8 +392,11 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b4 = macBytes[1]
         val b5 = macBytes[2]
         val b6 = macBytes[3]
-        val b7 = 0.toByte()
-        val b8 = 0.toByte()
+        val b7 = macBytes[4]
+        val b8 = macBytes[5]
+
+//        val b7 = 0.toByte()
+//        val b8 = 0.toByte()
 
         val byteArray = byteArrayOf(b3, b4, b5, b6, b7, b8)
         val crc = BleUtils.SSGetCrc16(byteArray)

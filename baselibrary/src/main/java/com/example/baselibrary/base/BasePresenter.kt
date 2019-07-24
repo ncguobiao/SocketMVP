@@ -32,12 +32,13 @@ open class BasePresenter<T : IBaseView> : IPresenter<T> {
 
     private var weakReference: WeakReference<T>? = null
 
-    private var mRootView: T? = null
+    public var mRootView: T? = null
 
     private var compositeDisposable = CompositeDisposable()
 
     override fun attachView(mRootView: T) {
         weakReference = WeakReference(mRootView)
+        this.mRootView = weakReference?.get()
     }
 
     override fun detachView() {

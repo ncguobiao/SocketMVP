@@ -43,7 +43,7 @@ import javax.inject.Named
 
 /**
  * Created by guobiao on 2018/11/15.
- * 测试蓝牙连接
+ * 测试钥匙蓝牙连接
  */
 
 
