@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_25"
-        android:hint="请输入第一帧key" />
+        android:hint="0102030405060708" />
     <EditText
 
         android:id="@+id/mEditText2"
@@ -70,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
-        android:hint="请输入第二帧key" />
+        android:hint="090A0B0C0D0E0F10" />
     <!--<Spinner-->
         <!--android:id="@+id/spinner"-->
         <!--android:layout_width="wrap_content"-->

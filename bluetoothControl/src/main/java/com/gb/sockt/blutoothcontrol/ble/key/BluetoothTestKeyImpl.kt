@@ -97,7 +97,7 @@ class BluetoothTestKeyImpl constructor(val context: Context?) : BluetoothTestKey
             val b10 = keyArray[6]
             val b11 = keyArray[7]
             val b12 = Integer.parseInt("72", 0x10).toByte()
-            val b13 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12))
+            val b13 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12))
             val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13)
             msg = "sendKeyOne"
             write(value)
@@ -121,7 +121,7 @@ class BluetoothTestKeyImpl constructor(val context: Context?) : BluetoothTestKey
             val b10 = keyArray[6]
             val b11 = keyArray[7]
             val b12 = Integer.parseInt("72", 0x10).toByte()
-            val b13 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12))
+            val b13 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12))
             val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13)
             msg = "sendKeyTwo"
             write(value)
@@ -143,7 +143,7 @@ class BluetoothTestKeyImpl constructor(val context: Context?) : BluetoothTestKey
         val b7 = macBytes[4]
         val b8 = macBytes[5]
         val b9 = Integer.parseInt("72", 0x10).toByte()
-        val b10 = BleUtils.getCheckCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9))
+        val b10 = BleUtils.checkSeekCode(byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9))
         val value = byteArrayOf(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10)
         msg = "configMAC"
         write(value)
@@ -213,18 +213,23 @@ class BluetoothTestKeyImpl constructor(val context: Context?) : BluetoothTestKey
                     receiveValue?.let {
                         Logger.w("接收蓝牙数据=${BleUtils.byteArrayToHexString(receiveValue)}")
                         when {
-                            it.size > 2 && it[3].toInt() == 0x01
-                            -> {
-                                mBluetoothTestKeyListener?.onSendkeyOne(BleUtils.byteArrayToHexString(receiveValue))
-                            }
-                            it.size > 2 && it[3].toInt() == 0x02
-                            -> {
-                                mBluetoothTestKeyListener?.onSendkeyTwo(BleUtils.byteArrayToHexString(receiveValue))
+                            it[0].toInt() != 0x27 -> {
+                                mBluetoothTestKeyListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
                             it.size > 2 && it[1].toInt() == 0x02
                             -> {
-                                mBluetoothTestKeyListener?.onConfigMAC(BleUtils.byteArrayToHexString(receiveValue))
+                                Logger.w("成功onConfigMAC")
+//                                mBluetoothTestKeyListener?.onConfigMAC(BleUtils.byteArrayToHexString(receiveValue))
                             }
+                            it.size > 2 && it[3].toInt() == 0x01 && it[1].toInt() == 0x01
+                            -> {
+                                mBluetoothTestKeyListener?.onSendkeyOne(BleUtils.byteArrayToHexString(receiveValue))
+                            }
+                            it.size > 2 && it[3].toInt() == 0x02 && it[1].toInt() == 0x01
+                            -> {
+                                mBluetoothTestKeyListener?.onSendkeyTwo(BleUtils.byteArrayToHexString(receiveValue))
+                            }
+
                             else -> {
                                 mBluetoothTestKeyListener?.onError(BleUtils.byteArrayToHexString(receiveValue))
                             }
