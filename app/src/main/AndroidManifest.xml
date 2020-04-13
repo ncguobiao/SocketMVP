@@ -163,7 +163,7 @@
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION" />
                 <action android:name="cn.jpush.android.intent.CONNECTION" />
 
-                <category android:name="com.gb.socket" />
+                <category android:name="com.gb.socket1" />
             </intent-filter>
         </receiver>
 
