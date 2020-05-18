@@ -49,13 +49,12 @@ public class BleUtils {
             0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8,
             0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0};
 
-    private static int[] g_TeaKey={0x7373647A, 0x32303139, 0x31323334, 0x35363738};
+    private static int[] g_TeaKey = {0x7373647A, 0x32303139, 0x31323334, 0x35363738};
     private static int CRYPT_FLAG = 0xAA55;
 
     public static final byte EQUIP_TYPE_CE = (byte) Integer.parseInt("D1", 16);
     public static final byte EQUIP_TYPE_CD = (byte) Integer.parseInt("B1", 16);
     private static List<Byte> list;
-
 
 
     public static byte[] seedToKey(byte[] originSeeds, int type) {
@@ -405,20 +404,25 @@ public class BleUtils {
         return GetCrc16(mac, 0xABCD, g_CrcTable);
     }
 
-    private static int GetCrc16(byte[] byteArrAddress,  int i, int[] g_crcTable) {
+    private static int GetCrc16(byte[] byteArrAddress, int i, int[] g_crcTable) {
         int cRc_16 = i, temp;
-        for (int j = 0; j <byteArrAddress.length; j++) {
+        for (int j = 0; j < byteArrAddress.length; j++) {
             temp = cRc_16 & 0xFF;
             cRc_16 = (cRc_16 >> 8) ^ g_crcTable[(temp ^ byteArrAddress[j]) & 0xFF];
         }
         return cRc_16;
     }
 
-    public static int[]  makePackage(byte[] mac, int flag) {
+    public static int[] makePackage(byte[] mac, int flag) {
         int tmp1, tmp2;
-        tmp1 = (mac[0] << 24) + (mac[1] << 16) + (mac[2] << 8) + mac[3];
+        int a1 = mac[0] << 24;
+        int a2 = mac[1] << 16;
+        int a3 = mac[2] << 8;
+        int a4 = mac[3] & 0xff;
+//        tmp1 = (mac[0] << 24) + (mac[1] << 16) + (mac[2] << 8) + mac[3];
+        tmp1 = a1 + a2 + a3 + a4;
         tmp2 = (CRYPT_FLAG << 16) + flag;
-       return encryptTEA(tmp1, tmp2, g_TeaKey);
+        return encryptTEA(tmp1, tmp2, g_TeaKey);
     }
 
     private static int[] encryptTEA(int tmp1, int tmp2, int[] key) {
@@ -429,9 +433,9 @@ public class BleUtils {
         for (int i = 0; i < 8; i++) {
             sum += delta;
             y += ((z << 4) + key[0]) ^ (z + sum) ^ ((z >>> 5) + key[1]);
-            z += ((y <<4) + key[2]) ^ (y + sum) ^ ((y >>> 5) + key[3]);
+            z += ((y << 4) + key[2]) ^ (y + sum) ^ ((y >>> 5) + key[3]);
         }
-        int[] arr = {y,z};
+        int[] arr = {y, z};
         return arr;
     }
 

@@ -130,7 +130,7 @@ class MainActivity : BaseMvpActivity<MainPresenterImpl>(), MainView, NavigationV
                     .subscribe {
                         if (it) {
 //                //申请的权限全部允许
-                            Logger.d("扫码权限通过")
+//                            Logger.d("扫码权限通过")
                             startActivityForResult(
                                     Intent(BaseApplication.getApplication(), CaptureActivity::class.java),
 //                                    Intent(BaseApplication.getApplication(), ActivityScanerCode::class.java),

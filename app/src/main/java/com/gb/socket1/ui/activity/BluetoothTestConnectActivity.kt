@@ -422,6 +422,7 @@ class BluetoothTestConnectActivity : BaseActivity() {
                             mBluetoothTestImpl.findSingleMAC(mCodes,macAddress)
                         }
                         SET_MAC->{
+                            Logger.d("SET_MAC=$macAddress")
                             mBluetoothTestImpl.setDeviceMAC(macAddress)
                         }
                         else->{

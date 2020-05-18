@@ -103,20 +103,6 @@ class BluetoothKeyActivity : BaseActivity() {
             }
 
         }
-//        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onNothingSelected(parent: AdapterView<*>?) {
-//
-//            }
-//
-//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                val stringArray = resources.getStringArray(R.array.macs)
-//                val mac = stringArray[position].toUpperCase()
-////                val formatAddress = formatAddress(mac)
-//                mEditText.setText(mac)
-//                toast("已选择:${mac}")
-//            }
-//
-//        }
 
 
         scan.onClick {

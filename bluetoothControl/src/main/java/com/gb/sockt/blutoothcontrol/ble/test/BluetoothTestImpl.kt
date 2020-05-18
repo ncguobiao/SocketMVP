@@ -20,6 +20,7 @@ import com.inuker.bluetooth.library.connect.response.BleWriteResponse
 import com.orhanobut.logger.Logger
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.experimental.and
 
 /**
  * Created by guobiao on 2018/11/15.
@@ -427,10 +428,13 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
 
         //MAC地址4字节密文
         val macBytes = BleUtils.getByteArrAddress(mac)
+        Logger.d("macBytes=$macBytes")
         val b3 = macBytes[3]
         val b4 = macBytes[2]
         val b5 = macBytes[1]
         val b6 = macBytes[0]
+        Logger.d("-127=${-127 and 0xFF}")
+        Logger.d("b3=$b3,b4=$b4,b5=$b5,b6=$b6")
         val byteArray = byteArrayOf(b3, b4, b5, b6)
 
         val arr = BleUtils.makePackage(byteArray, 0x1001)
