@@ -7,6 +7,7 @@ import com.orhanobut.logger.Logger;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -413,17 +414,68 @@ public class BleUtils {
         return cRc_16;
     }
 
+    /**
+     * 加密处理
+     * @param mac
+     * @param flag
+     * @return
+     */
     public static int[] makePackage(byte[] mac, int flag) {
-        int tmp1, tmp2;
-        int a1 = mac[0] << 24;
-        int a2 = mac[1] << 16;
-        int a3 = mac[2] << 8;
-        int a4 = mac[3] & 0xff;
-//        tmp1 = (mac[0] << 24) + (mac[1] << 16) + (mac[2] << 8) + mac[3];
-        tmp1 = a1 + a2 + a3 + a4;
+        int tmp1;
+        int tmp2;
+
+        long a1 = getUnsignedInt(getUnsignedByte(mac[0]) << 24);
+        long a2 = getUnsignedInt(getUnsignedByte(mac[1]) << 16);
+        long a3 = getUnsignedInt(getUnsignedByte(mac[2]) << 8);
+        long a4 = getUnsignedInt(getUnsignedByte(mac[3]));
+
+        Logger.d("a1 =" + a1);
+        Logger.d("a2 =" + a2);
+        Logger.d("a3 =" + a3);
+        Logger.d("a4 =" + a4);
+
+        tmp1 = (int) (a1 + a2 + a3 + a4);
+        Logger.d("tmp1 =" + tmp1);
+
         tmp2 = (CRYPT_FLAG << 16) + flag;
+        Logger.d("tmp2 =" + tmp2);
         return encryptTEA(tmp1, tmp2, g_TeaKey);
     }
+
+    private static long[] encryptTEA(long tmp1, int tmp2, int[] key) {
+        long y = tmp1;
+        int z = tmp2;
+        int sum = 0;
+        int delta = 0x9E3779B9;
+
+        for (int i = 0; i < 8; i++) {
+            sum += delta;
+            y += ((z << 4) + key[0]) ^ (z + sum) ^ ((z >>> 5) + key[1]);
+            z += ((y << 4) + key[2]) ^ (y + sum) ^ ((y >>> 5) + key[3]);
+        }
+        Logger.d("y =" + y+",z="+z);
+        return new long[]{y, z};
+    }
+
+//      前三位负数情况未处理
+//    public static int[] makePackage(byte[] mac, int flag) {
+//        int tmp1, tmp2;
+//        int a1 = mac[0] << 24;
+//        int a2 = mac[1] << 16;
+//        int a3 = mac[2] << 8;
+//        int a4 = mac[3] & 0xff;
+//        Logger.d("a1 =" + a1);
+//        Logger.d("a2 =" + a2);
+//        Logger.d("a3 =" + a3);
+//        Logger.d("a4 =" + a4);
+//        tmp1 = a1 + a2 + a3 + a4;
+//        Logger.d("tmp1 =" + tmp1);
+//
+//        tmp2 = ((CRYPT_FLAG << 16)) + flag;
+//        Logger.d("tmp2 =" + tmp2);
+//        return encryptTEA(tmp1, tmp2, g_TeaKey);
+//    }
+
 
     private static int[] encryptTEA(int tmp1, int tmp2, int[] key) {
         int y = tmp1;
@@ -435,10 +487,46 @@ public class BleUtils {
             y += ((z << 4) + key[0]) ^ (z + sum) ^ ((z >>> 5) + key[1]);
             z += ((y << 4) + key[2]) ^ (y + sum) ^ ((y >>> 5) + key[3]);
         }
-        int[] arr = {y, z};
-        return arr;
+        Logger.d("y =" + y+",z="+z);
+        return new int[]{y, z};
     }
 
+//    //将data字节型数据转换为0~255 (0xFF 即BYTE)。
+//    public static int getUnsignedByte (byte data){
+//        return data&0x0FF;
+//    }
+//    public static int getUnsignedShort(short data){
+//        return data&0xFFFF;
+//    }
+//    public static long getUnsignedInt(int data){
+//        return data&0xFFFFFF;
+//    }
+
+
+  /*  在Java中，不存在Unsigned无符号数据类型，但可以轻而易举的完成Unsigned转换。
+
+    方案一：如果在Java中进行流(Stream)数据处理，可以用DataInputStream类对Stream中的数据以Unsigned读取。
+
+    Java在这方面提供了支持，可以用java.io.DataInputStream类对象来完成对流内数据的Unsigned读取，该类提供了如下方法：
+          （1）int   readUnsignedByte()    //从流中读取一个0~255(0xFF)的单字节数据，并以int数据类型的数据返回。返回的数据相当于C/C++语言中所谓的“BYTE”。
+          （2）int readUnsignedShort()   //从流中读取一个0~65535(0xFFFF)的双字节数据，并以int数据类型的数据返回。返回的数据相当于C/C++语言中所谓的“WORD”，并且是以“低地址低字节”的方式返回的，所以程序员不需要额外的转换。
+
+    方案二：利用Java位运算符，完成Unsigned转换。
+
+    正常情况下，Java提供的*//**//*数据类型是有符号signed类型的，可以通过位运算的方式得到它们相对应的无符号值，参见几个方法中的代码：
+    */
+
+    public static int getUnsignedByte(byte data) {      //将data字节型数据转换为0~255 (0xFF 即BYTE)。
+        return data & 0x0FF;
+    }
+
+    public static int getUnsignedByte(short data) {      //将data字节型数据转换为0~65535 (0xFFFF 即 WORD)。
+        return data & 0x0FFFF;
+    }
+
+    public static long getUnsignedInt(int data) {     //将int数据转换为0~4294967295 (0xFFFFFFFF即DWORD)。
+        return data & 0x0FFFFFFFFL;
+    }
 
     /**
      * 操作设备动作

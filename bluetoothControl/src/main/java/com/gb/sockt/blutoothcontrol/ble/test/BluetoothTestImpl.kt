@@ -433,10 +433,8 @@ class BluetoothTestImpl constructor(val context: Context?) : BluetoothTest {
         val b4 = macBytes[2]
         val b5 = macBytes[1]
         val b6 = macBytes[0]
-        Logger.d("-127=${-127 and 0xFF}")
         Logger.d("b3=$b3,b4=$b4,b5=$b5,b6=$b6")
         val byteArray = byteArrayOf(b3, b4, b5, b6)
-
         val arr = BleUtils.makePackage(byteArray, 0x1001)
         val tmp1 = arr[0]
         val tmp2 = arr[1]
